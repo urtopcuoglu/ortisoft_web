@@ -1,163 +1,299 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ExternalLink, Github, Star, ArrowRight, Zap, Package, Code2, Rocket, MessageSquare, CheckCircle2 } from "lucide-react";
+import {
+  ArrowRight, CheckCircle2,
+  Store, Leaf, Train,
+  Briefcase, Award, Layers, Clock, Code2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Projects data artık kullanılmıyor - Coming Soon sayfası için
-// Eski projeler veri tabanında korunmuştur
+type ProjectStatus = "coming_soon" | "in_development" | "active";
+
+interface Project {
+  id: string;
+  title: string;
+  status: ProjectStatus;
+  badge: string;
+  fundingLabel: string;
+  fundingBadgeColor: string;
+  tagline: string;
+  description: string;
+  tags: string[];
+  iconName: "Store" | "Leaf" | "Train";
+  gradient: string;
+  borderColor: string;
+  features: string[];
+  techStack?: string[];
+}
+
+const projects: Project[] = [
+  {
+    id: "dukkanimbenim",
+    title: "dükkanımbenim.com",
+    status: "coming_soon",
+    badge: "Çok Yakında",
+    fundingLabel: "Ortisoft Girişimi",
+    fundingBadgeColor: "bg-slate-700 text-slate-300 border-slate-600",
+    tagline: "KOBİ'ler için hepsi bir arada dijital vitrin & CRM platformu",
+    description:
+      "Küçük ve orta ölçekli işletmelerin online varlıklarını kolayca yönetebilecekleri, müşteri ilişkilerini takip edebilecekleri ve satışlarını dijitale taşıyabilecekleri SaaS platformu. Kurulum gerektirmez, dakikalar içinde kullanıma hazır.",
+    tags: ["SaaS", "CRM", "E-Ticaret", "KOBİ"],
+    iconName: "Store",
+    gradient: "from-orange-500/20 to-amber-500/20",
+    borderColor: "border-orange-500/30",
+    features: [
+      "Dijital vitrin & ürün kataloğu",
+      "Müşteri ve sipariş yönetimi",
+      "WhatsApp & sosyal medya entegrasyonu",
+      "Analitik dashboard",
+    ],
+  },
+  {
+    id: "greeneco-map",
+    title: "GreenEco Map",
+    status: "in_development",
+    badge: "Geliştiriliyor",
+    fundingLabel: "TÜBİTAK BİGG",
+    fundingBadgeColor: "bg-red-900/40 text-red-300 border-red-700/50",
+    tagline: "Kahve telvesi geri dönüşüm ekosistemi — IoT + Gamification",
+    description:
+      "ESP32 tabanlı akıllı geri dönüşüm kutuları, mobil uygulama ve B2B/B2C gelir modeli ile kahve telvesini döngüsel ekonomiye kazandıran sürdürülebilirlik platformu. Kullanıcılar atıklarını bırakır, puan kazanır; üreticiler hammadde temin eder.",
+    tags: ["IoT", "Sürdürülebilirlik", "ESP32", "Gamification", "TÜBİTAK BİGG"],
+    iconName: "Leaf",
+    gradient: "from-emerald-500/20 to-green-500/20",
+    borderColor: "border-emerald-500/30",
+    features: [
+      "Akıllı IoT kutu ağı (IP65, load cell, drainage valve)",
+      "Puan & ödül gamification sistemi",
+      "B2B hammadde tedarik modülü",
+      "Gerçek zamanlı doluluk & analitik dashboard",
+    ],
+    techStack: [
+      ".NET 8",
+      "Next.js 14",
+      "PostgreSQL",
+      "TimescaleDB",
+      "Redis",
+      "RabbitMQ",
+      "SignalR",
+      "Capacitor",
+    ],
+  },
+  {
+    id: "railmentor",
+    title: "RailMentor",
+    status: "in_development",
+    badge: "Geliştiriliyor",
+    fundingLabel: "Erasmus+ KA210-VET",
+    fundingBadgeColor: "bg-blue-900/40 text-blue-300 border-blue-700/50",
+    tagline: "Demiryolu sektörüne adım atacak gençler için dijital mentorlük platformu",
+    description:
+      "Gazi MTAL koordinatörlüğünde yürütülen Erasmus+ girişimi. 14–18 yaş arası öğrencileri sektör profesyonelleriyle buluşturan akıllı eşleştirme algoritması, gerçek zamanlı iletişim ve multimedya içerik kütüphanesiyle donatılmış mentorlük platformu.",
+    tags: ["Erasmus+", "EdTech", "Mentorlük", "Demiryolu", "KA210-VET"],
+    iconName: "Train",
+    gradient: "from-blue-500/20 to-indigo-500/20",
+    borderColor: "border-blue-500/30",
+    features: [
+      "Akıllı mentor-menti eşleştirme motoru (dezavantajlı grup önceliği)",
+      "SignalR tabanlı anlık mesajlaşma & bildirim sistemi",
+      "Görev atama, dijital geri bildirim & süreç takibi",
+      "Podcast, video & e-öğrenme multimedya kütüphanesi",
+      "Admin KPI dashboard & öğrenci ilerleme analitikleri",
+      "Türkçe / İngilizce çok dil desteği (next-intl)",
+    ],
+    techStack: [
+      ".NET 8",
+      "Next.js 14",
+      "PostgreSQL",
+      "RabbitMQ",
+      "Redis",
+      "SignalR",
+      "MinIO",
+      "Capacitor",
+    ],
+  },
+];
 
 export default function ProjectsPage() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 3000);
-    }
-  };
-
   return (
     <div className="flex flex-col">
 
-      {/* ── Coming Soon Hero ── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden animated-gradient py-20">
-        <div className="absolute inset-0 grid-pattern" />
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl float" />
-        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-violet-600/15 rounded-full blur-3xl float" style={{ animationDelay: "2s" }} />
+      {/* ── Hero ── */}
+      <section className="relative min-h-[60vh] flex flex-col items-center justify-center overflow-hidden bg-slate-950 py-24">
+        <div className="absolute inset-0 grid-pattern opacity-40" />
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl" />
 
-        <div className="relative z-10 narrow-container text-center max-w-2xl mx-auto px-4">
-          {/* Badge */}
-          <Badge className="mb-8 bg-white/10 text-white border-white/20 justify-center mx-auto inline-flex">
-            <Zap className="w-4 h-4 mr-2" />
-            Yeni Ürün Hazırlığında
-          </Badge>
+        <div className="relative z-10 narrow-container px-4">
+          {/* Üst badge — çift pill */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <Badge className="bg-white/10 text-white border-white/20">
+              <Briefcase className="w-3.5 h-3.5 mr-1.5" />
+              3 Aktif Proje
+            </Badge>
+            <Badge className="bg-white/10 text-white border-white/20">
+              <Award className="w-3.5 h-3.5 mr-1.5" />
+              Erasmus+ · TÜBİTAK BİGG destekli
+            </Badge>
+          </div>
 
-          {/* Main Heading */}
-          <h1 className="heading-xl text-white mb-8 leading-tight">
-            Projelerimiz <br />
-            <span className="gradient-text">Yakında Sunulacak</span>
+          {/* Ana başlık */}
+          <h1 className="heading-xl text-white mb-6 leading-tight text-center">
+            Fikri Ürüne,<br />
+            <span className="gradient-text">Ürünü Gerçeğe Dönüştürüyoruz</span>
           </h1>
 
-          {/* Description */}
-          <p className="body-lg text-slate-300 mb-12 max-w-xl mx-auto leading-relaxed">
-            Ürün portföyümüzü yeniden düzenliyor, daha iyi örnekler ve başarı hikayeleri hazırlıyoruz.
-            Güncellemelerden haberdar olmak için e-mail adresinizi bırakın.
+          {/* Alt açıklama */}
+          <p className="body-lg text-slate-300 mb-10 max-w-2xl mx-auto text-center leading-relaxed">
+            Kendi geliştirdiğimiz SaaS ürünlerinden uluslararası fon destekli
+            araştırma projelerine — her çalışmamızda gerçek iş problemlerini
+            ölçeklenebilir yazılımla çözüyoruz.
           </p>
 
-          {/* Email Subscribe */}
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto mb-12">
-            <input
-              type="email"
-              placeholder="E-mail adresiniz..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex-1 px-5 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-200 backdrop-blur-sm"
-            />
-            <button
-              type="submit"
-              className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-blue-500/40 hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap"
-            >
-              {subscribed ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5" />
-                  Subscribed
-                </>
-              ) : (
-                <>
-                  Bildirim Al
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Stats/Timeline */}
-          <div className="grid grid-cols-3 gap-6 max-w-md mx-auto mb-14">
+          {/* 3 metrik kutu */}
+          <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-10">
             {[
-              { number: "50+", text: "Proje" },
-              { number: "500+", text: "Şirket" },
-              { number: "99.9%", text: "Uptime" },
+              { number: "3", label: "Aktif Proje", icon: <Layers className="w-5 h-5" /> },
+              { number: "2", label: "Uluslararası Fon", icon: <Award className="w-5 h-5" /> },
+              { number: "6+", label: "Yıllık Deneyim", icon: <Clock className="w-5 h-5" /> },
             ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-2xl sm:text-3xl font-black gradient-text mb-1">{stat.number}</div>
-                <div className="text-xs sm:text-sm text-slate-400 font-medium">{stat.text}</div>
+              <div
+                key={i}
+                className="flex flex-col items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-4 py-5"
+              >
+                <div className="text-blue-400">{stat.icon}</div>
+                <div className="text-2xl font-black gradient-text">{stat.number}</div>
+                <div className="text-xs text-slate-400 font-medium text-center">{stat.label}</div>
               </div>
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA butonları */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="gradient" size="lg" asChild>
-              <Link href="/services">
-                Hizmetlerimiz
+              <Link href="/contact">
+                Proje Görüşmesi Başlat
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>
             <Button variant="outline" className="border-white/30 text-white hover:bg-white/10" size="lg" asChild>
-              <Link href="/contact">
-                <MessageSquare className="w-5 h-5" />
-                İletişim Kurun
+              <Link href="/services">
+                <Code2 className="w-5 h-5" />
+                Hizmetlerimiz
               </Link>
             </Button>
           </div>
         </div>
-
-        {/* Floating Elements */}
-        <div className="absolute bottom-10 left-10 w-20 h-20 border border-white/10 rounded-2xl animate-pulse" />
-        <div className="absolute top-20 right-10 w-16 h-16 border-2 border-blue-400/30 rounded-full" />
       </section>
 
-      {/* ── What's Coming ── */}
+      {/* ── Projeler ── */}
       <section className="py-20 md:py-28 bg-slate-900">
         <div className="page-container">
           <div className="text-center mb-16">
             <h2 className="heading-lg text-white mb-4">
-              Hazırlanıyor: <span className="gradient-text">Portföyümüz</span>
+              Ürün <span className="gradient-text">Portföyümüz</span>
             </h2>
             <p className="body-lg text-slate-400 max-w-lg mx-auto">
-              Geçmiş başarılarımız, müşteri referansları ve derinlemesine proje incelemeleri
+              Geliştirdiğimiz ve yakında hayata geçireceğimiz projeler
             </p>
           </div>
 
-          {/* Preview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Package className="w-8 h-8" />,
-                title: "SaaS Ürünleri",
-                desc: "Şu anda geliştirdiğimiz 8+ ürünün detaylı incelemesi",
-                color: "from-blue-500/20 to-blue-600/20",
-              },
-              {
-                icon: <Code2 className="w-8 h-8" />,
-                title: "Kurumsal Çözümler",
-                desc: "İşletmelerin dijital dönüşümünde sağladığımız değer hikayeler",
-                color: "from-violet-500/20 to-violet-600/20",
-              },
-              {
-                icon: <Rocket className="w-8 h-8" />,
-                title: "Açık Kaynak",
-                desc: "Katılım sağladığımız ve geliştirdiğimiz açık kaynak projeler",
-                color: "from-emerald-500/20 to-emerald-600/20",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className={`bg-gradient-to-br ${item.color} border border-slate-700 rounded-2xl p-8 text-center hover:border-slate-600 transition-colors duration-300`}
-              >
-                <div className="text-slate-400 mb-4 flex justify-center">{item.icon}</div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {projects.map((project) => {
+              const Icon =
+                project.iconName === "Store"
+                  ? Store
+                  : project.iconName === "Leaf"
+                  ? Leaf
+                  : Train;
+
+              return (
+                <div
+                  key={project.id}
+                  className={cn(
+                    "bg-gradient-to-br border rounded-2xl p-8 flex flex-col gap-5",
+                    "hover:border-opacity-60 transition-all duration-300",
+                    project.gradient,
+                    project.borderColor
+                  )}
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="text-slate-300">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <span
+                        className={cn(
+                          "text-xs px-2.5 py-1 rounded-full font-semibold border",
+                          project.status === "coming_soon"
+                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                            : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                        )}
+                      >
+                        {project.badge}
+                      </span>
+                      <span
+                        className={cn(
+                          "text-xs px-2.5 py-1 rounded-full font-semibold border",
+                          project.fundingBadgeColor
+                        )}
+                      >
+                        {project.fundingLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Tagline + Description */}
+                  <div>
+                    <p className="text-base font-semibold text-white mb-2">{project.tagline}</p>
+                    <p className="text-slate-400 text-sm leading-relaxed">{project.description}</p>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="flex flex-col gap-2">
+                    {project.features.map((f, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-slate-400" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Tech Stack */}
+                  {project.techStack && (
+                    <div className="flex flex-wrap gap-2 pt-1 border-t border-white/10">
+                      {project.techStack.map((t) => (
+                        <span
+                          key={t}
+                          className="text-xs font-mono px-2 py-1 rounded bg-slate-800/60 text-slate-400 border border-slate-700/50"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        className="bg-white/10 text-slate-300 border-white/20 text-xs"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
