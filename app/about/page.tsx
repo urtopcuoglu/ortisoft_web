@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
   Target, Eye, Heart, Zap, Shield, Users,
-  TrendingUp, Star, Linkedin, Github, Twitter,
-  ArrowRight, CheckCircle2, Briefcase,
+  TrendingUp, Star, Linkedin, ExternalLink,
+  CheckCircle2, Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,41 +10,71 @@ import { cn } from "@/lib/utils";
 
 const teamMembers = [
   {
-    name: "Orhan Kılıç",
-    role: "Kurucu & CEO",
-    bio: "10+ yıllık yazılım geliştirme ve proje yönetimi deneyimine sahip. Boğaziçi Üniversitesi Bilgisayar Mühendisliği mezunu. 50+ şirkete liderlik etti.",
-    initials: "OK",
+    name: "Umutcan Recep TOPCUOĞLU",
+    role: "Kurucu Ortak | Yazılım Geliştiricisi",
+    bio: "Detaylar yakında eklenecek.",
+    initials: "UT",
     color: "from-blue-500 to-blue-600",
-    linkedin: "#", github: "#", twitter: "#",
-    specialties: ["Proje Yönetimi", "Strateji", "Yazılım Mimarisi"],
+    linkedin: "#",
+    specialties: ["Yazılım Geliştirme", "Teknik Mimari", "Proje Danışmanlığı"],
   },
   {
-    name: "Tuba Şahin",
-    role: "CTO & Baş Yazılım Mimarı",
-    bio: "Dağıtık sistemler ve bulut mimarisi uzmanı. ODTÜ Bilgisayar Mühendisliği mezunu. AWS Certified Solutions Architect.",
-    initials: "TŞ",
+    name: "Ezgi TOSUN",
+    role: "Kurucu Ortak | Proje Yöneticisi",
+    bio: "Detaylar yakında eklenecek.",
+    initials: "ET",
     color: "from-violet-500 to-violet-600",
-    linkedin: "#", github: "#",
-    specialties: ["Cloud Architecture", "DevOps", "Mikroservisler"],
+    linkedin: "#",
+    specialties: ["Proje Yönetimi", "Müşteri İlişkileri", "Operasyon"],
   },
   {
-    name: "İrem Yıldız",
-    role: "Dijital Pazarlama Direktörü",
-    bio: "8 yıllık dijital pazarlama deneyimiyle SEO, içerik stratejisi ve performance marketing konularında uzman. İTÜ İşletme mezunu.",
-    initials: "İY",
+    name: "Özlem Güneş AVCI",
+    role: "Dijital Pazarlama ve Marka Yöneticisi",
+    bio: "Detaylar yakında eklenecek.",
+    initials: "ÖA",
     color: "from-emerald-500 to-emerald-600",
-    linkedin: "#", twitter: "#",
-    specialties: ["SEO", "Performance Marketing", "İçerik"],
+    linkedin: "#",
+    specialties: ["Dijital Pazarlama", "Marka Yönetimi", "İçerik Stratejisi"],
+  },
+];
+
+const references = [
+  {
+    name: "Kasırga Bilgisayar",
+    description: "Bilgisayar donanım ve yazılım çözümleri",
+    logo: null,
+    url: "#",
   },
   {
-    name: "Emre Çelik",
-    role: "Kıdemli Yazılım Geliştirici",
-    bio: "Full-stack geliştirici ve açık kaynak katkıcısı. Hacettepe Üniversitesi mezunu. React, Node.js ve Python ekosisteminde uzman.",
-    initials: "EÇ",
-    color: "from-orange-500 to-orange-600",
-    linkedin: "#", github: "#",
-    specialties: ["React/Next.js", "Node.js", "Python/AI"],
+    name: "Railmentor",
+    description: "Eğitim ve kariyer koçluğu platformu",
+    logo: null,
+    url: "#",
   },
+  {
+    name: "Eatwellz Beslenme Danışmanlığı",
+    description: "Kişisel beslenme ve sağlık danışmanlığı",
+    logo: null,
+    url: "#",
+  },
+  {
+    name: "Green Eco Map",
+    description: "Sürdürülebilir yaşam ve çevre platformu",
+    logo: null,
+    url: "#",
+  },
+];
+
+const partners = [
+  { name: "İkas", logo: null },
+  { name: "Ticimax", logo: null },
+  { name: "Meta", logo: null },
+  { name: "Google", logo: null },
+  { name: "WordPress", logo: null },
+  { name: "Yandex", logo: null },
+  { name: "Shopier", logo: null },
+  { name: "Shopify", logo: null },
+  { name: "Claude", logo: null },
 ];
 
 const values = [
@@ -66,13 +96,6 @@ const milestones = [
   { year: "2025", title: "Yeni Hedefler",            desc: "Uluslararası pazara açılım ve kurumsal müşteri segmentine odaklanma stratejimizi hayata geçiriyoruz." },
 ];
 
-const openPositions = [
-  { title: "Senior Full-Stack Developer",  type: "Tam Zamanlı",       location: "İstanbul / Uzak", dept: "Yazılım" },
-  { title: "SEO & İçerik Uzmanı",          type: "Tam Zamanlı",       location: "İstanbul / Hibrit", dept: "Pazarlama" },
-  { title: "Proje Yöneticisi",             type: "Tam Zamanlı",       location: "İstanbul",        dept: "Proje Yönetimi" },
-  { title: "UI/UX Tasarımcı",             type: "Serbest / Part-Time", location: "Uzak",           dept: "Tasarım" },
-];
-
 export default function AboutPage() {
   return (
     <div className="flex flex-col">
@@ -89,8 +112,7 @@ export default function AboutPage() {
             <span className="gradient-text">Hakkımızda</span>
           </h1>
           <p className="body-lg text-slate-300 max-w-xl mx-auto">
-            2019&apos;dan bu yana işletmelerin dijital dönüşüm yolculuklarında
-            güvenilir ortakları oluyoruz.
+            İşletmelerin dijital dönüşüm yolculuklarında güvenilir ortakları oluyoruz.
           </p>
         </div>
       </section>
@@ -136,7 +158,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {teamMembers.map((member) => (
               <div
                 key={member.name}
@@ -161,24 +183,10 @@ export default function AboutPage() {
                 </div>
 
                 <div className="flex gap-3 mt-auto">
-                  {member.linkedin && (
-                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                      className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-200">
-                      <Linkedin className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {member.github && (
-                    <a href={member.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub"
-                      className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
-                      <Github className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                  {member.twitter && (
-                    <a href={member.twitter} target="_blank" rel="noopener noreferrer" aria-label="Twitter"
-                      className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-sky-500 hover:text-white transition-all duration-200">
-                      <Twitter className="w-3.5 h-3.5" />
-                    </a>
-                  )}
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                    className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-200">
+                    <Linkedin className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
             ))}
@@ -231,12 +239,93 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── References ── */}
+      <section className="py-20 md:py-28 bg-slate-50">
+        <div className="page-container">
+          <div className="section-header">
+            <Badge className="mb-4">Referanslarımız</Badge>
+            <h2 className="heading-lg text-slate-900 mb-5">
+              Birlikte Çalıştığımız <span className="gradient-text">Markalar</span>
+            </h2>
+            <p className="body-lg text-slate-500 max-w-xl mx-auto">
+              Farklı sektörlerden müşterilerimizle başarı hikâyeleri yaratıyoruz.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {references.map((ref) => (
+              <a
+                key={ref.name}
+                href={ref.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white rounded-2xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
+              >
+                <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-5 group-hover:bg-blue-50 transition-colors duration-300">
+                  {ref.logo ? (
+                    <img src={ref.logo} alt={ref.name} className="w-14 h-14 object-contain" />
+                  ) : (
+                    <Building2 className="w-8 h-8 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+                  )}
+                </div>
+                <h3 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                  {ref.name}
+                </h3>
+                <p className="text-slate-500 text-xs leading-relaxed mb-4">{ref.description}</p>
+                <span className="text-blue-600 text-xs font-semibold flex items-center gap-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Siteyi Ziyaret Et <ExternalLink className="w-3 h-3" />
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Solution Partners ── */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="page-container">
+          <div className="section-header">
+            <Badge className="mb-4">Ekosistem</Badge>
+            <h2 className="heading-lg text-slate-900 mb-5">
+              Çözüm <span className="gradient-text">Ortaklarımız</span>
+            </h2>
+            <p className="body-lg text-slate-500 max-w-xl mx-auto">
+              Güçlü iş ortaklıklarıyla müşterilerimize en iyi teknoloji ve platform deneyimini sunuyoruz.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4">
+            {partners.map((partner) => (
+              <div
+                key={partner.name}
+                className="bg-slate-50 border border-slate-100 rounded-2xl px-6 py-5 flex flex-col items-center justify-center gap-3 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 w-36 h-28 group"
+              >
+                {partner.logo ? (
+                  <img src={partner.logo} alt={partner.name} className="w-12 h-12 object-contain" />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center group-hover:border-blue-200 transition-colors duration-300">
+                    <Building2 className="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+                  </div>
+                )}
+                <span className="text-slate-700 text-xs font-semibold text-center leading-tight">
+                  {partner.name}
+                </span>
+              </div>
+            ))}
+            <div className="bg-slate-50 border border-dashed border-slate-200 rounded-2xl px-6 py-5 flex flex-col items-center justify-center gap-3 w-36 h-28 text-slate-400">
+              <span className="text-2xl font-light">+</span>
+              <span className="text-xs text-center leading-tight">Ve daha fazlası</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Timeline ── */}
       <section className="py-20 md:py-28 bg-slate-900">
         <div className="page-container">
           <div className="section-header">
             <Badge className="mb-5 bg-white/10 text-white border-white/20">Yolculuğumuz</Badge>
-            <h2 className="heading-lg text-white mb-5">2019&apos;dan Bugüne</h2>
+            <h2 className="heading-lg text-white mb-5">Kilometre Taşlarımız</h2>
             <p className="body-lg text-slate-400 max-w-xl mx-auto">
               Küçük bir ekipten büyüyen bir şirkete — kilometre taşlarımız.
             </p>
@@ -273,44 +362,22 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-4xl mx-auto">
-            {openPositions.map((pos) => (
-              <div
-                key={pos.title}
-                className="bg-white rounded-xl px-6 py-5 border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 flex items-center justify-between gap-4 group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Briefcase className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-sm">{pos.title}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="secondary" className="text-xs py-0.5">{pos.dept}</Badge>
-                      <span className="text-slate-400 text-xs">{pos.type} · {pos.location}</span>
-                    </div>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="flex-shrink-0" asChild>
-                  <Link href="/contact">
-                    Başvur
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </Button>
+          <div className="max-w-2xl mx-auto text-center mb-12">
+            <div className="bg-white rounded-2xl p-10 border border-slate-100">
+              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <Building2 className="w-7 h-7 text-blue-600" />
               </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <p className="text-slate-500 mb-5 text-sm">
-              Uygun bir pozisyon görmüyor musunuz? Açık başvurunuzu gönderin.
-            </p>
-            <Button variant="gradient" size="lg" asChild>
-              <Link href="/contact">
-                Açık Başvuru Gönder
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </Button>
+              <h3 className="font-bold text-slate-900 text-lg mb-3">Şu an aktif ilan bulunmuyor</h3>
+              <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                Yeni pozisyonlar açıldığında burada duyurulacak. Şimdiden başvurunuzu iletebilir,
+                gelecekte değerlendirilebilmesi için dosyalarınızı bizimle paylaşabilirsiniz.
+              </p>
+              <Button variant="gradient" size="lg" asChild>
+                <Link href="/contact">
+                  Açık Başvuru Gönder
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
