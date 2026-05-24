@@ -151,10 +151,10 @@ export default function AboutPage() {
       <section className="py-20 md:py-28 bg-slate-50">
         <div className="page-container">
           <div className="section-header">
-            <Badge className="mb-4">Ekibimiz</Badge>
-            <h2 className="heading-lg text-slate-900 mb-5">Arkamızdaki İnsanlar</h2>
+
+            <h2 className="heading-lg text-slate-900 mb-5">Ekibimiz</h2>
             <p className="body-lg text-slate-500 max-w-xl mx-auto">
-              Farklı disiplinlerden gelen uzmanlarımız, ortak bir hedef için birlikte çalışıyor.
+              Farklı disiplinlerden gelen uzmanlarımız, ortak bir hedef için bir araya geldi.
             </p>
           </div>
 
