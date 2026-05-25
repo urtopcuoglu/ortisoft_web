@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Target, Eye, Heart, Zap, Shield, Users,
   TrendingUp, Star, Linkedin, ExternalLink,
@@ -42,39 +43,53 @@ const references = [
   {
     name: "Kasırga Bilgisayar",
     description: "Bilgisayar donanım ve yazılım çözümleri",
-    logo: null,
-    url: "#",
+    logo: "/referances/kasirga.png",
+    url: "https://www.kasirgabilgisayar.com/",
   },
   {
     name: "Railmentor",
     description: "Eğitim ve kariyer koçluğu platformu",
-    logo: null,
-    url: "#",
+    logo: "/referances/railmentor.png",
+    url: "https://railmentor.com.tr",
   },
   {
-    name: "Eatwellz Beslenme Danışmanlığı",
+    name: "Eatwellz",
     description: "Kişisel beslenme ve sağlık danışmanlığı",
-    logo: null,
+    logo: "/referances/eatwellz.png",
+    url: "https://eatwellz.com.tr",
+  },
+  {
+    name: "Gatem",
+    description: "Dijital çözümler ve teknoloji hizmetleri",
+    logo: "/referances/gatem.png",
     url: "#",
   },
   {
-    name: "Green Eco Map",
-    description: "Sürdürülebilir yaşam ve çevre platformu",
-    logo: null,
-    url: "#",
+    name: "Sosyolojik Müdahale",
+    description: "Sosyal araştırma ve danışmanlık hizmetleri",
+    logo: "/referances/sosyolojikmüdahele.png",
+    url: "https://sosyolojikmudahale.com/",
   },
 ];
 
 const partners = [
-  { name: "İkas", logo: null },
-  { name: "Ticimax", logo: null },
-  { name: "Meta", logo: null },
-  { name: "Google", logo: null },
-  { name: "WordPress", logo: null },
-  { name: "Yandex", logo: null },
-  { name: "Shopier", logo: null },
-  { name: "Shopify", logo: null },
-  { name: "Claude", logo: null },
+  { name: "Hepsiburada", logo: "/brand-logo/hepsiburada.png" },
+  { name: "Trendyol", logo: "/brand-logo/trendyol.png" },
+  { name: "N11", logo: "/brand-logo/n11.png" },
+  { name: "Sahibinden", logo: "/brand-logo/sahibinden.png" },
+  { name: "Pazarama", logo: "/brand-logo/pazarama.png" },
+  { name: "Ticimax", logo: "/brand-logo/ticimax.png" },
+  { name: "İdeasoft", logo: "/brand-logo/ideasoft.png" },
+  { name: "T-Soft", logo: "/brand-logo/tsoft.png" },
+  { name: "Shopify", logo: "/brand-logo/shopify.png" },
+  { name: "Shopier", logo: "/brand-logo/shopier.png" },
+  { name: "Wix", logo: "/brand-logo/wix.png" },
+  { name: "Google", logo: "/brand-logo/google.png" },
+  { name: "Google Ads", logo: "/brand-logo/google-ads.png" },
+  { name: "Google Analytics", logo: "/brand-logo/google-analytics.png" },
+  { name: "Google Cloud", logo: "/brand-logo/google-cloud.png" },
+  { name: "Meta", logo: "/brand-logo/meta.png" },
+  { name: "Microsoft", logo: "/brand-logo/microsoft.png" },
 ];
 
 const values = [
@@ -259,19 +274,19 @@ export default function AboutPage() {
                 href={ref.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white rounded-2xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
+                className="bg-white rounded-2xl p-8 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
               >
-                <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mb-5 group-hover:bg-blue-50 transition-colors duration-300">
+                <div className="w-36 h-36 rounded-2xl bg-slate-100 flex items-center justify-center mb-6 group-hover:bg-blue-50 transition-colors duration-300">
                   {ref.logo ? (
-                    <img src={ref.logo} alt={ref.name} className="w-14 h-14 object-contain" />
+                    <Image src={ref.logo} alt={ref.name} width={112} height={112} className="object-contain" />
                   ) : (
-                    <Building2 className="w-8 h-8 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+                    <Building2 className="w-12 h-12 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
                   )}
                 </div>
-                <h3 className="font-bold text-slate-900 text-sm mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-blue-600 transition-colors duration-300">
                   {ref.name}
                 </h3>
-                <p className="text-slate-500 text-xs leading-relaxed mb-4">{ref.description}</p>
+                <p className="text-slate-500 text-sm leading-relaxed mb-4">{ref.description}</p>
                 <span className="text-blue-600 text-xs font-semibold flex items-center gap-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   Siteyi Ziyaret Et <ExternalLink className="w-3 h-3" />
                 </span>
@@ -294,27 +309,27 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-6">
             {partners.map((partner) => (
               <div
                 key={partner.name}
-                className="bg-slate-50 border border-slate-100 rounded-2xl px-6 py-5 flex flex-col items-center justify-center gap-3 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 w-36 h-28 group"
+                className="bg-slate-50 border border-slate-100 rounded-2xl px-8 py-7 flex flex-col items-center justify-center gap-4 hover:border-blue-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 w-48 h-44 group"
               >
                 {partner.logo ? (
-                  <img src={partner.logo} alt={partner.name} className="w-12 h-12 object-contain" />
+                  <Image src={partner.logo} alt={partner.name} width={80} height={80} className="object-contain" />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center group-hover:border-blue-200 transition-colors duration-300">
-                    <Building2 className="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+                  <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 flex items-center justify-center group-hover:border-blue-200 transition-colors duration-300">
+                    <Building2 className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
                   </div>
                 )}
-                <span className="text-slate-700 text-xs font-semibold text-center leading-tight">
+                <span className="text-slate-700 text-sm font-semibold text-center leading-tight">
                   {partner.name}
                 </span>
               </div>
             ))}
-            <div className="bg-slate-50 border border-dashed border-slate-200 rounded-2xl px-6 py-5 flex flex-col items-center justify-center gap-3 w-36 h-28 text-slate-400">
-              <span className="text-2xl font-light">+</span>
-              <span className="text-xs text-center leading-tight">Ve daha fazlası</span>
+            <div className="bg-slate-50 border border-dashed border-slate-200 rounded-2xl px-8 py-7 flex flex-col items-center justify-center gap-4 w-48 h-44 text-slate-400">
+              <span className="text-3xl font-light">+</span>
+              <span className="text-sm text-center leading-tight">Ve daha fazlası</span>
             </div>
           </div>
         </div>
