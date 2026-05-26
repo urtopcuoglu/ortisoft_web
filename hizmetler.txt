@@ -1,0 +1,58 @@
+Hizmetler
+
+	Yazılım Geliştirme
+		-Masaüstü Uygulamaları Geliştirme
+		-Mobil Uygulama Geliştirme
+		-Web Uygulamaları
+		-Özelleştirilmiş Finans, CRM, ERP, CMS Paket Uygulamaları
+		-Firma ve İşletmelere Özel Bulut Tabanlı Entegrasyon Çözümleri
+
+	Web Tasarım
+		-Mobil Uyumlu, E-Ticaret Web Sitesi
+		-Mobil Uyumlu, Kurumsal Web Sitesi
+		-Mobil Uyumlu, Kişisel Web Sitesi
+		-Mobil Uyumlu, Wordpress, Opencart, Wix ve Prestoshop Web Siteleri
+
+	Teknoloji Danışmanlığı
+		-Sunucu, Mail, Barındırma, Domain, SSL Çözümleri
+		-Donanım, Network, Sistem Çözümleri
+		-Güvenlik Çözümleri (Anlaşma Sağlanırsa bir yerle güvenlik kamerası kurulum, montaj hizmeti teknoloji danışmanlığı altında yer alabilir)
+
+	Dijital Pazarlama Danışmanlığı
+		-Arama Motoru Reklamcılığı ( Google Ads, Yandex Metrika vb.)
+		-SEO Çözümleri
+		-On Page - Off Page SEO Hizmetleri
+		-ASO ( App Search Optimization) Hizmetleri
+		-GEO ( Generative Engine Optimization) Hizmetleri
+		-Mail - SMS Pazarlaması Hizmetleri
+	Sosyal Medya Danışmanlığı
+		-Sosyal Medya Reklamcılık (Meta,Tiktok,Twitter) Hizmetleri
+		-Sosyal Medya Hesap Yönetimi & Hesap Analiz Hizmetleri
+		-Influencer Pazarlama, UGC, İçerik Pazarlama Hizmetleri
+
+	E-ticaret Danışmanlığı
+		-Çoklu Pazaryeri ve Platform Kurulum Çözümleri
+		-Özel Entegrasyon ve Yönetim Çözümleri
+		-Ürün - İçerik Çözümleri (Ürün Görseli ve Ürün İçerikleri Hakkında Çalışmalar)
+
+	Yönetim Danışmanlığı
+		-Girişim ve Kuruluş Danışmanlığı 
+		-Stratejik Planlama
+		-Kurumsal Yapılanma ve Organizasyon
+
+	Proje Danışmanlığı
+		-TÜBİTAK, Erasmus, KOSGEB, AB, Kalkınma Ajansları vb. Kurumsal Destek & Hibe Programlarına Yönelik Çözümler
+		-Proje Yönetimi Çözümleri
+		-Proje Yönetimi Hukuk Danışmanlığı
+		-Proje Yönetimi Finans Danışmanlığı
+	Marka Danışmanlığı
+		-Marka, Ürün, Proje ve Tasarım Patent & Tescil Çözümleri
+		-Marka Konumlandırma, Yönetim ve  Analiz Çözümleri
+
+	Kreatif Tasarım Hizmetleri
+		-Afiş, Broşür, Katalog Tasarımı Hizmetleri
+		-Logo Tasarımı Hizmetleri
+		-Kartvizit, Kurumsal Kimlik Çözümleri
+		-Sosyal Medya, Web Sitesi ve Dijital Medya Görsel, Video İçerik Tasarım Hizmetleri 
+		-Görsel ve Video Çekim Hizmetleri
+		-UI / UX Tasarım Hizmetleri

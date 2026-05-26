@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import {
-  Rocket, Code2, BarChart3, Cpu, ArrowRight,
+  Rocket, Code2, BarChart3, ArrowRight,
   CheckCircle2, Search, Lightbulb, Wrench, LineChart,
+  Monitor, Server, Share2, ShoppingCart, Briefcase, Award, Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,111 +12,222 @@ import { cn } from "@/lib/utils";
 
 const services = [
   {
-    id: "project",
-    icon: Rocket,
-    tag: "PM & Agile",
-    title: "Proje Danışmanlığı",
-    subtitle: "Projelerinizi Zamanında ve Bütçe Dahilinde Teslim Ediyoruz",
+    id: "software",
+    icon: Code2,
+    tag: "Tech & Dev",
+    title: "Yazılım Geliştirme",
     description:
-      "Dijital projenizin her aşamasında yanınızdayız. Gereksinim analizinden başlayarak proje planlaması, kaynak yönetimi, risk analizi ve başarılı teslimat sürecine kadar kapsamlı destek sağlıyoruz. Agile ve Scrum metodolojileriyle projenizi şeffaf biçimde yönetiyor, her sprint sonunda somut çıktılar sunuyoruz.",
+      "Masaüstü, mobil ve web uygulamalarından kurumsal yazılım çözümlerine kadar geniş bir yelpazede özel geliştirme hizmetleri sunuyoruz.",
     features: [
-      "Kapsamlı gereksinim analizi ve iş akışı haritalama",
-      "Agile/Scrum tabanlı proje yönetimi",
-      "Detaylı proje planı ve milestone takibi",
-      "Risk analizi ve azaltma stratejileri",
-      "Kaynak planlama ve ekip koordinasyonu",
-      "Düzenli ilerleme raporları ve paydaş iletişimi",
-      "Kalite güvencesi ve test süreçleri",
-      "Proje sonrası değerlendirme ve öğrenimler",
+      "Masaüstü Uygulamaları Geliştirme",
+      "Mobil Uygulama Geliştirme",
+      "Web Uygulamaları",
+      "Özelleştirilmiş Finans, CRM, ERP, CMS Paket Uygulamaları",
+      "Firma ve İşletmelere Özel Bulut Tabanlı Entegrasyon Çözümleri",
     ],
     colors: {
       badge:    "bg-blue-50 text-blue-700 border-blue-200",
-      iconBg:   "bg-blue-50",
+      iconBg:   "bg-blue-100",
       iconText: "text-blue-600",
       check:    "text-blue-500",
-      cardBg:   "bg-blue-50/50",
       border:   "border-blue-100 hover:border-blue-300",
+      glow:     "hover:shadow-blue-100",
     },
   },
   {
-    id: "software",
-    icon: Code2,
-    tag: "Tech & Architecture",
-    title: "Yazılım Danışmanlığı",
-    subtitle: "Doğru Teknolojiyle Güçlü Yazılım Mimarileri",
+    id: "webdesign",
+    icon: Monitor,
+    tag: "Design & UX",
+    title: "Web Tasarım",
     description:
-      "Yazılım geliştirme sürecinizde stratejik kararlar almak için uzman görüş ve rehberlik sunuyoruz. Mevcut sistemlerinizi analiz edip iyileştirme fırsatları belirliyoruz; yeni projeler için en uygun teknoloji yığını, mimari deseni ve geliştirme yaklaşımını birlikte tasarlıyoruz.",
+      "Tüm cihazlarda mükemmel görünen, dönüşüm odaklı modern web siteleri tasarlıyor ve geliştiriyoruz.",
     features: [
-      "Mevcut sistem analizi ve teknik borç değerlendirmesi",
-      "Teknoloji yığını seçimi ve mimari tasarım",
-      "Mikroservis ve monolitik mimari değerlendirmesi",
-      "API tasarımı ve entegrasyon stratejileri",
-      "Cloud geçiş planlaması (AWS, Azure, GCP)",
-      "DevOps ve CI/CD süreç danışmanlığı",
-      "Kod kalitesi standartları ve best practice rehberliği",
-      "Performans optimizasyonu ve ölçeklendirme",
+      "Mobil Uyumlu, E-Ticaret Web Sitesi",
+      "Mobil Uyumlu, Kurumsal Web Sitesi",
+      "Mobil Uyumlu, Kişisel Web Sitesi",
+      "Mobil Uyumlu, WordPress, OpenCart, Wix ve PrestaShop Web Siteleri",
     ],
     colors: {
       badge:    "bg-violet-50 text-violet-700 border-violet-200",
-      iconBg:   "bg-violet-50",
+      iconBg:   "bg-violet-100",
       iconText: "text-violet-600",
       check:    "text-violet-500",
-      cardBg:   "bg-violet-50/50",
       border:   "border-violet-100 hover:border-violet-300",
+      glow:     "hover:shadow-violet-100",
     },
   },
   {
-    id: "marketing",
+    id: "techconsulting",
+    icon: Server,
+    tag: "IT & Infrastructure",
+    title: "Teknoloji Danışmanlığı",
+    description:
+      "Sunucu, ağ, donanım ve güvenlik altyapınızı optimize etmek için kapsamlı teknoloji danışmanlığı hizmetleri sunuyoruz.",
+    features: [
+      "Sunucu, Mail, Barındırma, Domain, SSL Çözümleri",
+      "Donanım, Network, Sistem Çözümleri",
+      "Güvenlik Çözümleri",
+    ],
+    colors: {
+      badge:    "bg-cyan-50 text-cyan-700 border-cyan-200",
+      iconBg:   "bg-cyan-100",
+      iconText: "text-cyan-600",
+      check:    "text-cyan-500",
+      border:   "border-cyan-100 hover:border-cyan-300",
+      glow:     "hover:shadow-cyan-100",
+    },
+  },
+  {
+    id: "digitalmarketing",
     icon: BarChart3,
     tag: "Growth & SEO",
     title: "Dijital Pazarlama Danışmanlığı",
-    subtitle: "Hedef Kitlenize Ulaşın, Büyümenizi Hızlandırın",
     description:
-      "Dijital pazarlama dünyasında fark yaratmak için veri odaklı stratejiler geliştiriyoruz. SEO'dan sosyal medyaya, içerik pazarlamasından ücretli reklamlara kadar bütüncül bir dijital varlık oluşturmanıza yardımcı oluyoruz. Her kanal için özelleştirilmiş yaklaşımlarla ROI'nizi maksimize ediyoruz.",
+      "Arama motorlarından e-posta pazarlamasına kadar veri odaklı dijital pazarlama stratejileriyle büyümenizi hızlandırıyoruz.",
     features: [
-      "SEO stratejisi ve teknik optimizasyon",
-      "İçerik pazarlama stratejisi ve editöryal takvim",
-      "Google Ads ve Meta Ads kampanya yönetimi",
-      "Sosyal medya stratejisi ve içerik planlaması",
-      "E-posta pazarlama otomasyonu",
-      "Dönüşüm optimizasyonu (CRO)",
-      "Analytics kurulumu ve raporlama",
-      "Rekabet analizi ve pazar araştırması",
+      "Arama Motoru Reklamcılığı (Google Ads, Yandex Metrika vb.)",
+      "SEO Çözümleri",
+      "On Page – Off Page SEO Hizmetleri",
+      "ASO (App Search Optimization) Hizmetleri",
+      "GEO (Generative Engine Optimization) Hizmetleri",
+      "Mail – SMS Pazarlaması Hizmetleri",
     ],
     colors: {
       badge:    "bg-emerald-50 text-emerald-700 border-emerald-200",
-      iconBg:   "bg-emerald-50",
+      iconBg:   "bg-emerald-100",
       iconText: "text-emerald-600",
       check:    "text-emerald-500",
-      cardBg:   "bg-emerald-50/50",
       border:   "border-emerald-100 hover:border-emerald-300",
+      glow:     "hover:shadow-emerald-100",
     },
   },
   {
-    id: "digital",
-    icon: Cpu,
-    tag: "Transformation",
-    title: "Dijital Dönüşüm",
-    subtitle: "İş Modelinizi Geleceğe Hazırlayın",
+    id: "socialmedia",
+    icon: Share2,
+    tag: "Social & Influencer",
+    title: "Sosyal Medya Danışmanlığı",
     description:
-      "Dijital dönüşüm yalnızca teknoloji değişikliği değil; süreç, kültür ve iş modelinin yeniden tasarlanmasıdır. Şirketinizin mevcut durumunu analiz ediyor, dönüşüm yol haritası hazırlıyor ve uygulama sürecinde stratejik rehberlik sunuyoruz. İnsan merkezli yaklaşımımızla ekibinizi de bu yolculuğa dahil ediyoruz.",
+      "Markanızın sosyal medyada güçlü bir varlık kurmasını sağlıyor; reklam, içerik ve influencer stratejilerini bir arada yönetiyoruz.",
     features: [
-      "Dijital olgunluk değerlendirmesi",
-      "Dönüşüm yol haritası ve önceliklendirme",
-      "İş süreci otomasyonu (RPA, workflow)",
-      "Veri stratejisi ve analitik olgunlaşma",
-      "Değişim yönetimi ve çalışan eğitimi",
-      "ERP, CRM ve kurumsal sistem entegrasyonları",
-      "Müşteri deneyimi dijitalleşmesi",
-      "Dijital KPI'lar ve başarı metrikleri",
+      "Sosyal Medya Reklamcılık (Meta, TikTok, Twitter) Hizmetleri",
+      "Sosyal Medya Hesap Yönetimi & Hesap Analiz Hizmetleri",
+      "Influencer Pazarlama, UGC, İçerik Pazarlama Hizmetleri",
+    ],
+    colors: {
+      badge:    "bg-pink-50 text-pink-700 border-pink-200",
+      iconBg:   "bg-pink-100",
+      iconText: "text-pink-600",
+      check:    "text-pink-500",
+      border:   "border-pink-100 hover:border-pink-300",
+      glow:     "hover:shadow-pink-100",
+    },
+  },
+  {
+    id: "ecommerce",
+    icon: ShoppingCart,
+    tag: "E-Commerce",
+    title: "E-Ticaret Danışmanlığı",
+    description:
+      "Çoklu pazaryerlerinden özel entegrasyonlara, ürün içeriklerinden yönetim çözümlerine kadar e-ticaretinizi büyütüyoruz.",
+    features: [
+      "Çoklu Pazaryeri ve Platform Kurulum Çözümleri",
+      "Özel Entegrasyon ve Yönetim Çözümleri",
+      "Ürün – İçerik Çözümleri (Ürün Görseli ve Ürün İçerikleri Hakkında Çalışmalar)",
     ],
     colors: {
       badge:    "bg-orange-50 text-orange-700 border-orange-200",
-      iconBg:   "bg-orange-50",
+      iconBg:   "bg-orange-100",
       iconText: "text-orange-600",
       check:    "text-orange-500",
-      cardBg:   "bg-orange-50/50",
       border:   "border-orange-100 hover:border-orange-300",
+      glow:     "hover:shadow-orange-100",
+    },
+  },
+  {
+    id: "management",
+    icon: Briefcase,
+    tag: "Strategy & Operations",
+    title: "Yönetim Danışmanlığı",
+    description:
+      "Girişimden kurumsallaşmaya, stratejik planlamadan organizasyon tasarımına kadar işletmenizi bir adım öteye taşıyoruz.",
+    features: [
+      "Girişim ve Kuruluş Danışmanlığı",
+      "Stratejik Planlama",
+      "Kurumsal Yapılanma ve Organizasyon",
+    ],
+    colors: {
+      badge:    "bg-indigo-50 text-indigo-700 border-indigo-200",
+      iconBg:   "bg-indigo-100",
+      iconText: "text-indigo-600",
+      check:    "text-indigo-500",
+      border:   "border-indigo-100 hover:border-indigo-300",
+      glow:     "hover:shadow-indigo-100",
+    },
+  },
+  {
+    id: "project",
+    icon: Rocket,
+    tag: "Grants & PM",
+    title: "Proje Danışmanlığı",
+    description:
+      "TÜBİTAK, KOSGEB, AB ve diğer hibe programlarından yararlanmanız için proje yönetimi, hukuk ve finans desteği sağlıyoruz.",
+    features: [
+      "TÜBİTAK, Erasmus, KOSGEB, AB, Kalkınma Ajansları vb. Kurumsal Destek & Hibe Programlarına Yönelik Çözümler",
+      "Proje Yönetimi Çözümleri",
+      "Proje Yönetimi Hukuk Danışmanlığı",
+      "Proje Yönetimi Finans Danışmanlığı",
+    ],
+    colors: {
+      badge:    "bg-rose-50 text-rose-700 border-rose-200",
+      iconBg:   "bg-rose-100",
+      iconText: "text-rose-600",
+      check:    "text-rose-500",
+      border:   "border-rose-100 hover:border-rose-300",
+      glow:     "hover:shadow-rose-100",
+    },
+  },
+  {
+    id: "brand",
+    icon: Award,
+    tag: "Branding",
+    title: "Marka Danışmanlığı",
+    description:
+      "Markanızı tescil ettirmekten konumlandırmaya kadar güçlü ve sürdürülebilir bir marka kimliği oluşturmanıza destek oluyoruz.",
+    features: [
+      "Marka, Ürün, Proje ve Tasarım Patent & Tescil Çözümleri",
+      "Marka Konumlandırma, Yönetim ve Analiz Çözümleri",
+    ],
+    colors: {
+      badge:    "bg-amber-50 text-amber-700 border-amber-200",
+      iconBg:   "bg-amber-100",
+      iconText: "text-amber-600",
+      check:    "text-amber-500",
+      border:   "border-amber-100 hover:border-amber-300",
+      glow:     "hover:shadow-amber-100",
+    },
+  },
+  {
+    id: "creative",
+    icon: Palette,
+    tag: "Creative & UI/UX",
+    title: "Kreatif Tasarım Hizmetleri",
+    description:
+      "Logo'dan kurumsal kimliğe, dijital içerikten UI/UX tasarımına kadar markanızın görsel dilini kusursuz biçimde oluşturuyoruz.",
+    features: [
+      "Afiş, Broşür, Katalog Tasarımı Hizmetleri",
+      "Logo Tasarımı Hizmetleri",
+      "Kartvizit, Kurumsal Kimlik Çözümleri",
+      "Sosyal Medya, Web Sitesi ve Dijital Medya Görsel/Video İçerik Tasarım Hizmetleri",
+      "Görsel ve Video Çekim Hizmetleri",
+      "UI / UX Tasarım Hizmetleri",
+    ],
+    colors: {
+      badge:    "bg-purple-50 text-purple-700 border-purple-200",
+      iconBg:   "bg-purple-100",
+      iconText: "text-purple-600",
+      check:    "text-purple-500",
+      border:   "border-purple-100 hover:border-purple-300",
+      glow:     "hover:shadow-purple-100",
     },
   },
 ];
@@ -144,79 +256,76 @@ export default function ServicesPage() {
           <h1 className="heading-xl text-white mb-6">
             <span className="gradient-text">Hizmetlerimiz</span>
           </h1>
-          <p className="body-lg text-slate-300 max-w-xl mx-auto">
-            İşletmenizin dijital yolculuğunu baştan sona desteklemek için dört temel alanda
-            uzman danışmanlık hizmetleri sunuyoruz.
+          <p className="body-lg text-slate-300 max-w-2xl mx-auto">
+            İşletmenizin dijital yolculuğunu baştan sona desteklemek için yazılımdan tasarıma,
+            pazarlamadan danışmanlığa kadar 10 temel alanda uzman hizmetler sunuyoruz.
           </p>
         </div>
       </section>
 
-      {/* ── Service Sections ── */}
-      {services.map((service, index) => (
-        <section
-          key={service.id}
-          id={service.id}
-          className={cn("py-20 md:py-28", index % 2 === 0 ? "bg-white" : "bg-slate-50")}
-        >
-          <div className="page-container">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-start">
+      {/* ── Services Grid ── */}
+      <section className="section bg-slate-50">
+        <div className="page-container">
+          <div className="section-header mb-14">
+            <Badge className="mb-5 bg-blue-50 text-blue-700 border-blue-200">
+              Hizmet Kategorilerimiz
+            </Badge>
+            <h2 className="heading-lg text-slate-900 mb-5">
+              Her İhtiyacınız İçin Doğru Çözüm
+            </h2>
+            <p className="body-lg text-slate-500 max-w-xl mx-auto">
+              Aşağıdaki kategorilerden herhangi biri için bizimle iletişime geçebilirsiniz.
+            </p>
+          </div>
 
-              {/* Content */}
-              <div className={cn("max-w-xl", index % 2 !== 0 && "lg:order-2")}>
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 block">
-                  {service.tag}
-                </span>
-                <Badge className={cn("mb-5", service.colors.badge)}>
-                  {service.title}
-                </Badge>
-                <h2 className="heading-md text-slate-900 mb-5">
-                  {service.subtitle}
-                </h2>
-                <p className="text-slate-500 leading-relaxed mb-10 text-base">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {services.map((service) => (
+              <div
+                key={service.id}
+                id={service.id}
+                className={cn(
+                  "bg-white rounded-2xl p-7 border-2 transition-all duration-300 hover:shadow-xl flex flex-col",
+                  service.colors.border,
+                  service.colors.glow,
+                )}
+              >
+                {/* Card Header */}
+                <div className="flex items-start gap-4 mb-5">
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0",
+                    service.colors.iconBg,
+                  )}>
+                    <service.icon className={cn("w-6 h-6", service.colors.iconText)} />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">
+                      {service.tag}
+                    </span>
+                    <Badge className={cn("text-xs", service.colors.badge)}>
+                      {service.title}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <p className="text-slate-500 text-sm leading-relaxed mb-6">
                   {service.description}
                 </p>
-                <Button variant="gradient" size="lg" asChild>
-                  <Link href="/contact">
-                    Bu Hizmet Hakkında Konuşalım
-                    <ArrowRight className="w-5 h-5" />
-                  </Link>
-                </Button>
-              </div>
 
-              {/* Features Card */}
-              <div className={cn(index % 2 !== 0 && "lg:order-1")}>
-                <div className={cn(
-                  "rounded-2xl p-8 border-2 transition-all duration-300 hover:shadow-xl",
-                  service.colors.cardBg,
-                  service.colors.border,
-                )}>
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0",
-                      service.colors.iconBg
-                    )}>
-                      <service.icon className={cn("w-6 h-6", service.colors.iconText)} />
-                    </div>
-                    <div>
-                      <h3 className="text-slate-900 font-bold text-lg">Neler Dahil?</h3>
-                      <p className="text-slate-400 text-xs mt-1">{service.features.length} özellik</p>
-                    </div>
-                  </div>
-                  <ul className="space-y-4">
-                    {service.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <CheckCircle2 className={cn("w-5 h-5 mt-0.5 flex-shrink-0", service.colors.check)} />
-                        <span className="text-slate-700 text-sm leading-relaxed font-medium">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Features */}
+                <ul className="space-y-2.5 flex-1">
+                  {service.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2.5">
+                      <CheckCircle2 className={cn("w-4 h-4 mt-0.5 flex-shrink-0", service.colors.check)} />
+                      <span className="text-slate-700 text-sm leading-relaxed">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-            </div>
+            ))}
           </div>
-        </section>
-      ))}
+        </div>
+      </section>
 
       {/* ── Process ── */}
       <section className="section bg-slate-900">
