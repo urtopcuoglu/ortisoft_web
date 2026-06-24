@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ortisoft.com.tr
+
+# Sitemaps
+Sitemap: https://ortisoft.com.tr/sitemap.xml
