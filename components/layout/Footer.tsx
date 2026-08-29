@@ -4,6 +4,7 @@ import {
   Zap, Mail, Phone, MapPin,
   Linkedin, Twitter, Github, ArrowUpRight, ArrowRight,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const footerLinks = {
   services: [
@@ -13,10 +14,12 @@ const footerLinks = {
     { label: "Dijital Dönüşüm",       href: "/services#digital" },
   ],
   company: [
-    { label: "Hakkımızda",   href: "/about" },
-    { label: "Projelerimiz", href: "/projects" },
-    { label: "Kariyer",      href: "/about#career" },
-    { label: "İletişim",     href: "/contact" },
+    { label: "Hakkımızda",     href: "/about" },
+    { label: "Referanslarımız", href: "/references", child: true },
+    { label: "Ürünlerimiz",    href: "/products" },
+    { label: "Projelerimiz",   href: "/projects" },
+    { label: "Kariyer",        href: "/about#career" },
+    { label: "İletişim",       href: "/contact" },
   ],
 };
 
@@ -128,12 +131,18 @@ export default function Footer() {
             <h4 className="font-bold text-sm text-white mb-7 tracking-wide">Şirket</h4>
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
-                <li key={link.label}>
+                <li key={link.label} className={link.child ? "pl-4" : undefined}>
                   <Link
                     href={link.href}
-                    className="text-sm text-slate-400 hover:text-blue-400 transition-colors duration-200 font-medium flex items-center gap-2 group"
+                    className={cn(
+                      "text-slate-400 hover:text-blue-400 transition-colors duration-200 font-medium flex items-center gap-2 group",
+                      link.child ? "text-xs" : "text-sm"
+                    )}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-blue-400 transition-colors duration-200 flex-shrink-0" />
+                    <span className={cn(
+                      "rounded-full bg-slate-700 group-hover:bg-blue-400 transition-colors duration-200 flex-shrink-0",
+                      link.child ? "w-1 h-1" : "w-1.5 h-1.5"
+                    )} />
                     {link.label}
                   </Link>
                 </li>

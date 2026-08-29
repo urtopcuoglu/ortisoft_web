@@ -80,7 +80,7 @@ const services = [
     icon: Cpu,
     title: "Kendi Ürünlerimiz",
     description: "Sektöre özel geliştirdiğimiz SaaS çözümleri ve açık kaynak araçlarımızla iş süreçlerinizi optimize edin.",
-    href: "/projects",
+    href: "/products",
     iconBg: "bg-orange-50",
     iconColor: "text-orange-600",
     accentColor: "group-hover:border-orange-200",

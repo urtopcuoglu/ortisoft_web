@@ -4,15 +4,29 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Info, Phone, FolderKanban, Settings2, MessageSquare,
+  Home, Info, Phone, FolderKanban, Settings2, MessageSquare, Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const sidebarLinks = [
-  { href: "/",         label: "Anasayfa",     icon: Home },
+interface SidebarLink {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
+  children?: { href: string; label: string }[];
+}
+
+const sidebarLinks: SidebarLink[] = [
+  { href: "/",         label: "Anasayfa",      icon: Home },
   { href: "/services", label: "Hizmetlerimiz", icon: Settings2 },
+  { href: "/products", label: "Ürünlerimiz",   icon: Package },
   { href: "/projects", label: "Projelerimiz",  icon: FolderKanban },
-  { href: "/about",    label: "Hakkımızda",    icon: Info },
+  {
+    href: "/about", label: "Hakkımızda", icon: Info,
+    children: [
+      { href: "/about",      label: "Hakkımızda" },
+      { href: "/references", label: "Referanslarımız" },
+    ],
+  },
   { href: "/contact",  label: "İletişim",      icon: Phone },
 ];
 
@@ -24,8 +38,9 @@ export default function Sidebar() {
     <aside className="hidden xl:flex flex-col fixed right-6 top-1/2 -translate-y-1/2 z-40">
       <div className="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-200/60 p-2.5 flex flex-col gap-1.5">
 
-        {sidebarLinks.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href;
+        {sidebarLinks.map(({ href, label, icon: Icon, children }) => {
+          const isActive = pathname === href
+            || (children?.some((c) => pathname === c.href) ?? false);
           return (
             <div
               key={href}
@@ -45,9 +60,29 @@ export default function Sidebar() {
                 <Icon size={17} strokeWidth={isActive ? 2.5 : 2} />
               </Link>
 
-              {hovered === href && (
+              {hovered === href && !children && (
                 <div className="absolute right-full mr-3.5 top-1/2 -translate-y-1/2 bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold px-4 py-2.5 rounded-lg whitespace-nowrap pointer-events-none shadow-2xl z-50 border border-slate-700/50">
                   {label}
+                  <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[5px] border-4 border-transparent border-l-slate-900" />
+                </div>
+              )}
+
+              {hovered === href && children && (
+                <div className="absolute right-full mr-3.5 top-1/2 -translate-y-1/2 bg-slate-900/95 backdrop-blur-md rounded-lg whitespace-nowrap shadow-2xl z-50 border border-slate-700/50 overflow-hidden py-1 min-w-[150px]">
+                  {children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      className={cn(
+                        "block px-4 py-2 text-xs font-bold transition-colors duration-150",
+                        pathname === child.href
+                          ? "text-blue-400"
+                          : "text-white hover:bg-white/10"
+                      )}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
                   <span className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[5px] border-4 border-transparent border-l-slate-900" />
                 </div>
               )}

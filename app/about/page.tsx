@@ -255,7 +255,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── References ── */}
-      <section className="py-20 md:py-28 bg-slate-50">
+      <section id="references" className="py-20 md:py-28 bg-slate-50">
         <div className="page-container">
           <div className="section-header">
             <Badge className="mb-4">Referanslarımız</Badge>

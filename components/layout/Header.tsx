@@ -3,20 +3,35 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Zap, ArrowRight } from "lucide-react";
+import { Menu, X, Zap, ArrowRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
+interface NavLink {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+}
+
+const navLinks: NavLink[] = [
   { href: "/",         label: "Anasayfa" },
   { href: "/services", label: "Hizmetlerimiz" },
+  { href: "/products", label: "Ürünlerimiz" },
   { href: "/projects", label: "Projelerimiz" },
-  { href: "/about",    label: "Hakkımızda" },
+  {
+    href: "/about", label: "Hakkımızda",
+    children: [
+      { href: "/about",      label: "Hakkımızda" },
+      { href: "/references", label: "Referanslarımız" },
+    ],
+  },
   { href: "/contact",  label: "İletişim" },
 ];
 
 export default function Header() {
-  const [scrolled,    setScrolled]    = useState(false);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [scrolled,       setScrolled]       = useState(false);
+  const [mobileOpen,     setMobileOpen]     = useState(false);
+  const [openDropdown,   setOpenDropdown]   = useState<string | null>(null);
+  const [openMobileSub,  setOpenMobileSub]  = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -64,30 +79,102 @@ export default function Header() {
             {/* ── Desktop Nav ── */}
             <nav className="hidden md:flex items-center gap-0.5">
               {navLinks.map((link) => {
-                const active = pathname === link.href;
+                const active = pathname === link.href
+                  || (link.children?.some((c) => pathname === c.href) ?? false);
+
+                if (!link.children) {
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "relative px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200",
+                        active
+                          ? scrolled
+                            ? "text-blue-700 bg-blue-50"
+                            : "text-white bg-white/20"
+                          : scrolled
+                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            : "text-white/95 hover:text-white hover:bg-white/15"
+                      )}
+                    >
+                      {link.label}
+                      {active && (
+                        <span className={cn(
+                          "absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full",
+                          scrolled ? "bg-blue-600" : "bg-white"
+                        )} />
+                      )}
+                    </Link>
+                  );
+                }
+
                 return (
-                  <Link
+                  <div
                     key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "relative px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200",
-                      active
-                        ? scrolled
-                          ? "text-blue-700 bg-blue-50"
-                          : "text-white bg-white/20"
-                        : scrolled
-                          ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-                          : "text-white/95 hover:text-white hover:bg-white/15"
-                    )}
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(link.href)}
+                    onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    {link.label}
-                    {active && (
-                      <span className={cn(
-                        "absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full",
-                        scrolled ? "bg-blue-600" : "bg-white"
-                      )} />
-                    )}
-                  </Link>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "relative flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200",
+                        active
+                          ? scrolled
+                            ? "text-blue-700 bg-blue-50"
+                            : "text-white bg-white/20"
+                          : scrolled
+                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            : "text-white/95 hover:text-white hover:bg-white/15"
+                      )}
+                    >
+                      {link.label}
+                      <ChevronDown
+                        size={14}
+                        className={cn(
+                          "transition-transform duration-200",
+                          openDropdown === link.href && "rotate-180"
+                        )}
+                      />
+                      {active && (
+                        <span className={cn(
+                          "absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full",
+                          scrolled ? "bg-blue-600" : "bg-white"
+                        )} />
+                      )}
+                    </Link>
+
+                    {/* ── Dropdown Panel ── */}
+                    <div
+                      className={cn(
+                        "absolute top-full left-0 pt-2 transition-all duration-200",
+                        openDropdown === link.href
+                          ? "opacity-100 translate-y-0 pointer-events-auto"
+                          : "opacity-0 -translate-y-1 pointer-events-none"
+                      )}
+                    >
+                      <div className="bg-white rounded-xl shadow-xl border border-slate-100 py-2 min-w-[190px]">
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={cn(
+                                "block px-4 py-2.5 text-sm font-semibold transition-colors duration-150",
+                                childActive
+                                  ? "text-blue-700 bg-blue-50"
+                                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </nav>
@@ -133,20 +220,70 @@ export default function Header() {
           <div className="bg-white border-t border-slate-100 px-4 py-4">
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => {
-                const active = pathname === link.href;
+                const active = pathname === link.href
+                  || (link.children?.some((c) => pathname === c.href) ?? false);
+
+                if (!link.children) {
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
+                        active
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                }
+
+                const subOpen = openMobileSub === link.href;
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
-                      active
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
+                  <div key={link.href}>
+                    <button
+                      type="button"
+                      onClick={() => setOpenMobileSub(subOpen ? null : link.href)}
+                      className={cn(
+                        "flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
+                        active
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      )}
+                    >
+                      {link.label}
+                      <ChevronDown
+                        size={16}
+                        className={cn("transition-transform duration-200", subOpen && "rotate-180")}
+                      />
+                    </button>
+                    <div className={cn(
+                      "overflow-hidden transition-all duration-200",
+                      subOpen ? "max-h-40" : "max-h-0"
+                    )}>
+                      <div className="flex flex-col gap-1 pl-4 pt-1 pb-1">
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={cn(
+                                "flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                                childActive
+                                  ? "bg-blue-50 text-blue-700"
+                                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 );
               })}
             </nav>

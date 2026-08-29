@@ -189,6 +189,12 @@ body {
 }
 .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
 
+@keyframes shimmerBar {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.shimmer-bar { animation: shimmerBar 1.8s ease-in-out infinite; }
+
 /* ─────────────────────────────────────────
    Grid Pattern
 ───────────────────────────────────────── */
