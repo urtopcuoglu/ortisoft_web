@@ -20,7 +20,13 @@ export default async function ProtectedAdminLayout({
           <a href="/admin/dashboard" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Panel
           </a>
-          {/* Faz 2+: Hakkımızda, Kariyer, Referanslar, Projeler, Mesajlar, Blog */}
+          <a href="/admin/about" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Hakkımızda
+          </a>
+          <a href="/admin/services" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Hizmetlerimiz
+          </a>
+          {/* Faz 2 devamı: Kariyer, Referanslar, Projeler, Mesajlar, Blog */}
         </nav>
       </aside>
 
