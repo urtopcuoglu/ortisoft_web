@@ -9,20 +9,20 @@ const DESC_MIN = 150;
 const DESC_MAX = 160;
 
 function counterColor(len: number, min: number, max: number) {
-  if (len === 0) return "text-slate-400";
-  if (len < min || len > max) return "text-amber-600";
-  return "text-emerald-600";
+  if (len === 0) return "text-slate-400 dark:text-slate-500";
+  if (len < min || len > max) return "text-amber-600 dark:text-amber-400";
+  return "text-emerald-600 dark:text-emerald-400";
 }
 
 function CheckRow({ ok, label }: { ok: boolean; label: string }) {
   return (
     <div className="flex items-center gap-2 text-xs">
       {ok ? (
-        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
+        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500 dark:text-emerald-400" />
       ) : (
-        <XCircle className="h-3.5 w-3.5 flex-shrink-0 text-slate-300" />
+        <XCircle className="h-3.5 w-3.5 flex-shrink-0 text-slate-300 dark:text-slate-600" />
       )}
-      <span className={ok ? "text-slate-600" : "text-slate-400"}>{label}</span>
+      <span className={ok ? "text-slate-600 dark:text-slate-300" : "text-slate-400 dark:text-slate-500"}>{label}</span>
     </div>
   );
 }
@@ -72,15 +72,15 @@ export default function SeoAnalyzer({
   const scoreLabel = score >= 80 ? "İyi" : score >= 50 ? "Geliştirilebilir" : "Zayıf";
   const scoreClass =
     score >= 80
-      ? "bg-emerald-100 text-emerald-700"
+      ? "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
       : score >= 50
-        ? "bg-amber-100 text-amber-700"
-        : "bg-red-100 text-red-700";
+        ? "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400"
+        : "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500">
+        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           SEO Analizi (Google Önizlemesi)
         </h3>
         <span className={cn("rounded-full px-2.5 py-1 text-xs font-bold", scoreClass)}>
@@ -89,14 +89,14 @@ export default function SeoAnalyzer({
       </div>
 
       {/* SERP Önizleme */}
-      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4">
-        <p className="mb-1 truncate text-xs text-slate-500">
+      <div className="mb-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <p className="mb-1 truncate text-xs text-slate-500 dark:text-slate-400">
           {siteUrl} › {path}
         </p>
-        <p className="mb-1 truncate text-lg text-blue-700" style={{ maxWidth: "600px" }}>
+        <p className="mb-1 truncate text-lg text-blue-700 dark:text-blue-400" style={{ maxWidth: "600px" }}>
           {effectiveTitle || "Sayfa başlığı buraya gelecek"}
         </p>
-        <p className="line-clamp-2 text-sm text-slate-600" style={{ maxWidth: "600px" }}>
+        <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-300" style={{ maxWidth: "600px" }}>
           {description || "Meta açıklama buraya gelecek — Google arama sonuçlarında bu metin gösterilir."}
         </p>
       </div>
@@ -104,13 +104,13 @@ export default function SeoAnalyzer({
       {/* Karakter sayaçları */}
       <div className="mb-4 grid grid-cols-2 gap-4 text-xs">
         <div>
-          <span className="font-semibold text-slate-600">SEO Başlık: </span>
+          <span className="font-semibold text-slate-600 dark:text-slate-300">SEO Başlık: </span>
           <span className={counterColor(titleLen, TITLE_MIN, TITLE_MAX)}>
             {titleLen} / {TITLE_MAX}
           </span>
         </div>
         <div>
-          <span className="font-semibold text-slate-600">Meta Açıklama: </span>
+          <span className="font-semibold text-slate-600 dark:text-slate-300">Meta Açıklama: </span>
           <span className={counterColor(descLen, DESC_MIN, DESC_MAX)}>
             {descLen} / {DESC_MAX}
           </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { createReply } from "@/modules/messages/actions";
 import type { ReplyFormState } from "@/modules/messages/schema";
 
@@ -29,14 +30,14 @@ export default function MessageReplyForm({
       : null;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
-      <h3 className="mb-3 text-sm font-bold text-slate-800">Yanıt Yaz</h3>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+      <h3 className="mb-3 text-sm font-bold text-slate-800 dark:text-slate-200">Yanıt Yaz</h3>
       <form action={formAction} className="flex flex-col gap-3">
         <textarea
           name="body"
           rows={4}
           placeholder="Yanıtınızı buraya yazın…"
-          className="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20"
           required
         />
         {state?.errors?.body && <p className="text-xs text-red-600">{state.errors.body[0]}</p>}
@@ -49,16 +50,19 @@ export default function MessageReplyForm({
         </button>
       </form>
 
-      {mailtoHref && (
-        <div className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Yanıt kaydedildi.{" "}
+      {state?.success && state.emailSent && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-400">
+          <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
+          Yanıt kaydedildi ve e-posta olarak otomatik gönderildi.
+        </div>
+      )}
+
+      {mailtoHref && state?.emailSent === false && (
+        <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-400">
+          Yanıt kaydedildi, ancak otomatik e-posta gönderimi yapılandırılmamış (RESEND_API_KEY).{" "}
           <a href={mailtoHref} className="font-semibold underline">
             E-posta istemcinde taslağı aç →
           </a>
-          <p className="mt-1 text-xs text-emerald-700">
-            (Not: Şimdilik e-posta otomatik gönderilmiyor, mailto: ile e-posta programın açılır. İleride
-            otomatik gönderim eklenecek.)
-          </p>
         </div>
       )}
     </div>

@@ -19,7 +19,7 @@ export default async function EditReferencePage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Referansı Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Referansı Düzenle</h1>
       <ReferenceForm action={updateReference.bind(null, id)} reference={reference} />
     </div>
   );

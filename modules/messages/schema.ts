@@ -67,7 +67,13 @@ export const ReplySchema = z.object({
 });
 
 export type ReplyFormState =
-  | { errors?: Record<string, string[]>; message?: string; success?: boolean; replyBody?: string }
+  | {
+      errors?: Record<string, string[]>;
+      message?: string;
+      success?: boolean;
+      replyBody?: string;
+      emailSent?: boolean;
+    }
   | undefined;
 
 export const MESSAGE_STATUSES = ["NEW", "IN_PROGRESS", "REPLIED", "CLOSED"] as const;

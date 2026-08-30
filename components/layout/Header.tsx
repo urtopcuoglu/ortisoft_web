@@ -5,30 +5,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Zap, ArrowRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "@/components/LocaleProvider";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface NavLink {
   href: string;
-  label: string;
-  children?: { href: string; label: string }[];
+  labelKey: string;
+  children?: { href: string; labelKey: string }[];
 }
 
 const navLinks: NavLink[] = [
-  { href: "/",         label: "Anasayfa" },
-  { href: "/services", label: "Hizmetlerimiz" },
-  { href: "/products", label: "Ürünlerimiz" },
-  { href: "/projects", label: "Projelerimiz" },
+  { href: "/",         labelKey: "nav.home" },
+  { href: "/services", labelKey: "nav.services" },
+  { href: "/products", labelKey: "nav.products" },
+  { href: "/projects", labelKey: "nav.projects" },
   {
-    href: "/about", label: "Hakkımızda",
+    href: "/about", labelKey: "nav.about",
     children: [
-      { href: "/references", label: "Referanslarımız" },
-      { href: "/career",     label: "Kariyer" },
+      { href: "/references", labelKey: "nav.references" },
+      { href: "/career",     labelKey: "nav.career" },
     ],
   },
-  { href: "/blog",     label: "Blog" },
-  { href: "/contact",  label: "İletişim" },
+  { href: "/blog",     labelKey: "nav.blog" },
+  { href: "/contact",  labelKey: "nav.contact" },
 ];
 
 export default function Header() {
+  const { t } = useTranslations();
   const [scrolled,       setScrolled]       = useState(false);
   const [mobileOpen,     setMobileOpen]     = useState(false);
   const [openDropdown,   setOpenDropdown]   = useState<string | null>(null);
@@ -56,7 +60,7 @@ export default function Header() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-sm",
           scrolled
-            ? "bg-white/95 shadow-lg border-b border-slate-200/50"
+            ? "bg-white/95 dark:bg-slate-950/95 shadow-lg border-b border-slate-200/50 dark:border-slate-800/50"
             : "bg-gradient-to-b from-black/40 to-transparent"
         )}
       >
@@ -71,13 +75,13 @@ export default function Header() {
               <div className="flex flex-col leading-none">
                 <span className={cn(
                   "font-extrabold text-[1.05rem] tracking-tight transition-colors duration-200",
-                  scrolled ? "text-slate-900" : "text-white drop-shadow-lg"
+                  scrolled ? "text-slate-900 dark:text-white" : "text-white drop-shadow-lg"
                 )}>
-                  Orti<span className={scrolled ? "text-blue-600" : "text-blue-300"}>soft</span>
+                  Orti<span className={scrolled ? "text-blue-600 dark:text-blue-400" : "text-blue-300"}>soft</span>
                 </span>
                 <span className={cn(
                   "text-[9px] font-bold tracking-[0.18em] uppercase mt-0.5 transition-colors duration-200",
-                  scrolled ? "text-slate-600" : "text-white/70 drop-shadow"
+                  scrolled ? "text-slate-600 dark:text-slate-400" : "text-white/70 drop-shadow"
                 )}>
                   Digital Solutions
                 </span>
@@ -99,18 +103,18 @@ export default function Header() {
                         "relative px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200",
                         active
                           ? scrolled
-                            ? "text-blue-700 bg-blue-50"
+                            ? "text-blue-700 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10"
                             : "text-white bg-white/20"
                           : scrolled
-                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
                             : "text-white/95 hover:text-white hover:bg-white/15"
                       )}
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                       {active && (
                         <span className={cn(
                           "absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full",
-                          scrolled ? "bg-blue-600" : "bg-white"
+                          scrolled ? "bg-blue-600 dark:bg-blue-400" : "bg-white"
                         )} />
                       )}
                     </Link>
@@ -130,14 +134,14 @@ export default function Header() {
                         "relative flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200",
                         active
                           ? scrolled
-                            ? "text-blue-700 bg-blue-50"
+                            ? "text-blue-700 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10"
                             : "text-white bg-white/20"
                           : scrolled
-                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+                            ? "text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
                             : "text-white/95 hover:text-white hover:bg-white/15"
                       )}
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                       <ChevronDown
                         size={14}
                         className={cn(
@@ -148,7 +152,7 @@ export default function Header() {
                       {active && (
                         <span className={cn(
                           "absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full",
-                          scrolled ? "bg-blue-600" : "bg-white"
+                          scrolled ? "bg-blue-600 dark:bg-blue-400" : "bg-white"
                         )} />
                       )}
                     </Link>
@@ -162,7 +166,7 @@ export default function Header() {
                           : "opacity-0 -translate-y-1 pointer-events-none"
                       )}
                     >
-                      <div className="bg-white rounded-xl shadow-xl border border-slate-100 py-2 min-w-[190px]">
+                      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 py-2 min-w-[190px]">
                         {link.children.map((child) => {
                           const childActive = pathname === child.href;
                           return (
@@ -172,11 +176,11 @@ export default function Header() {
                               className={cn(
                                 "block px-4 py-2.5 text-sm font-semibold transition-colors duration-150",
                                 childActive
-                                  ? "text-blue-700 bg-blue-50"
-                                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                  ? "text-blue-700 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10"
+                                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
                               )}
                             >
-                              {child.label}
+                              {t(child.labelKey)}
                             </Link>
                           );
                         })}
@@ -187,8 +191,10 @@ export default function Header() {
               })}
             </nav>
 
-            {/* ── Desktop CTA ── */}
-            <div className="hidden md:flex">
+            {/* ── Desktop CTA + Dil/Tema ── */}
+            <div className="hidden md:flex items-center gap-4">
+              <LocaleSwitcher dark={!scrolled} />
+              <ThemeToggle dark={!scrolled} />
               <Link
                 href="/contact"
                 className={cn(
@@ -198,24 +204,28 @@ export default function Header() {
                     : "bg-white/15 text-white border border-white/30 hover:bg-white/25 backdrop-blur-sm"
                 )}
               >
-                Görüşme Talep Et
+                {t("nav.cta")}
                 <ArrowRight size={14} />
               </Link>
             </div>
 
-            {/* ── Mobile Toggle ── */}
-            <button
-              className={cn(
-                "md:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-200",
-                scrolled
-                  ? "text-slate-700 hover:bg-slate-100"
-                  : "text-white hover:bg-white/10"
-              )}
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Menü"
-            >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+            {/* ── Mobile: Dil/Tema + Toggle ── */}
+            <div className="flex items-center gap-2 md:hidden">
+              <LocaleSwitcher dark={!scrolled} />
+              <ThemeToggle dark={!scrolled} />
+              <button
+                className={cn(
+                  "flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-200",
+                  scrolled
+                    ? "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
+                    : "text-white hover:bg-white/10"
+                )}
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Menü"
+              >
+                {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
 
           </div>
         </div>
@@ -225,7 +235,7 @@ export default function Header() {
           "md:hidden overflow-hidden transition-all duration-300",
           mobileOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
         )}>
-          <div className="bg-white border-t border-slate-100 px-4 py-4">
+          <div className="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 px-4 py-4">
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const active = pathname === link.href
@@ -239,11 +249,11 @@ export default function Header() {
                       className={cn(
                         "flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
                         active
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
                       )}
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   );
                 }
@@ -257,11 +267,11 @@ export default function Header() {
                       className={cn(
                         "flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
                         active
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
                       )}
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                       <ChevronDown
                         size={16}
                         className={cn("transition-transform duration-200", subOpen && "rotate-180")}
@@ -281,11 +291,11 @@ export default function Header() {
                               className={cn(
                                 "flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                                 childActive
-                                  ? "bg-blue-50 text-blue-700"
-                                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                                  ? "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"
+                                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
                               )}
                             >
-                              {child.label}
+                              {t(child.labelKey)}
                             </Link>
                           );
                         })}
@@ -295,12 +305,12 @@ export default function Header() {
                 );
               })}
             </nav>
-            <div className="mt-4 pt-4 border-t border-slate-100">
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
               <Link
                 href="/contact"
                 className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-bold"
               >
-                Görüşme Talep Et
+                {t("nav.cta")}
                 <ArrowRight size={14} />
               </Link>
             </div>

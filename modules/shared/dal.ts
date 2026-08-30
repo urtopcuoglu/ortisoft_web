@@ -33,6 +33,19 @@ export async function getOptionalSession() {
   return decrypt(cookie);
 }
 
+/**
+ * verifySession()'ın rol kontrollü hali — sadece ADMIN rolündeki hesapların
+ * erişebilmesi gereken alanlar için (Kullanıcı Yönetimi). EDITOR bir hesap
+ * buraya gelirse dashboard'a geri yönlendirilir.
+ */
+export const verifyAdminSession = cache(async () => {
+  const session = await verifySession();
+  if (session.role !== "ADMIN") {
+    redirect("/admin/dashboard");
+  }
+  return session;
+});
+
 export const getCurrentUser = cache(async () => {
   const session = await verifySession();
 

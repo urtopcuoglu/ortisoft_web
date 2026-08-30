@@ -15,9 +15,9 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_CLASS: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-600",
-  SCHEDULED: "bg-amber-100 text-amber-700",
-  PUBLISHED: "bg-emerald-100 text-emerald-700",
+  DRAFT: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300",
+  SCHEDULED: "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  PUBLISHED: "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
 };
 
 export default async function AdminBlogPage() {
@@ -27,8 +27,8 @@ export default async function AdminBlogPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900">Blog Yazıları</h1>
-          <p className="text-sm text-slate-500">&quot;Yayında&quot; durumundaki yazılar /blog sayfasında görünür.</p>
+          <h1 className="text-xl font-extrabold text-slate-900 dark:text-white">Blog Yazıları</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">&quot;Yayında&quot; durumundaki yazılar /blog sayfasında görünür.</p>
         </div>
         <Link
           href="/admin/blog/new"
@@ -38,9 +38,9 @@ export default async function AdminBlogPage() {
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase text-slate-500">
+          <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
             <tr>
               <th className="px-4 py-3">Başlık</th>
               <th className="px-4 py-3">Durum</th>
@@ -50,14 +50,14 @@ export default async function AdminBlogPage() {
           <tbody>
             {posts.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-6 text-center text-slate-400">
+                <td colSpan={3} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
                   Henüz yazı eklenmedi.
                 </td>
               </tr>
             )}
             {posts.map((post) => (
-              <tr key={post.id} className="border-b border-slate-100 last:border-0">
-                <td className="px-4 py-3 font-semibold text-slate-800">{post.title}</td>
+              <tr key={post.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">{post.title}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${STATUS_CLASS[post.status]}`}>
                     {STATUS_LABEL[post.status]}
@@ -69,14 +69,14 @@ export default async function AdminBlogPage() {
                       <Link
                         href={`/blog/${post.slug}`}
                         target="_blank"
-                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                        className="rounded-lg border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                       >
                         Görüntüle
                       </Link>
                     )}
                     <Link
                       href={`/admin/blog/${post.id}/edit`}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      className="rounded-lg border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                     >
                       Düzenle
                     </Link>

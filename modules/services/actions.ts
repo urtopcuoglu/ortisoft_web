@@ -19,23 +19,27 @@ export async function getService(id: string) {
   return prisma.service.findUnique({ where: { id } });
 }
 
+function parseServiceForm(formData: FormData) {
+  return ServiceSchema.safeParse({
+    slug: formData.get("slug"),
+    icon: formData.get("icon"),
+    tag: formData.get("tag"),
+    title: formData.get("title"),
+    description: formData.get("description"),
+    colorTheme: formData.get("colorTheme"),
+    sortOrder: formData.get("sortOrder") ?? 0,
+    pricingCurrency: formData.get("pricingCurrency") ?? "TRY",
+    subServicesJson: formData.get("subServicesJson") ?? "[]",
+  });
+}
+
 export async function createService(
   _prevState: ServiceFormState,
   formData: FormData
 ): Promise<ServiceFormState> {
   const session = await verifySession();
 
-  const validated = ServiceSchema.safeParse({
-    slug: formData.get("slug"),
-    icon: formData.get("icon"),
-    tag: formData.get("tag"),
-    title: formData.get("title"),
-    description: formData.get("description"),
-    features: formData.get("features") ?? "",
-    colorTheme: formData.get("colorTheme"),
-    sortOrder: formData.get("sortOrder") ?? 0,
-  });
-
+  const validated = parseServiceForm(formData);
   if (!validated.success) {
     return { errors: validated.error.flatten().fieldErrors };
   }
@@ -47,8 +51,9 @@ export async function createService(
     return { errors: { slug: ["Bu slug zaten kullanılıyor."] } };
   }
 
+  const { subServicesJson, ...rest } = validated.data;
   const service = await prisma.service.create({
-    data: { locale: LOCALE, ...validated.data },
+    data: { locale: LOCALE, ...rest, subServices: subServicesJson },
   });
 
   await logAudit({
@@ -70,17 +75,7 @@ export async function updateService(
 ): Promise<ServiceFormState> {
   const session = await verifySession();
 
-  const validated = ServiceSchema.safeParse({
-    slug: formData.get("slug"),
-    icon: formData.get("icon"),
-    tag: formData.get("tag"),
-    title: formData.get("title"),
-    description: formData.get("description"),
-    features: formData.get("features") ?? "",
-    colorTheme: formData.get("colorTheme"),
-    sortOrder: formData.get("sortOrder") ?? 0,
-  });
-
+  const validated = parseServiceForm(formData);
   if (!validated.success) {
     return { errors: validated.error.flatten().fieldErrors };
   }
@@ -92,7 +87,11 @@ export async function updateService(
     return { errors: { slug: ["Bu slug zaten kullanılıyor."] } };
   }
 
-  await prisma.service.update({ where: { id }, data: validated.data });
+  const { subServicesJson, ...rest } = validated.data;
+  await prisma.service.update({
+    where: { id },
+    data: { ...rest, subServices: subServicesJson },
+  });
 
   await logAudit({
     actorId: session.userId,

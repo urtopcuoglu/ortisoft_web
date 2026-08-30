@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Script from "next/script";
+import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
     title: "Ortisoft | Dijital Dönüşüm & Yazılım Danışmanlığı",
@@ -17,7 +18,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="tr" className="h-full antialiased">
+        <html lang="tr" className="h-full antialiased" suppressHydrationWarning>
         <head>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -38,8 +39,10 @@ export default function RootLayout({
           `}
             </Script>
         </head>
-        <body className="min-h-full flex flex-col">
-        {children}
+        <body className="min-h-full flex flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100" suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+        </ThemeProvider>
         </body>
         </html>
     );

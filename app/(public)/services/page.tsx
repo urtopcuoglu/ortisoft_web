@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { listServices } from "@/modules/services/actions";
+import type { SubService } from "@/modules/services/schema";
 import { resolveIcon } from "@/lib/icon-map";
 import { resolveServiceTheme } from "@/lib/color-theme";
 import { isPageComingSoon } from "@/modules/pages/actions";
@@ -68,8 +69,10 @@ export default async function ServicesPage() {
             {services.map((service) => {
               const ServiceIcon = resolveIcon(service.icon);
               const colors = resolveServiceTheme(service.colorTheme);
-              const features = Array.isArray(service.features)
-                ? (service.features as string[])
+              // Fiyat (price) burada BİLEREK okunmuyor — sadece label+description
+              // gösterilir, alt hizmet fiyatlandırması admin paneline özeldir.
+              const subServices = Array.isArray(service.subServices)
+                ? (service.subServices as unknown as SubService[])
                 : [];
               return (
                 <div
@@ -104,15 +107,24 @@ export default async function ServicesPage() {
                     {service.description}
                   </p>
 
-                  {/* Features */}
-                  <ul className="space-y-2.5 flex-1">
-                    {features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5">
+                  {/* Alt Hizmetler */}
+                  <ul className="space-y-3 flex-1">
+                    {subServices.map((sub) => (
+                      <li key={sub.label} className="flex items-start gap-2.5">
                         <CheckCircle2 className={cn("w-4 h-4 mt-0.5 flex-shrink-0", colors.check)} />
-                        <span className="text-slate-700 text-sm leading-relaxed">{feature}</span>
+                        <span className="text-sm leading-relaxed">
+                          <span className="text-slate-800 font-semibold">{sub.label}</span>
+                          {sub.description && (
+                            <span className="text-slate-500"> — {sub.description}</span>
+                          )}
+                        </span>
                       </li>
                     ))}
                   </ul>
+
+                  <Button variant="outline" size="sm" asChild className="mt-6 w-full">
+                    <Link href="/contact">Bilgi Talep Et</Link>
+                  </Button>
                 </div>
               );
             })}

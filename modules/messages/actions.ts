@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { supabaseAdmin, CV_BUCKET } from "@/lib/supabase-admin";
+import { sendEmail } from "@/lib/resend";
 import { verifySession } from "@/modules/shared/dal";
 import { logAudit } from "@/modules/shared/audit";
 import {
@@ -15,6 +16,7 @@ import {
   type ContactFormState,
   type ReplyFormState,
   type MessageStatusValue,
+  type MessagePurposeValue,
 } from "./schema";
 
 function extensionFor(mimeType: string) {
@@ -110,9 +112,13 @@ export async function submitContactMessage(
   return { success: true, message: "Mesajınız alındı! En kısa sürede size dönüş yapacağız." };
 }
 
-/** Admin: tüm mesajlar, en yeniden eskiye. */
-export async function listMessages() {
+/** Admin: tüm mesajlar, en yeniden eskiye — durum/talep türüne göre isteğe bağlı filtre. */
+export async function listMessages(filters?: { status?: MessageStatusValue; purpose?: MessagePurposeValue }) {
   return prisma.contactMessage.findMany({
+    where: {
+      ...(filters?.status ? { status: filters.status } : {}),
+      ...(filters?.purpose ? { purpose: filters.purpose } : {}),
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -190,9 +196,28 @@ export async function createReply(
     return { errors: validated.error.flatten().fieldErrors };
   }
 
+  const message = await prisma.contactMessage.findUnique({ where: { id: messageId } });
+  if (!message) {
+    return { message: "Mesaj bulunamadı." };
+  }
+
+  // RESEND_API_KEY tanımlıysa gerçekten gönderilmeye çalışılır; tanımlı
+  // değilse veya gönderim başarısız olursa sessizce mailto: yedeğine düşülür
+  // (aşağıda emailSent:false döner, UI mailto linkini gösterir).
+  const emailResult = await sendEmail({
+    to: message.email,
+    subject: "Re: Ortisoft — Mesajınız Hakkında",
+    html: `<p>Merhaba ${message.name},</p><p>${validated.data.body.replace(/\n/g, "<br/>")}</p><p>Saygılarımızla,<br/>Ortisoft</p>`,
+  });
+
   await prisma.$transaction([
     prisma.messageReply.create({
-      data: { messageId, body: validated.data.body, sentById: session.userId },
+      data: {
+        messageId,
+        body: validated.data.body,
+        sentById: session.userId,
+        emailMessageId: emailResult.sent ? emailResult.id : null,
+      },
     }),
     prisma.contactMessage.update({
       where: { id: messageId },
@@ -205,11 +230,12 @@ export async function createReply(
     action: "CREATE",
     entityType: "MessageReply",
     entityId: messageId,
+    diff: { emailSent: emailResult.sent },
   });
 
   revalidatePath("/admin/messages");
   revalidatePath(`/admin/messages/${messageId}`);
-  return { success: true, replyBody: validated.data.body };
+  return { success: true, replyBody: validated.data.body, emailSent: emailResult.sent };
 }
 
 export async function deleteMessage(id: string) {

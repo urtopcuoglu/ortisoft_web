@@ -19,7 +19,7 @@ export default async function EditTeamMemberPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">
         Ekip Üyesini Düzenle
       </h1>
       <TeamMemberForm

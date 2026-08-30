@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Tailwind v4: dark: varyantını next-themes'in <html class="dark"> eklemesine
+   göre çalıştır (varsayılan sadece OS tercihine bakardı). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ─────────────────────────────────────────
    Design Tokens
 ───────────────────────────────────────── */
@@ -18,6 +22,15 @@
   --z-header:   50;
   --z-dropdown: 60;
   --z-modal:    70;
+}
+
+.dark {
+  --background: #0b1220;
+  --foreground: #f1f5f9;
+  --primary:    #f1f5f9;
+  --accent:     #60a5fa;
+  --muted:      #94a3b8;
+  --border:     #1e293b;
 }
 
 @theme inline {
@@ -209,16 +222,20 @@ body {
    Card
 ───────────────────────────────────────── */
 .card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--background);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.75rem;
-  transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+  transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s, background-color 0.25s;
 }
 .card:hover {
   border-color: #bfdbfe;
   box-shadow: 0 12px 40px rgba(37, 99, 235, 0.1);
   transform: translateY(-3px);
+}
+.dark .card:hover {
+  border-color: #1d4ed8;
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.25);
 }
 
 /* ─────────────────────────────────────────
