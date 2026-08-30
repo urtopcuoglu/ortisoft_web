@@ -7,6 +7,7 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "tsx prisma/seed.ts",
   },
   datasource: {
     // NOT: Bu url, sadece Prisma CLI (migrate/db pull/studio) için kullanılır.
@@ -15,8 +16,8 @@ export default defineConfig({
     //
     // Supabase'in Transaction Pooler'ı (6543, pgbouncer) Prisma'nın şema
     // motoruyla (introspection/migration) uyumsuz olduğu için CLI her zaman
-    // doğrudan bağlantıyı (5432) kullanır.
+    // doğrudan bağlantıyı (5432) kullanır. (Prisma 7.10'da datasource config
+    // tipi sadece `url`/`shadowDatabaseUrl` destekliyor — `directUrl` yok.)
     url: env("DIRECT_URL"),
-    directUrl: env("DIRECT_URL"),
   },
 });

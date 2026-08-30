@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import Sidebar from "@/components/layout/Sidebar";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -11,6 +8,9 @@ export const metadata: Metadata = {
         "Proje danışmanlığı, yazılım danışmanlığı ve dijital pazarlama hizmetleriyle işletmenizi geleceğe taşıyoruz.",
 };
 
+// Bu, tüm site için ortak (public + admin) minimal kabuktur: html/head/font/GA4.
+// Sayfa-özel görünüm (Header/Sidebar/Footer vs. admin sidebar) alt route group
+// layout'larında (app/(public)/layout.tsx, app/(admin)/admin/layout.tsx) tanımlanır.
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
@@ -39,12 +39,8 @@ export default function RootLayout({
             </Script>
         </head>
         <body className="min-h-full flex flex-col">
-        <Header />
-        <Sidebar />
-        <main className="flex-1 content-area">{children}</main>
-        <Footer />
+        {children}
         </body>
         </html>
     );
 }
-
