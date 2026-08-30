@@ -3,6 +3,7 @@ import {
   Linkedin, ExternalLink, CheckCircle2, Building2, Rocket, Code2,
   BarChart3, ArrowRight, Search, Lightbulb, Wrench, LineChart,
   Monitor, Server, Share2, ShoppingCart, Briefcase, Award, Palette,
+  Store, Leaf, Train,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +17,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Linkedin, ExternalLink, CheckCircle2, Building2, Rocket, Code2,
   BarChart3, ArrowRight, Search, Lightbulb, Wrench, LineChart,
   Monitor, Server, Share2, ShoppingCart, Briefcase, Award, Palette,
+  Store, Leaf, Train,
 };
 
 export const ICON_NAMES = Object.keys(ICON_MAP) as [string, ...string[]];

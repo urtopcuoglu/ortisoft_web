@@ -2,6 +2,28 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.6.0] - 2026-08-30 — Faz 2 (bölüm 4): Projeler Modülü
+
+### Eklenenler
+- `Project` Prisma modeli — Ortisoft'un kendi ürünleri/hibe destekli girişimleri
+  (slug, durum: Çok Yakında/Geliştiriliyor/Aktif, fon etiketi, tagline, açıklama,
+  etiketler, özellikler, opsiyonel teknoloji yığını, ikon, renk teması, sıra)
+- `lib/icon-map.tsx`'e Store/Leaf/Train eklendi; `lib/color-theme.ts`'e nötr `slate`
+  teması ve proje kartlarına özel gradient/kenarlık/fon-rozeti eşlemesi eklendi
+- `modules/projects/`: Zod şeması + CRUD Server Action'lar, AuditLog
+- Admin UI: `/admin/projects` (liste + durum rozeti), `/admin/projects/new`, `/admin/projects/[id]/edit`
+- Public `/projects` sayfasının kart bölümü artık DB'den okuyor (hero/takvim/CTA statik kaldı)
+- Mevcut 3 proje (dükkanımbenim.com, GreenEco Map, RailMentor) seed ile birebir DB'ye taşındı
+
+### Düzeltmeler
+- Prisma'nın opsiyonel `Json?` alanına düz `null` yazılamadığı ortaya çıktı —
+  `Prisma.JsonNull` sentinel'i kullanılacak şekilde `modules/projects/actions.ts`
+  ve `prisma/seed.ts` düzeltildi.
+
+### Notlar
+- Şema doğrulama, `Json` alan + gerçek DB NULL round-trip'i ve admin/public sayfa
+  erişimi test edildi.
+
 ## [0.5.0] - 2026-08-30 — Faz 2 (bölüm 3): Referanslar Modülü
 
 ### Eklenenler

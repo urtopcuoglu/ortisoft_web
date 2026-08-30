@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
-import { PrismaClient } from "../lib/generated/prisma/client";
+import { PrismaClient, Prisma } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "@node-rs/argon2";
 
@@ -37,6 +37,7 @@ async function main() {
   await seedTeamMembers();
   await seedServices();
   await seedReferences();
+  await seedProjects();
 }
 
 const LOCALE = "tr";
@@ -225,6 +226,79 @@ async function seedReferences() {
     ],
   });
   console.log("✔ Reference seed edildi (5 kayıt)");
+}
+
+async function seedProjects() {
+  const count = await prisma.project.count({ where: { locale: LOCALE } });
+  if (count > 0) return;
+
+  await prisma.project.createMany({
+    data: [
+      {
+        locale: LOCALE, sortOrder: 0,
+        slug: "dukkanimbenim",
+        title: "dükkanımbenim.com",
+        status: "COMING_SOON",
+        fundingLabel: "Ortisoft Girişimi",
+        colorTheme: "slate",
+        icon: "Store",
+        tagline: "KOBİ'ler için hepsi bir arada dijital vitrin & CRM platformu",
+        description:
+          "Küçük ve orta ölçekli işletmelerin online varlıklarını kolayca yönetebilecekleri, müşteri ilişkilerini takip edebilecekleri ve satışlarını dijitale taşıyabilecekleri SaaS platformu. Kurulum gerektirmez, dakikalar içinde kullanıma hazır.",
+        tags: ["SaaS", "CRM", "E-Ticaret", "KOBİ"],
+        features: [
+          "Dijital vitrin & ürün kataloğu",
+          "Müşteri ve sipariş yönetimi",
+          "WhatsApp & sosyal medya entegrasyonu",
+          "Analitik dashboard",
+        ],
+        techStack: Prisma.JsonNull,
+      },
+      {
+        locale: LOCALE, sortOrder: 1,
+        slug: "greeneco-map",
+        title: "GreenEco Map",
+        status: "IN_DEVELOPMENT",
+        fundingLabel: "TÜBİTAK BİGG",
+        colorTheme: "emerald",
+        icon: "Leaf",
+        tagline: "Kahve telvesi geri dönüşüm ekosistemi — IoT + Gamification",
+        description:
+          "ESP32 tabanlı akıllı geri dönüşüm kutuları, mobil uygulama ve B2B/B2C gelir modeli ile kahve telvesini döngüsel ekonomiye kazandıran sürdürülebilirlik platformu. Kullanıcılar atıklarını bırakır, puan kazanır; üreticiler hammadde temin eder.",
+        tags: ["IoT", "Sürdürülebilirlik", "ESP32", "Gamification", "TÜBİTAK BİGG"],
+        features: [
+          "Akıllı IoT kutu ağı (IP65, load cell, drainage valve)",
+          "Puan & ödül gamification sistemi",
+          "B2B hammadde tedarik modülü",
+          "Gerçek zamanlı doluluk & analitik dashboard",
+        ],
+        techStack: [".NET 8", "Next.js 14", "PostgreSQL", "TimescaleDB", "Redis", "RabbitMQ", "SignalR", "Capacitor"],
+      },
+      {
+        locale: LOCALE, sortOrder: 2,
+        slug: "railmentor",
+        title: "RailMentor",
+        status: "IN_DEVELOPMENT",
+        fundingLabel: "Erasmus+ KA210-VET",
+        colorTheme: "blue",
+        icon: "Train",
+        tagline: "Demiryolu sektörüne adım atacak gençler için dijital mentorlük platformu",
+        description:
+          "Gazi MTAL koordinatörlüğünde yürütülen Erasmus+ girişimi. 14–18 yaş arası öğrencileri sektör profesyonelleriyle buluşturan akıllı eşleştirme algoritması, gerçek zamanlı iletişim ve multimedya içerik kütüphanesiyle donatılmış mentorlük platformu.",
+        tags: ["Erasmus+", "EdTech", "Mentorlük", "Demiryolu", "KA210-VET"],
+        features: [
+          "Akıllı mentor-menti eşleştirme motoru (dezavantajlı grup önceliği)",
+          "SignalR tabanlı anlık mesajlaşma & bildirim sistemi",
+          "Görev atama, dijital geri bildirim & süreç takibi",
+          "Podcast, video & e-öğrenme multimedya kütüphanesi",
+          "Admin KPI dashboard & öğrenci ilerleme analitikleri",
+          "Türkçe / İngilizce çok dil desteği (next-intl)",
+        ],
+        techStack: [".NET 8", "Next.js 14", "PostgreSQL", "RabbitMQ", "Redis", "SignalR", "MinIO", "Capacitor"],
+      },
+    ],
+  });
+  console.log("✔ Project seed edildi (3 kayıt)");
 }
 
 main()
