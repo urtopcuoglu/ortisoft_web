@@ -108,3 +108,29 @@ model Service {
   @@index([locale, sortOrder])
   @@map("services")
 }
+
+enum CareerStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+model CareerPosting {
+  id             String       @id @default(cuid())
+  locale         String       @default("tr")
+  slug           String
+  title          String
+  description    String
+  requirements   Json
+  location       String
+  employmentType String
+  applyEmail     String
+  status         CareerStatus @default(DRAFT)
+  publishedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, status])
+  @@map("career_postings")
+}

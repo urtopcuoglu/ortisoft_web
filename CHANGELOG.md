@@ -2,6 +2,23 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.4.0] - 2026-08-30 — Faz 2 (bölüm 2): Kariyer Modülü
+
+### Eklenenler
+- `CareerPosting` Prisma modeli (slug, açıklama, gereksinimler, konum, çalışma şekli,
+  başvuru e-postası, durum: Taslak/Yayında/Kapalı, `publishedAt`)
+- `modules/career/`: Zod şeması + CRUD Server Action'lar; Yayında'ya geçişte
+  `publishedAt` otomatik damgalanır
+- Admin UI: `/admin/career` (liste + durum rozeti), `/admin/career/new`, `/admin/career/[id]/edit`
+- **Yeni public sayfa `/career`**: yayındaki ilanları listeler, `mailto:` ile başvuru,
+  ilan yoksa açık başvuru CTA'sı
+- Navbar "Hakkımızda" menüsüne "Kariyer" eklendi; About sayfasındaki gömülü kariyer
+  bölümü sadeleştirilip `/career`'a yönlendirildi (veri tekrarı kaldırıldı)
+
+### Notlar
+- Sahte/örnek ilan seed edilmedi — canlıda yanlışlıkla gerçek ilan gibi görünmesin diye.
+- Durum geçişleri (DRAFT→PUBLISHED→CLOSED) ve `Json` alan round-trip'i test edildi.
+
 ## [0.3.0] - 2026-08-30 — Faz 2 (bölüm 1): Hakkımızda + Hizmetler İçerik Modülleri
 
 ### Eklenenler
