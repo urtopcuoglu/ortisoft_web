@@ -23,14 +23,15 @@ enum UserRole {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  passwordHash String
-  name         String
-  role         UserRole   @default(EDITOR)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  auditLogs    AuditLog[]
+  id             String          @id @default(cuid())
+  email          String          @unique
+  passwordHash   String
+  name           String
+  role           UserRole        @default(EDITOR)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  auditLogs      AuditLog[]
+  messageReplies MessageReply[]
 
   @@map("users")
 }
@@ -130,6 +131,61 @@ enum CareerStatus {
   CLOSED
 }
 
+enum MessageStatus {
+  NEW
+  IN_PROGRESS
+  REPLIED
+  CLOSED
+}
+
+// İletişim formundan gelen mesajlar — herkes (girişsiz) oluşturabilir,
+// sadece admin görüntüleyip yanıtlayabilir.
+enum MessagePurpose {
+  INFO
+  SUPPORT
+  SERVICE
+  PARTNERSHIP
+  CV
+}
+
+model ContactMessage {
+  id           String          @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  company      String?
+  service      String?
+  message      String
+  purpose      MessagePurpose  @default(INFO)
+  // CV başvurusu (purpose=CV) — Supabase Storage'daki dosya yolu (private bucket,
+  // indirme için her seferinde imzalı URL üretilir) ve orijinal dosya adı.
+  cvFilePath   String?
+  cvFileName   String?
+  kvkkConsent  Boolean         @default(false)
+  status       MessageStatus   @default(NEW)
+  source       String          @default("contact_form")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  replies      MessageReply[]
+
+  @@index([status])
+  @@index([purpose])
+  @@map("contact_messages")
+}
+
+model MessageReply {
+  id        String         @id @default(cuid())
+  message   ContactMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String
+  body      String
+  sentBy    User?          @relation(fields: [sentById], references: [id], onDelete: SetNull)
+  sentById  String?
+  sentAt    DateTime       @default(now())
+
+  @@index([messageId])
+  @@map("message_replies")
+}
+
 enum ProjectStatus {
   COMING_SOON
   IN_DEVELOPMENT
@@ -178,4 +234,36 @@ model CareerPosting {
   @@unique([locale, slug])
   @@index([locale, status])
   @@map("career_postings")
+}
+
+// ─────────────────────────────────────────────────────────
+// Sözleşme yönetimi — KVKK, Gizlilik, Çerez vb. Footer'da listelenir,
+// her biri /contracts/[slug] sayfasına sahiptir. Zengin metin (Tiptap HTML)
+// içeriği SADECE admin tarafından yazılır (tek admin hesabı — public kullanıcı
+// girdisi değildir), bu yüzden ayrıca sanitize edilmez.
+// ─────────────────────────────────────────────────────────
+model Contract {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contracts")
+}
+
+// ─────────────────────────────────────────────────────────
+// Sayfa yönetimi — sabit bir sayfa listesi (kod içinde route'ları zaten var),
+// her satır sadece "coming soon" durumunu tutar. Yeni sayfa admin panelinden
+// eklenemez/silinemez, sadece mevcut sayfaların görünürlüğü aç/kapa yapılır.
+// ─────────────────────────────────────────────────────────
+model SitePage {
+  key        String   @id
+  label      String
+  comingSoon Boolean  @default(false)
+  updatedAt  DateTime @updatedAt
+
+  @@map("site_pages")
 }

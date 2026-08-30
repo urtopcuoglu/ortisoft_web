@@ -6,6 +6,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listReferences } from "@/modules/references/actions";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 export const metadata = {
   title: "Referanslarımız | Ortisoft",
@@ -19,6 +21,10 @@ const stats = [
 ];
 
 export default async function ReferencesPage() {
+  if (await isPageComingSoon("references")) {
+    return <ComingSoonPage pageName="Referanslarımız" />;
+  }
+
   const references = await listReferences();
 
   return (

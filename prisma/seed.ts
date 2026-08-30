@@ -38,6 +38,8 @@ async function main() {
   await seedServices();
   await seedReferences();
   await seedProjects();
+  await seedContracts();
+  await seedSitePages();
 }
 
 const LOCALE = "tr";
@@ -299,6 +301,85 @@ async function seedProjects() {
     ],
   });
   console.log("✔ Project seed edildi (3 kayıt)");
+}
+
+async function seedContracts() {
+  const count = await prisma.contract.count();
+  if (count > 0) return;
+
+  const draftNotice =
+    "<p><strong>TASLAK — Bu metin hukuki incelemeden geçmemiştir, yayına almadan önce bir hukuk danışmanına inceletilmelidir.</strong></p>";
+
+  await prisma.contract.createMany({
+    data: [
+      {
+        slug: "kvkk",
+        title: "KVKK Aydınlatma Metni",
+        sortOrder: 0,
+        content:
+          draftNotice +
+          "<h2>1. Veri Sorumlusu</h2>" +
+          "<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla Ortisoft (\"Şirket\") tarafından aşağıda açıklanan kapsamda işlenebilecektir.</p>" +
+          "<h2>2. İşlenen Kişisel Veriler ve Amaçları</h2>" +
+          "<p>İletişim formu, kariyer başvuru formu ve benzeri kanallar aracılığıyla paylaştığınız ad-soyad, e-posta, telefon, şirket bilgisi, mesaj içeriği ve (varsa) özgeçmiş dosyanız; talebinizin değerlendirilmesi, tarafınızla iletişime geçilmesi, açık pozisyonlar için aday değerlendirmesi yapılması ve hizmetlerimizin sunulması amaçlarıyla işlenmektedir.</p>" +
+          "<h2>3. Kişisel Verilerin Aktarılması</h2>" +
+          "<p>Kişisel verileriniz, yukarıda belirtilen amaçların gerçekleştirilmesi ile sınırlı olarak hizmet aldığımız yurt içi/yurt dışı tedarikçilerle (barındırma, veritabanı ve depolama hizmet sağlayıcıları dahil) paylaşılabilir.</p>" +
+          "<h2>4. Saklama Süresi</h2>" +
+          "<p>Kişisel verileriniz, işleme amacının gerektirdiği süre boyunca ve ilgili mevzuatta öngörülen zamanaşımı süreleri dikkate alınarak saklanır.</p>" +
+          "<h2>5. Haklarınız</h2>" +
+          "<p>KVKK'nın 11. maddesi uyarınca kişisel verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini/silinmesini isteme gibi haklara sahipsiniz. Taleplerinizi <a href=\"mailto:ortisofttech@gmail.com\">ortisofttech@gmail.com</a> adresine iletebilirsiniz.</p>",
+      },
+      {
+        slug: "gizlilik-politikasi",
+        title: "Gizlilik Politikası",
+        sortOrder: 1,
+        content:
+          draftNotice +
+          "<h2>1. Genel</h2>" +
+          "<p>Bu Gizlilik Politikası, ortisoft.com.tr (\"Site\") üzerinden toplanan bilgilerin nasıl kullanıldığını açıklar.</p>" +
+          "<h2>2. Toplanan Bilgiler</h2>" +
+          "<p>İletişim ve kariyer formları aracılığıyla gönderdiğiniz ad, e-posta, telefon ve mesaj içerikleri; site kullanım istatistikleri için Google Analytics çerezleri.</p>" +
+          "<h2>3. Bilgilerin Kullanımı</h2>" +
+          "<p>Toplanan bilgiler yalnızca talebinizi yanıtlamak, hizmet kalitemizi artırmak ve yasal yükümlülükleri yerine getirmek amacıyla kullanılır; üçüncü taraflarla pazarlama amacıyla paylaşılmaz.</p>" +
+          "<h2>4. İletişim</h2>" +
+          "<p>Sorularınız için <a href=\"mailto:ortisofttech@gmail.com\">ortisofttech@gmail.com</a> adresinden bize ulaşabilirsiniz.</p>",
+      },
+      {
+        slug: "cerez-politikasi",
+        title: "Çerez Politikası",
+        sortOrder: 2,
+        content:
+          draftNotice +
+          "<h2>1. Çerez Nedir?</h2>" +
+          "<p>Çerezler, ziyaret ettiğiniz web siteleri tarafından tarayıcınıza kaydedilen küçük metin dosyalarıdır.</p>" +
+          "<h2>2. Kullandığımız Çerez Türleri</h2>" +
+          "<ul><li>Zorunlu çerezler — sitenin temel işlevleri için gereklidir.</li><li>Analitik çerezler (Google Analytics) — site kullanımını anlamamıza yardımcı olur.</li></ul>" +
+          "<h2>3. Çerezleri Yönetme</h2>" +
+          "<p>Tarayıcı ayarlarınızdan çerezleri silebilir veya engelleyebilirsiniz; ancak bu, bazı site özelliklerinin düzgün çalışmamasına neden olabilir.</p>",
+      },
+    ],
+  });
+  console.log("✔ Contract seed edildi (3 kayıt: kvkk, gizlilik, çerez)");
+}
+
+async function seedSitePages() {
+  const count = await prisma.sitePage.count();
+  if (count > 0) return;
+
+  await prisma.sitePage.createMany({
+    data: [
+      { key: "home", label: "Anasayfa" },
+      { key: "about", label: "Hakkımızda" },
+      { key: "services", label: "Hizmetlerimiz" },
+      { key: "products", label: "Ürünlerimiz" },
+      { key: "projects", label: "Projelerimiz" },
+      { key: "references", label: "Referanslarımız" },
+      { key: "career", label: "Kariyer" },
+      { key: "contact", label: "İletişim" },
+      { key: "blog", label: "Blog" },
+    ],
+  });
+  console.log("✔ SitePage seed edildi (9 kayıt)");
 }
 
 main()

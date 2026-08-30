@@ -5,6 +5,7 @@ import {
   Linkedin, Twitter, Github, ArrowUpRight, ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { listContracts } from "@/modules/contracts/actions";
 
 const footerLinks = {
   services: [
@@ -18,7 +19,7 @@ const footerLinks = {
     { label: "Referanslarımız", href: "/references", child: true },
     { label: "Ürünlerimiz",    href: "/products" },
     { label: "Projelerimiz",   href: "/projects" },
-    { label: "Kariyer",        href: "/about#career" },
+    { label: "Kariyer",        href: "/career" },
     { label: "İletişim",       href: "/contact" },
   ],
 };
@@ -36,7 +37,9 @@ const contactItems = [
   { icon: MapPin, label: "Ankara, Türkiye",         href: "https://maps.google.com/?q=Ankara+Turkiye" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const contracts = await listContracts();
+
   return (
     <footer className="bg-slate-950 text-white">
 
@@ -179,14 +182,14 @@ export default function Footer() {
           <p className="text-slate-500 text-xs font-light">
             © {new Date().getFullYear()} Ortisoft. Tüm hakları saklıdır.
           </p>
-          <div className="flex gap-8">
-            {["Gizlilik Politikası", "Kullanım Koşulları"].map((item) => (
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+            {contracts.map((contract) => (
               <Link
-                key={item}
-                href="#"
+                key={contract.slug}
+                href={`/contracts/${contract.slug}`}
                 className="text-xs text-slate-500 hover:text-blue-400 transition-colors duration-200 font-light"
               >
-                {item}
+                {contract.title}
               </Link>
             ))}
           </div>

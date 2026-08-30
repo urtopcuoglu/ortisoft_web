@@ -2,6 +2,46 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.7.0] - 2026-08-30 — Faz 2 Tamamlandı + Sözleşme & Sayfa Yönetimi
+
+### Faz 2 (bölüm 5): Mesajlar Modülü
+- `ContactMessage`/`MessageReply` modelleri, gerçek Server Action'a bağlı iletişim formu
+  (öncesi sahteydi, hiçbir yere kaydetmiyordu)
+- Admin gelen kutusu `/admin/messages`, durum yönetimi (Yeni/İşlemde/Yanıtlandı/Kapalı),
+  yanıt kaydı + `mailto:` taslağı (gerçek e-posta gönderimi ileride eklenecek)
+- Honeypot tabanlı spam koruması (sıfır ek servis)
+
+### İletişim Formu Genişletmesi: Talep Türü, CV Yükleme, KVKK Onayı
+- "Talebiniz" dropdown'ı (Bilgi/Destek/Hizmet/Ortaklık/CV) + koşullu alanlar
+  (Hizmet → Şirket+Hizmet dropdown'u, CV → dosya yükleme)
+- Supabase Storage'da **private bucket** (`cvs`) — CV'ler imzalı URL ile indirilir,
+  herkese açık erişilemez; admin > Kariyer > Aday CV'leri (`/admin/career/cvs`)
+- KVKK onay checkbox'ı — hem client hem sunucu tarafında zorunlu (iki katmanlı)
+
+### Sözleşme Yönetimi
+- `Contract` modeli + Tiptap tabanlı zengin metin editörü, admin CRUD (`/admin/contracts`)
+- Her sözleşme Footer'da (sabit konum, eski statik Gizlilik/Kullanım Koşulları linklerinin
+  yerinde) otomatik listelenir ve kendi `/contracts/[slug]` sayfasına sahiptir
+- KVKK bu sisteme taşındı; Gizlilik Politikası ve Çerez Politikası ile birlikte 3 sözleşme
+  seed edildi (hepsi "TASLAK — hukuki incelemeden geçmemiştir" uyarısıyla)
+
+### Sayfa Yönetimi (Coming Soon)
+- `SitePage` modeli — 9 sayfa (Anasayfa + Hakkımızda/Hizmetlerimiz/Ürünlerimiz/
+  Projelerimiz/Referanslarımız/Kariyer/İletişim/Blog), `/admin/pages` tablo + aç/kapa switch
+- Açılan sayfa ziyaretçiye genel bir "Çok Yakında" ekranı gösterir — içerik güncellenirken
+  yarım kalmış değişiklikler gizlenir
+- Anasayfa (`"use client"`, animasyonlu sayaçlar) `components/home/HomePageContent.tsx`'e
+  taşındı, `app/(public)/page.tsx` artık ince bir server-component sarmalayıcı
+
+### Düzeltmeler
+- Footer'daki "Kariyer" linki `/about#career`den `/career`'a güncellendi
+- Admin sidebar linkleri `<a>`den `<Link>`'e çevrildi (lint hatası)
+- Header.tsx'teki önceden var olan `setState`-in-effect uyarısı giderildi
+
+### Notlar
+- Vercel deploy'ları hâlâ ertelenmiş durumda (kullanıcı kararı) — geliştirme bitince ele alınacak.
+- Sıradaki: Blog modülü (Faz 5). Müşteri yönetimi/Takvim en sona bırakıldı.
+
 ## [0.6.0] - 2026-08-30 — Faz 2 (bölüm 4): Projeler Modülü
 
 ### Eklenenler

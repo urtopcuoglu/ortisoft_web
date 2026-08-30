@@ -3,6 +3,8 @@ import {
   Sparkles, ArrowRight, Mail, Rocket, Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 const highlights = [
   {
@@ -22,7 +24,11 @@ const highlights = [
   },
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  if (await isPageComingSoon("products")) {
+    return <ComingSoonPage pageName="Ürünlerimiz" />;
+  }
+
   return (
     <div className="flex flex-col">
 
