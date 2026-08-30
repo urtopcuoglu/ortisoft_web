@@ -394,14 +394,13 @@ export default async function AboutPage() {
               <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <Building2 className="w-7 h-7 text-blue-600" />
               </div>
-              <h3 className="font-bold text-slate-900 text-lg mb-3">Şu an aktif ilan bulunmuyor</h3>
+              <h3 className="font-bold text-slate-900 text-lg mb-3">Açık Pozisyonlarımızı İnceleyin</h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                Yeni pozisyonlar açıldığında burada duyurulacak. Şimdiden başvurunuzu iletebilir,
-                gelecekte değerlendirilebilmesi için dosyalarınızı bizimle paylaşabilirsiniz.
+                Güncel ilanlarımızı ve başvuru şartlarını Kariyer sayfamızda bulabilirsiniz.
               </p>
               <Button variant="gradient" size="lg" asChild>
-                <Link href="/contact">
-                  Açık Başvuru Gönder
+                <Link href="/career">
+                  Kariyer Sayfasını Ziyaret Et
                 </Link>
               </Button>
             </div>
