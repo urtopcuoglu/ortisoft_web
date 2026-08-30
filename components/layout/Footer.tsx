@@ -20,6 +20,7 @@ const footerLinks = {
     { label: "Ürünlerimiz",    href: "/products" },
     { label: "Projelerimiz",   href: "/projects" },
     { label: "Kariyer",        href: "/career" },
+    { label: "Blog",           href: "/blog" },
     { label: "İletişim",       href: "/contact" },
   ],
 };

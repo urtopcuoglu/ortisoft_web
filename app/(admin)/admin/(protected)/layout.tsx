@@ -48,7 +48,9 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin/pages" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Sayfa Yönetimi
           </Link>
-          {/* Faz 5: Blog */}
+          <Link href="/admin/blog" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Blog
+          </Link>
         </nav>
       </aside>
 
