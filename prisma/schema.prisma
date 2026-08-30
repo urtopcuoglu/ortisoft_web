@@ -130,6 +130,36 @@ enum CareerStatus {
   CLOSED
 }
 
+enum ProjectStatus {
+  COMING_SOON
+  IN_DEVELOPMENT
+  ACTIVE
+}
+
+// Ortisoft'un kendi ürünleri / hibe destekli projeleri (müşteri vaka çalışmaları DEĞİL).
+model Project {
+  id           String        @id @default(cuid())
+  locale       String        @default("tr")
+  slug         String
+  title        String
+  status       ProjectStatus @default(COMING_SOON)
+  fundingLabel String
+  tagline      String
+  description  String
+  tags         Json
+  icon         String
+  colorTheme   String        @default("blue")
+  features     Json
+  techStack    Json?
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, sortOrder])
+  @@map("projects")
+}
+
 model CareerPosting {
   id             String       @id @default(cuid())
   locale         String       @default("tr")

@@ -85,6 +85,14 @@ export const SERVICE_COLOR_THEMES = {
     border: "border-purple-100 hover:border-purple-300",
     glow: "hover:shadow-purple-100",
   },
+  slate: {
+    badge: "bg-slate-50 text-slate-700 border-slate-200",
+    iconBg: "bg-slate-100",
+    iconText: "text-slate-600",
+    check: "text-slate-500",
+    border: "border-slate-100 hover:border-slate-300",
+    glow: "hover:shadow-slate-100",
+  },
 } as const;
 
 export type ColorThemeName = keyof typeof SERVICE_COLOR_THEMES;
@@ -110,8 +118,75 @@ export const TEAM_GRADIENTS: Record<ColorThemeName, string> = {
   rose: "from-rose-500 to-rose-600",
   amber: "from-amber-500 to-amber-600",
   purple: "from-purple-500 to-purple-600",
+  slate: "from-slate-500 to-slate-600",
 };
 
 export function resolveTeamGradient(name: string) {
   return TEAM_GRADIENTS[name as ColorThemeName] ?? TEAM_GRADIENTS.blue;
+}
+
+// Proje kartları (yarı saydam arka plan gradyanı + kenarlık + fon rozeti).
+export const PROJECT_COLOR_THEMES: Record<
+  ColorThemeName,
+  { cardGradient: string; cardBorder: string; fundingBadge: string }
+> = {
+  blue: {
+    cardGradient: "from-blue-500/20 to-indigo-500/20",
+    cardBorder: "border-blue-500/30",
+    fundingBadge: "bg-blue-900/40 text-blue-300 border-blue-700/50",
+  },
+  violet: {
+    cardGradient: "from-violet-500/20 to-purple-500/20",
+    cardBorder: "border-violet-500/30",
+    fundingBadge: "bg-violet-900/40 text-violet-300 border-violet-700/50",
+  },
+  cyan: {
+    cardGradient: "from-cyan-500/20 to-blue-500/20",
+    cardBorder: "border-cyan-500/30",
+    fundingBadge: "bg-cyan-900/40 text-cyan-300 border-cyan-700/50",
+  },
+  emerald: {
+    cardGradient: "from-emerald-500/20 to-green-500/20",
+    cardBorder: "border-emerald-500/30",
+    fundingBadge: "bg-emerald-900/40 text-emerald-300 border-emerald-700/50",
+  },
+  pink: {
+    cardGradient: "from-pink-500/20 to-rose-500/20",
+    cardBorder: "border-pink-500/30",
+    fundingBadge: "bg-pink-900/40 text-pink-300 border-pink-700/50",
+  },
+  orange: {
+    cardGradient: "from-orange-500/20 to-amber-500/20",
+    cardBorder: "border-orange-500/30",
+    fundingBadge: "bg-orange-900/40 text-orange-300 border-orange-700/50",
+  },
+  indigo: {
+    cardGradient: "from-indigo-500/20 to-blue-500/20",
+    cardBorder: "border-indigo-500/30",
+    fundingBadge: "bg-indigo-900/40 text-indigo-300 border-indigo-700/50",
+  },
+  rose: {
+    cardGradient: "from-rose-500/20 to-pink-500/20",
+    cardBorder: "border-rose-500/30",
+    fundingBadge: "bg-rose-900/40 text-rose-300 border-rose-700/50",
+  },
+  amber: {
+    cardGradient: "from-amber-500/20 to-orange-500/20",
+    cardBorder: "border-amber-500/30",
+    fundingBadge: "bg-amber-900/40 text-amber-300 border-amber-700/50",
+  },
+  purple: {
+    cardGradient: "from-purple-500/20 to-violet-500/20",
+    cardBorder: "border-purple-500/30",
+    fundingBadge: "bg-purple-900/40 text-purple-300 border-purple-700/50",
+  },
+  slate: {
+    cardGradient: "from-slate-500/20 to-slate-400/20",
+    cardBorder: "border-slate-500/30",
+    fundingBadge: "bg-slate-700 text-slate-300 border-slate-600",
+  },
+};
+
+export function resolveProjectTheme(name: string) {
+  return PROJECT_COLOR_THEMES[name as ColorThemeName] ?? PROJECT_COLOR_THEMES.blue;
 }

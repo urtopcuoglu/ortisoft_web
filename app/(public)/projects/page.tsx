@@ -1,123 +1,29 @@
-"use client";
-
 import Link from "next/link";
 import {
   ArrowRight, CheckCircle2,
-  Store, Leaf, Train,
   Briefcase, Award, Layers, Clock, Code2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { listProjects } from "@/modules/projects/actions";
+import { resolveIcon } from "@/lib/icon-map";
+import { resolveProjectTheme } from "@/lib/color-theme";
 
-type ProjectStatus = "coming_soon" | "in_development" | "active";
+const STATUS_BADGE_LABEL: Record<string, string> = {
+  COMING_SOON: "Çok Yakında",
+  IN_DEVELOPMENT: "Geliştiriliyor",
+  ACTIVE: "Aktif",
+};
 
-interface Project {
-  id: string;
-  title: string;
-  status: ProjectStatus;
-  badge: string;
-  fundingLabel: string;
-  fundingBadgeColor: string;
-  tagline: string;
-  description: string;
-  tags: string[];
-  iconName: "Store" | "Leaf" | "Train";
-  gradient: string;
-  borderColor: string;
-  features: string[];
-  techStack?: string[];
-}
+const STATUS_BADGE_CLASS: Record<string, string> = {
+  COMING_SOON: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+  IN_DEVELOPMENT: "bg-blue-500/20 text-blue-300 border-blue-500/40",
+  ACTIVE: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+};
 
-const projects: Project[] = [
-  {
-    id: "dukkanimbenim",
-    title: "dükkanımbenim.com",
-    status: "coming_soon",
-    badge: "Çok Yakında",
-    fundingLabel: "Ortisoft Girişimi",
-    fundingBadgeColor: "bg-slate-700 text-slate-300 border-slate-600",
-    tagline: "KOBİ'ler için hepsi bir arada dijital vitrin & CRM platformu",
-    description:
-      "Küçük ve orta ölçekli işletmelerin online varlıklarını kolayca yönetebilecekleri, müşteri ilişkilerini takip edebilecekleri ve satışlarını dijitale taşıyabilecekleri SaaS platformu. Kurulum gerektirmez, dakikalar içinde kullanıma hazır.",
-    tags: ["SaaS", "CRM", "E-Ticaret", "KOBİ"],
-    iconName: "Store",
-    gradient: "from-orange-500/20 to-amber-500/20",
-    borderColor: "border-orange-500/30",
-    features: [
-      "Dijital vitrin & ürün kataloğu",
-      "Müşteri ve sipariş yönetimi",
-      "WhatsApp & sosyal medya entegrasyonu",
-      "Analitik dashboard",
-    ],
-  },
-  {
-    id: "greeneco-map",
-    title: "GreenEco Map",
-    status: "in_development",
-    badge: "Geliştiriliyor",
-    fundingLabel: "TÜBİTAK BİGG",
-    fundingBadgeColor: "bg-red-900/40 text-red-300 border-red-700/50",
-    tagline: "Kahve telvesi geri dönüşüm ekosistemi — IoT + Gamification",
-    description:
-      "ESP32 tabanlı akıllı geri dönüşüm kutuları, mobil uygulama ve B2B/B2C gelir modeli ile kahve telvesini döngüsel ekonomiye kazandıran sürdürülebilirlik platformu. Kullanıcılar atıklarını bırakır, puan kazanır; üreticiler hammadde temin eder.",
-    tags: ["IoT", "Sürdürülebilirlik", "ESP32", "Gamification", "TÜBİTAK BİGG"],
-    iconName: "Leaf",
-    gradient: "from-emerald-500/20 to-green-500/20",
-    borderColor: "border-emerald-500/30",
-    features: [
-      "Akıllı IoT kutu ağı (IP65, load cell, drainage valve)",
-      "Puan & ödül gamification sistemi",
-      "B2B hammadde tedarik modülü",
-      "Gerçek zamanlı doluluk & analitik dashboard",
-    ],
-    techStack: [
-      ".NET 8",
-      "Next.js 14",
-      "PostgreSQL",
-      "TimescaleDB",
-      "Redis",
-      "RabbitMQ",
-      "SignalR",
-      "Capacitor",
-    ],
-  },
-  {
-    id: "railmentor",
-    title: "RailMentor",
-    status: "in_development",
-    badge: "Geliştiriliyor",
-    fundingLabel: "Erasmus+ KA210-VET",
-    fundingBadgeColor: "bg-blue-900/40 text-blue-300 border-blue-700/50",
-    tagline: "Demiryolu sektörüne adım atacak gençler için dijital mentorlük platformu",
-    description:
-      "Gazi MTAL koordinatörlüğünde yürütülen Erasmus+ girişimi. 14–18 yaş arası öğrencileri sektör profesyonelleriyle buluşturan akıllı eşleştirme algoritması, gerçek zamanlı iletişim ve multimedya içerik kütüphanesiyle donatılmış mentorlük platformu.",
-    tags: ["Erasmus+", "EdTech", "Mentorlük", "Demiryolu", "KA210-VET"],
-    iconName: "Train",
-    gradient: "from-blue-500/20 to-indigo-500/20",
-    borderColor: "border-blue-500/30",
-    features: [
-      "Akıllı mentor-menti eşleştirme motoru (dezavantajlı grup önceliği)",
-      "SignalR tabanlı anlık mesajlaşma & bildirim sistemi",
-      "Görev atama, dijital geri bildirim & süreç takibi",
-      "Podcast, video & e-öğrenme multimedya kütüphanesi",
-      "Admin KPI dashboard & öğrenci ilerleme analitikleri",
-      "Türkçe / İngilizce çok dil desteği (next-intl)",
-    ],
-    techStack: [
-      ".NET 8",
-      "Next.js 14",
-      "PostgreSQL",
-      "RabbitMQ",
-      "Redis",
-      "SignalR",
-      "MinIO",
-      "Capacitor",
-    ],
-  },
-];
-
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await listProjects();
   return (
     <div className="flex flex-col">
 
@@ -203,12 +109,11 @@ export default function ProjectsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {projects.map((project) => {
-              const Icon =
-                project.iconName === "Store"
-                  ? Store
-                  : project.iconName === "Leaf"
-                  ? Leaf
-                  : Train;
+              const Icon = resolveIcon(project.icon);
+              const theme = resolveProjectTheme(project.colorTheme);
+              const tags = Array.isArray(project.tags) ? (project.tags as string[]) : [];
+              const features = Array.isArray(project.features) ? (project.features as string[]) : [];
+              const techStack = Array.isArray(project.techStack) ? (project.techStack as string[]) : null;
 
               return (
                 <div
@@ -216,8 +121,8 @@ export default function ProjectsPage() {
                   className={cn(
                     "bg-gradient-to-br border rounded-2xl p-8 flex flex-col gap-5",
                     "hover:border-opacity-60 transition-all duration-300",
-                    project.gradient,
-                    project.borderColor
+                    theme.cardGradient,
+                    theme.cardBorder
                   )}
                 >
                   {/* Header */}
@@ -232,17 +137,15 @@ export default function ProjectsPage() {
                       <span
                         className={cn(
                           "text-xs px-2.5 py-1 rounded-full font-semibold border",
-                          project.status === "coming_soon"
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                            : "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                          STATUS_BADGE_CLASS[project.status]
                         )}
                       >
-                        {project.badge}
+                        {STATUS_BADGE_LABEL[project.status]}
                       </span>
                       <span
                         className={cn(
                           "text-xs px-2.5 py-1 rounded-full font-semibold border",
-                          project.fundingBadgeColor
+                          theme.fundingBadge
                         )}
                       >
                         {project.fundingLabel}
@@ -258,8 +161,8 @@ export default function ProjectsPage() {
 
                   {/* Features */}
                   <ul className="flex flex-col gap-2">
-                    {project.features.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    {features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-slate-300">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-slate-400" />
                         {f}
                       </li>
@@ -267,9 +170,9 @@ export default function ProjectsPage() {
                   </ul>
 
                   {/* Tech Stack */}
-                  {project.techStack && (
+                  {techStack && (
                     <div className="flex flex-wrap gap-2 pt-1 border-t border-white/10">
-                      {project.techStack.map((t) => (
+                      {techStack.map((t) => (
                         <span
                           key={t}
                           className="text-xs font-mono px-2 py-1 rounded bg-slate-800/60 text-slate-400 border border-slate-700/50"
@@ -282,7 +185,7 @@ export default function ProjectsPage() {
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
+                    {tags.map((tag) => (
                       <Badge
                         key={tag}
                         className="bg-white/10 text-slate-300 border-white/20 text-xs"
