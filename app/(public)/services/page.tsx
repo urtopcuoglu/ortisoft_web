@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { listServices } from "@/modules/services/actions";
 import { resolveIcon } from "@/lib/icon-map";
 import { resolveServiceTheme } from "@/lib/color-theme";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 const processSteps = [
   { step: "01", icon: Search,    title: "Analiz",       desc: "İhtiyaçlarınızı, mevcut durumunuzu ve hedeflerinizi derinlemesine analiz ediyoruz. Paydaş görüşmeleri ve veri incelemesiyle gerçek problemi tanımlıyoruz." },
@@ -18,6 +20,10 @@ const processSteps = [
 ];
 
 export default async function ServicesPage() {
+  if (await isPageComingSoon("services")) {
+    return <ComingSoonPage pageName="Hizmetlerimiz" />;
+  }
+
   const services = await listServices();
 
   return (

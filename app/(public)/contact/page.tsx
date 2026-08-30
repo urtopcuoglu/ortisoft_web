@@ -1,28 +1,21 @@
-"use client";
-
-import { useState } from "react";
-import {
-  MapPin, Phone, Mail, Clock,
-  ArrowRight, Send, ChevronDown, ChevronUp, CheckCircle2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import ContactForm from "@/components/ContactForm";
+import FaqAccordion from "@/components/FaqAccordion";
+import { listServices } from "@/modules/services/actions";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
-interface FormData {
-  name: string; email: string; company: string; service: string; message: string;
-}
-
-const serviceOptions = [
-  "Proje Danışmanlığı", "Yazılım Danışmanlığı",
-  "Dijital Pazarlama Danışmanlığı", "Dijital Dönüşüm",
-  "SaaS Ürün Demo", "Diğer",
-];
+export const metadata = {
+  title: "İletişim | Ortisoft",
+  description: "Bir projeniz mi var? Sorunuz mu var? Hemen iletişime geçin.",
+};
 
 const contactInfo = [
-  { icon: MapPin, title: "Adres",           lines: ["Ankara, Türkiye"],           color: "text-blue-600",   bg: "bg-blue-50",   href: "https://maps.google.com/?q=Ankara+Turkiye" },
-  { icon: Phone,  title: "Telefon",          lines: ["+90 (551) 714 24 52", "+90 (543) 841 06 40"],                           color: "text-violet-600", bg: "bg-violet-50", href: "tel:+905517142452" },
-  { icon: Mail,   title: "E-posta",          lines: ["ortisofttech@gmail.com"],                                                color: "text-emerald-600",bg: "bg-emerald-50",href: "mailto:ortisofttech@gmail.com" },
+  { icon: MapPin, title: "Adres",   lines: ["Ankara, Türkiye"], color: "text-blue-600", bg: "bg-blue-50", href: "https://maps.google.com/?q=Ankara+Turkiye" },
+  { icon: Phone,  title: "Telefon", lines: ["+90 (551) 714 24 52", "+90 (543) 841 06 40"], color: "text-violet-600", bg: "bg-violet-50", href: "tel:+905517142452" },
+  { icon: Mail,   title: "E-posta", lines: ["ortisofttech@gmail.com"], color: "text-emerald-600", bg: "bg-emerald-50", href: "mailto:ortisofttech@gmail.com" },
 ];
 
 const faqs = [
@@ -34,25 +27,13 @@ const faqs = [
   { q: "Referans veya örnek çalışma görebilir miyim?", a: "Kesinlikle. Projeler sayfamızda portföyümüzü inceleyebilirsiniz. Gizlilik sözleşmesi çerçevesinde belirli müşteri projelerine ilişkin detaylı vaka analizleri de paylaşabiliyoruz." },
 ];
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState<FormData>({ name: "", email: "", company: "", service: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading,   setLoading]   = useState(false);
-  const [openFaq,   setOpenFaq]   = useState<number | null>(null);
+export default async function ContactPage() {
+  if (await isPageComingSoon("contact")) {
+    return <ComingSoonPage pageName="İletişim" />;
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setSubmitted(true);
-  };
-
-  const field = "w-full px-4 py-3.5 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-200";
+  const services = await listServices();
+  const serviceOptions = services.map((s) => s.title);
 
   return (
     <div className="flex flex-col">
@@ -83,84 +64,7 @@ export default function ContactPage() {
             {/* Form – 3/5 */}
             <div className="lg:col-span-3">
               <div className="bg-white rounded-2xl p-8 md:p-10 border border-slate-100 shadow-sm">
-                {submitted ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-5">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">Mesajınız Alındı!</h3>
-                    <p className="text-slate-500 text-sm mb-8">En geç 24 saat içinde size geri döneceğiz. Teşekkür ederiz.</p>
-                    <Button variant="outline" onClick={() => { setSubmitted(false); setFormData({ name: "", email: "", company: "", service: "", message: "" }); }}>
-                      Yeni Mesaj Gönder
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-1.5">Mesaj Gönderin</h2>
-                    <p className="text-slate-500 text-sm mb-8">Formu doldurun, en kısa sürede size dönelim.</p>
-
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Ad Soyad <span className="text-red-500">*</span>
-                          </label>
-                          <input type="text" name="name" required placeholder="Adınız Soyadınız"
-                            value={formData.name} onChange={handleChange} className={field} />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            E-posta <span className="text-red-500">*</span>
-                          </label>
-                          <input type="email" name="email" required placeholder="ornek@sirket.com"
-                            value={formData.email} onChange={handleChange} className={field} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">Şirket / Kurum</label>
-                        <input type="text" name="company" placeholder="Şirket adınız"
-                          value={formData.company} onChange={handleChange} className={field} />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">İlgilendiğiniz Hizmet</label>
-                        <select name="service" value={formData.service} onChange={handleChange}
-                          className={cn(field, "cursor-pointer")}>
-                          <option value="">Hizmet seçin (isteğe bağlı)</option>
-                          {serviceOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Mesajınız <span className="text-red-500">*</span>
-                        </label>
-                        <textarea name="message" required rows={5} placeholder="Projenizi veya ihtiyacınızı kısaca anlatın..."
-                          value={formData.message} onChange={handleChange}
-                          className={cn(field, "resize-none")} />
-                      </div>
-
-                      <Button type="submit" variant="gradient" size="lg" className="w-full" disabled={loading}>
-                        {loading ? (
-                          <span className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Gönderiliyor...
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            <Send className="w-4 h-4" />
-                            Mesaj Gönder
-                          </span>
-                        )}
-                      </Button>
-
-                      <p className="text-xs text-slate-400 text-center">
-                        Kişisel verileriniz KVKK kapsamında korunmaktadır.
-                      </p>
-                    </form>
-                  </>
-                )}
+                <ContactForm serviceOptions={serviceOptions} />
               </div>
             </div>
 
@@ -173,9 +77,9 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              {contactInfo.map((info, i) => (
+              {contactInfo.map((info) => (
                 <a
-                  key={i}
+                  key={info.title}
                   href={info.href}
                   target={info.href.startsWith("http") ? "_blank" : undefined}
                   rel={info.href.startsWith("http") ? "noopener noreferrer" : undefined}
@@ -225,30 +129,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-3">
-            {faqs.map((faq, i) => (
-              <div key={i} className={cn(
-                "rounded-xl overflow-hidden border transition-all duration-200",
-                openFaq === i ? "border-blue-200 shadow-sm" : "border-slate-200 hover:border-slate-300"
-              )}>
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between px-6 py-4.5 text-left bg-white hover:bg-slate-50 transition-colors"
-                >
-                  <span className="font-semibold text-slate-900 text-sm pr-6">{faq.q}</span>
-                  {openFaq === i
-                    ? <ChevronUp className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    : <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                  }
-                </button>
-                {openFaq === i && (
-                  <div className="px-6 pb-5 bg-white border-t border-slate-100">
-                    <p className="text-slate-600 text-sm leading-relaxed pt-3">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <FaqAccordion faqs={faqs} />
         </div>
       </section>
 

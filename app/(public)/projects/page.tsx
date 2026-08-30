@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { listProjects } from "@/modules/projects/actions";
 import { resolveIcon } from "@/lib/icon-map";
 import { resolveProjectTheme } from "@/lib/color-theme";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 const STATUS_BADGE_LABEL: Record<string, string> = {
   COMING_SOON: "Çok Yakında",
@@ -23,6 +25,10 @@ const STATUS_BADGE_CLASS: Record<string, string> = {
 };
 
 export default async function ProjectsPage() {
+  if (await isPageComingSoon("projects")) {
+    return <ComingSoonPage pageName="Projelerimiz" />;
+  }
+
   const projects = await listProjects();
   return (
     <div className="flex flex-col">

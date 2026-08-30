@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getCurrentUser } from "@/modules/shared/dal";
 import { logout } from "@/modules/auth/actions";
 
@@ -17,25 +18,37 @@ export default async function ProtectedAdminLayout({
           Ortisoft <span className="text-blue-600">Admin</span>
         </span>
         <nav className="flex flex-col gap-1 text-sm font-semibold text-slate-600">
-          <a href="/admin/dashboard" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          <Link href="/admin/dashboard" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Panel
-          </a>
-          <a href="/admin/about" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          </Link>
+          <Link href="/admin/about" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Hakkımızda
-          </a>
-          <a href="/admin/services" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          </Link>
+          <Link href="/admin/services" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Hizmetlerimiz
-          </a>
-          <a href="/admin/career" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          </Link>
+          <Link href="/admin/career" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Kariyer
-          </a>
-          <a href="/admin/references" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          </Link>
+          <Link href="/admin/career/cvs" className="rounded-lg px-3 py-2 pl-6 text-slate-500 hover:bg-slate-100 hover:text-slate-900">
+            ↳ Aday CV&apos;leri
+          </Link>
+          <Link href="/admin/references" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Referanslar
-          </a>
-          <a href="/admin/projects" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+          </Link>
+          <Link href="/admin/projects" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Projeler
-          </a>
-          {/* Faz 2 devamı: Mesajlar, Blog */}
+          </Link>
+          <Link href="/admin/messages" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Mesajlar
+          </Link>
+          <Link href="/admin/contracts" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Sözleşmeler
+          </Link>
+          <Link href="/admin/pages" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Sayfa Yönetimi
+          </Link>
+          {/* Faz 5: Blog */}
         </nav>
       </aside>
 

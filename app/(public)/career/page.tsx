@@ -4,6 +4,8 @@ import { MapPin, Briefcase, Building2, ArrowRight, CheckCircle2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listPublishedCareerPostings } from "@/modules/career/actions";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 export const metadata: Metadata = {
   title: "Kariyer | Ortisoft",
@@ -11,6 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function CareerPage() {
+  if (await isPageComingSoon("career")) {
+    return <ComingSoonPage pageName="Kariyer" />;
+  }
+
   const postings = await listPublishedCareerPostings();
 
   return (

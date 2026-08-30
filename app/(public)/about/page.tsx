@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { getAboutContent, listTeamMembers } from "@/modules/about/actions";
 import { listReferences } from "@/modules/references/actions";
 import { resolveTeamGradient } from "@/lib/color-theme";
+import { isPageComingSoon } from "@/modules/pages/actions";
+import ComingSoonPage from "@/components/ComingSoonPage";
 
 function initialsOf(name: string) {
   return name
@@ -62,6 +64,10 @@ const milestones = [
 ];
 
 export default async function AboutPage() {
+  if (await isPageComingSoon("about")) {
+    return <ComingSoonPage pageName="Hakkımızda" />;
+  }
+
   const [content, teamMembers, references] = await Promise.all([
     getAboutContent(),
     listTeamMembers(),

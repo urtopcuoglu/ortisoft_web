@@ -32,6 +32,7 @@ export default function Header() {
   const [mobileOpen,     setMobileOpen]     = useState(false);
   const [openDropdown,   setOpenDropdown]   = useState<string | null>(null);
   const [openMobileSub,  setOpenMobileSub]  = useState<string | null>(null);
+  const [prevPathname,   setPrevPathname]   = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -40,7 +41,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  // Rota değişince mobil menüyü kapat — render sırasında state güncellenir,
+  // ekstra bir efekt/re-render turu gerektiren useEffect yerine tercih edildi
+  // (bkz. React: "Adjusting state when a prop changes").
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setMobileOpen(false);
+  }
 
   return (
     <>
