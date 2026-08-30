@@ -5,11 +5,17 @@ import { cookies } from "next/headers";
 const SESSION_COOKIE_NAME = "ortisoft_session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 gün
 
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey) {
-  throw new Error("SESSION_SECRET ortam değişkeni tanımlı değil (.env.local)");
+// Tembel (lazy) okunuyor — modül import edilir edilmez SESSION_SECRET
+// kontrol edilseydi, ortam değişkeni tanımlı olmayan build ortamlarında
+// (ör. Vercel'e env var eklenmeden önceki build'ler) build'in kendisi
+// çökerdi. Artık hata sadece gerçekten bir oturum işlemi yapılırken atılır.
+function getEncodedKey() {
+  const secretKey = process.env.SESSION_SECRET;
+  if (!secretKey) {
+    throw new Error("SESSION_SECRET ortam değişkeni tanımlı değil (.env.local)");
+  }
+  return new TextEncoder().encode(secretKey);
 }
-const encodedKey = new TextEncoder().encode(secretKey);
 
 export type SessionPayload = {
   userId: string;
@@ -22,12 +28,12 @@ export async function encrypt(payload: SessionPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(new Date(payload.expiresAt))
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 export async function decrypt(session: string | undefined = "") {
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = await jwtVerify(session, getEncodedKey(), {
       algorithms: ["HS256"],
     });
     return payload as { userId: string; role: "ADMIN" | "EDITOR" };

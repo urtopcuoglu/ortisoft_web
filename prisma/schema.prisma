@@ -32,6 +32,7 @@ model User {
   updatedAt      DateTime        @updatedAt
   auditLogs      AuditLog[]
   messageReplies MessageReply[]
+  blogPosts      BlogPost[]
 
   @@map("users")
 }
@@ -266,4 +267,37 @@ model SitePage {
   updatedAt  DateTime @updatedAt
 
   @@map("site_pages")
+}
+
+enum BlogStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+}
+
+// SEO alanları (seoTitle/seoDescription/focusKeyword) admin editöründeki
+// SEO Analiz Aracı (SERP önizleme + karakter/anahtar kelime kontrolü) için —
+// bkz. plan dokümanı Bölüm 3.4. generateMetadata() ile gerçek <head>'e yansır.
+model BlogPost {
+  id             String     @id @default(cuid())
+  locale         String     @default("tr")
+  slug           String
+  title          String
+  excerpt        String
+  content        String
+  coverImage     String?
+  tags           Json
+  status         BlogStatus @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  focusKeyword   String?
+  authorId       String?
+  author         User?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, status])
+  @@map("blog_posts")
 }

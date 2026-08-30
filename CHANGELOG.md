@@ -2,6 +2,38 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.8.0] - 2026-08-30 — Blog Modülü + Vercel Build Düzeltmeleri
+
+### Blog Modülü
+- `BlogPost` modeli (başlık, slug, özet, içerik, kapak görseli, etiketler, durum:
+  Taslak/Planlandı/Yayında, SEO alanları)
+- Admin `/admin/blog`: Tiptap zengin metin editörü + **canlı SEO Analiz Aracı**
+  (Google SERP önizleme, karakter sayaçları, odak anahtar kelime kontrol listesi, skor)
+- Public `/blog`: yayındaki yazılar, `generateMetadata()` ile gerçek SEO `<head>`'i
+  (title/description/canonical/OG/Twitter) + `BlogPosting` JSON-LD
+- **Grid/Liste görünüm anahtarı**, **kategori (etiket) filtresi**, **sayfa başına 10 yazı sayfalama**
+- RSS feed (`/blog/rss.xml`)
+- Navbar ve Footer'a "Blog" linki eklendi
+
+### Sitemap/Robots — Native Next.js'e Geçiş
+- `next-sitemap` paketi ve statik `public/sitemap*.xml`/`robots.txt` kaldırıldı
+- `app/sitemap.ts` / `app/robots.ts`: artık yayındaki blog yazılarını ve
+  sözleşmeleri de dinamik olarak içeriyor
+
+### Vercel Build Düzeltmeleri (kanıtlanmış kök nedenler)
+- `lib/supabase-admin.ts`: Supabase istemcisi modül yüklenirken (eager) oluşturuluyordu —
+  `SUPABASE_URL` tanımsızken build'i çöktürüyordu. Tembel (lazy, Proxy tabanlı) hale getirildi.
+- `lib/session.ts`: `SESSION_SECRET` kontrolü modül seviyesindeydi, aynı şekilde build'i
+  çöktürüyordu (muhtemelen Faz 1'den beri asıl sebep). Tembel hale getirildi.
+- `next.config.ts`: dış görsel URL'lerine (`images.remotePatterns`) izin verilmemişti —
+  admin panelinden harici bir link girilseydi sayfa patlardı, düzeltildi.
+- Yerelde hem env değişkenleriyle hem olmadan `next build` çalıştırılarak doğrulandı.
+
+### Notlar
+- Vercel'de hâlâ eksik olan: `DATABASE_URL`, `SESSION_SECRET`, `SUPABASE_URL`,
+  `SUPABASE_SERVICE_ROLE_KEY` ortam değişkenlerinin dashboard'a eklenmesi (kullanıcı
+  tarafından yapılacak, kod tarafında yapılabilecek başka bir şey kalmadı).
+
 ## [0.7.0] - 2026-08-30 — Faz 2 Tamamlandı + Sözleşme & Sayfa Yönetimi
 
 ### Faz 2 (bölüm 5): Mesajlar Modülü

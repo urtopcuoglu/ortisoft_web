@@ -24,6 +24,7 @@ const navLinks: NavLink[] = [
       { href: "/career",     label: "Kariyer" },
     ],
   },
+  { href: "/blog",     label: "Blog" },
   { href: "/contact",  label: "İletişim" },
 ];
 

@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "12mb",
     },
   },
+  images: {
+    // Admin panelinden (ekip fotoğrafı, referans logosu, blog kapak görseli vb.)
+    // herhangi bir dış https görsel URL'si girilebiliyor — tek admin hesabı
+    // güvenilir kabul edildiği için host kısıtlaması yapılmıyor.
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
+  },
 };
 
 export default nextConfig;
