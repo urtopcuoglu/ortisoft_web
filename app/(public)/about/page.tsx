@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { getAboutContent, listTeamMembers } from "@/modules/about/actions";
+import { listReferences } from "@/modules/references/actions";
 import { resolveTeamGradient } from "@/lib/color-theme";
 
 function initialsOf(name: string) {
@@ -20,39 +21,6 @@ function initialsOf(name: string) {
     .join("")
     .toUpperCase();
 }
-
-const references = [
-  {
-    name: "Kasırga Bilgisayar",
-    description: "Bilgisayar donanım ve yazılım çözümleri",
-    logo: "/referances/kasirga.png",
-    url: "https://www.kasirgabilgisayar.com/",
-  },
-  {
-    name: "Railmentor",
-    description: "Eğitim ve kariyer koçluğu platformu",
-    logo: "/referances/railmentor.png",
-    url: "https://railmentor.com.tr",
-  },
-  {
-    name: "Eatwellz",
-    description: "Kişisel beslenme ve sağlık danışmanlığı",
-    logo: "/referances/eatwellz.png",
-    url: "https://eatwellz.com.tr",
-  },
-  {
-    name: "Gatem",
-    description: "Dijital çözümler ve teknoloji hizmetleri",
-    logo: "/referances/gatem.png",
-    url: "#",
-  },
-  {
-    name: "Sosyolojik Müdahale",
-    description: "Sosyal araştırma ve danışmanlık hizmetleri",
-    logo: "/referances/sosyolojikmüdahele.png",
-    url: "https://sosyolojikmudahale.com/",
-  },
-];
 
 const partners = [
   { name: "Hepsiburada", logo: "/brand-logo/hepsiburada.png" },
@@ -94,9 +62,10 @@ const milestones = [
 ];
 
 export default async function AboutPage() {
-  const [content, teamMembers] = await Promise.all([
+  const [content, teamMembers, references] = await Promise.all([
     getAboutContent(),
     listTeamMembers(),
+    listReferences(),
   ]);
 
   return (
@@ -280,30 +249,35 @@ export default async function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {references.map((ref) => (
-              <a
-                key={ref.name}
-                href={ref.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white rounded-2xl p-8 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
-              >
-                <div className="w-36 h-36 rounded-2xl bg-slate-100 flex items-center justify-center mb-6 group-hover:bg-blue-50 transition-colors duration-300">
-                  {ref.logo ? (
-                    <Image src={ref.logo} alt={ref.name} width={112} height={112} className="object-contain" />
-                  ) : (
-                    <Building2 className="w-12 h-12 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+            {references.map((ref) => {
+              const CardTag = ref.projectLink ? "a" : "div";
+              return (
+                <CardTag
+                  key={ref.id}
+                  {...(ref.projectLink
+                    ? { href: ref.projectLink, target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="bg-white rounded-2xl p-8 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
+                >
+                  <div className="w-36 h-36 rounded-2xl bg-slate-100 flex items-center justify-center mb-6 group-hover:bg-blue-50 transition-colors duration-300">
+                    {ref.logoUrl ? (
+                      <Image src={ref.logoUrl} alt={ref.clientName} width={112} height={112} className="object-contain" />
+                    ) : (
+                      <Building2 className="w-12 h-12 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
+                    )}
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                    {ref.clientName}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mb-4">{ref.description}</p>
+                  {ref.projectLink && (
+                    <span className="text-blue-600 text-xs font-semibold flex items-center gap-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Siteyi Ziyaret Et <ExternalLink className="w-3 h-3" />
+                    </span>
                   )}
-                </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                  {ref.name}
-                </h3>
-                <p className="text-slate-500 text-sm leading-relaxed mb-4">{ref.description}</p>
-                <span className="text-blue-600 text-xs font-semibold flex items-center gap-1 mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Siteyi Ziyaret Et <ExternalLink className="w-3 h-3" />
-                </span>
-              </a>
-            ))}
+                </CardTag>
+              );
+            })}
           </div>
         </div>
       </section>

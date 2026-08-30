@@ -2,6 +2,21 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.5.0] - 2026-08-30 — Faz 2 (bölüm 3): Referanslar Modülü
+
+### Eklenenler
+- `Reference` Prisma modeli (clientName, description, logoUrl, projectLink, sortOrder)
+- `modules/references/`: Zod şeması + CRUD Server Action'lar, AuditLog
+- Admin UI: `/admin/references` (liste), `/admin/references/new`, `/admin/references/[id]/edit`
+- **Karar:** `/references` "çok yakında" bekleme sayfasından gerçek bir listeye çevrildi
+  (kullanıcı ile netleşti). Hem `/references` hem `/about` sayfasının referans bölümü
+  artık aynı `Reference` tablosunu okuyor — tek veri kaynağı, tekrar yok.
+- Mevcut 5 referans (Kasırga, Railmentor, Eatwellz, Gatem, Sosyolojik Müdahale)
+  `prisma/seed.ts` ile birebir DB'ye taşındı.
+
+### Notlar
+- Şema doğrulama, DB round-trip ve admin/public sayfa erişimi test edildi.
+
 ## [0.4.0] - 2026-08-30 — Faz 2 (bölüm 2): Kariyer Modülü
 
 ### Eklenenler
