@@ -29,7 +29,10 @@ export default async function ProtectedAdminLayout({
           <a href="/admin/career" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
             Kariyer
           </a>
-          {/* Faz 2 devamı: Referanslar, Projeler, Mesajlar, Blog */}
+          <a href="/admin/references" className="rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-900">
+            Referanslar
+          </a>
+          {/* Faz 2 devamı: Projeler, Mesajlar, Blog */}
         </nav>
       </aside>
 

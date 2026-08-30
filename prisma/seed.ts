@@ -36,6 +36,7 @@ async function main() {
   await seedAboutContent();
   await seedTeamMembers();
   await seedServices();
+  await seedReferences();
 }
 
 const LOCALE = "tr";
@@ -178,6 +179,52 @@ async function seedServices() {
     ],
   });
   console.log("✔ Service seed edildi (10 kayıt)");
+}
+
+async function seedReferences() {
+  const count = await prisma.reference.count({ where: { locale: LOCALE } });
+  if (count > 0) return;
+
+  await prisma.reference.createMany({
+    data: [
+      {
+        locale: LOCALE, sortOrder: 0,
+        clientName: "Kasırga Bilgisayar",
+        description: "Bilgisayar donanım ve yazılım çözümleri",
+        logoUrl: "/referances/kasirga.png",
+        projectLink: "https://www.kasirgabilgisayar.com/",
+      },
+      {
+        locale: LOCALE, sortOrder: 1,
+        clientName: "Railmentor",
+        description: "Eğitim ve kariyer koçluğu platformu",
+        logoUrl: "/referances/railmentor.png",
+        projectLink: "https://railmentor.com.tr",
+      },
+      {
+        locale: LOCALE, sortOrder: 2,
+        clientName: "Eatwellz",
+        description: "Kişisel beslenme ve sağlık danışmanlığı",
+        logoUrl: "/referances/eatwellz.png",
+        projectLink: "https://eatwellz.com.tr",
+      },
+      {
+        locale: LOCALE, sortOrder: 3,
+        clientName: "Gatem",
+        description: "Dijital çözümler ve teknoloji hizmetleri",
+        logoUrl: "/referances/gatem.png",
+        projectLink: null,
+      },
+      {
+        locale: LOCALE, sortOrder: 4,
+        clientName: "Sosyolojik Müdahale",
+        description: "Sosyal araştırma ve danışmanlık hizmetleri",
+        logoUrl: "/referances/sosyolojikmüdahele.png",
+        projectLink: "https://sosyolojikmudahale.com/",
+      },
+    ],
+  });
+  console.log("✔ Reference seed edildi (5 kayıt)");
 }
 
 main()
