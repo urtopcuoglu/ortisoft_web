@@ -19,7 +19,7 @@ export default async function EditServicePage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Hizmeti Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Hizmeti Düzenle</h1>
       <ServiceForm action={updateService.bind(null, id)} service={service} />
     </div>
   );

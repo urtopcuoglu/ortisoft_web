@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewCareerPostingPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Kariyer İlanı</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Kariyer İlanı</h1>
       <CareerPostingForm action={createCareerPosting} submitLabel="Oluştur" />
     </div>
   );

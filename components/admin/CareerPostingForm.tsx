@@ -5,7 +5,7 @@ import type { CareerPostingFormState } from "@/modules/career/schema";
 import type { CareerPosting } from "@/lib/generated/prisma/client";
 
 const inputClass =
-  "w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+  "w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20";
 
 type Action = (
   state: CareerPostingFormState,
@@ -30,13 +30,13 @@ export default function CareerPostingForm({
     <form action={formAction} className="flex max-w-xl flex-col gap-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">İlan Başlığı</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">İlan Başlığı</label>
           <input name="title" defaultValue={posting?.title} className={inputClass} required />
           {state?.errors?.title && <p className="mt-1 text-xs text-red-600">{state.errors.title[0]}</p>}
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-            Slug <span className="font-normal text-slate-400">(URL için, benzersiz)</span>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+            Slug <span className="font-normal text-slate-400 dark:text-slate-500">(URL için, benzersiz)</span>
           </label>
           <input name="slug" defaultValue={posting?.slug} className={inputClass} required />
           {state?.errors?.slug && <p className="mt-1 text-xs text-red-600">{state.errors.slug[0]}</p>}
@@ -45,7 +45,7 @@ export default function CareerPostingForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Konum</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Konum</label>
           <input
             name="location"
             defaultValue={posting?.location}
@@ -56,7 +56,7 @@ export default function CareerPostingForm({
           {state?.errors?.location && <p className="mt-1 text-xs text-red-600">{state.errors.location[0]}</p>}
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Çalışma Şekli</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Çalışma Şekli</label>
           <input
             name="employmentType"
             defaultValue={posting?.employmentType}
@@ -69,14 +69,14 @@ export default function CareerPostingForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">Açıklama</label>
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Açıklama</label>
         <textarea name="description" rows={3} defaultValue={posting?.description} className={inputClass} />
         {state?.errors?.description && <p className="mt-1 text-xs text-red-600">{state.errors.description[0]}</p>}
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
-          Gereksinimler <span className="font-normal text-slate-400">(her satıra bir tane)</span>
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
+          Gereksinimler <span className="font-normal text-slate-400 dark:text-slate-500">(her satıra bir tane)</span>
         </label>
         <textarea name="requirements" rows={5} defaultValue={requirementsText} className={inputClass} />
         {state?.errors?.requirements && <p className="mt-1 text-xs text-red-600">{state.errors.requirements[0]}</p>}
@@ -84,7 +84,7 @@ export default function CareerPostingForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Başvuru E-postası</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Başvuru E-postası</label>
           <input
             name="applyEmail"
             type="email"
@@ -95,7 +95,7 @@ export default function CareerPostingForm({
           {state?.errors?.applyEmail && <p className="mt-1 text-xs text-red-600">{state.errors.applyEmail[0]}</p>}
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-700">Durum</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">Durum</label>
           <select name="status" defaultValue={posting?.status ?? "DRAFT"} className={inputClass}>
             <option value="DRAFT">Taslak</option>
             <option value="PUBLISHED">Yayında</option>
@@ -105,7 +105,7 @@ export default function CareerPostingForm({
       </div>
 
       {state?.success && (
-        <p className="rounded-lg bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">Kaydedildi.</p>
+        <p className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-700 dark:text-emerald-400">Kaydedildi.</p>
       )}
 
       <button

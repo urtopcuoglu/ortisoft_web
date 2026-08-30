@@ -19,7 +19,7 @@ export default async function EditCareerPostingPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">İlanı Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">İlanı Düzenle</h1>
       <CareerPostingForm action={updateCareerPosting.bind(null, id)} posting={posting} />
     </div>
   );

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewReferencePage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Referans</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Referans</h1>
       <ReferenceForm action={createReference} submitLabel="Oluştur" />
     </div>
   );

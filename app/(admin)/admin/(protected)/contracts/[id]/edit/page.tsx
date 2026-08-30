@@ -19,7 +19,7 @@ export default async function EditContractPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Sözleşmeyi Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Sözleşmeyi Düzenle</h1>
       <ContractForm action={updateContract.bind(null, id)} contract={contract} />
     </div>
   );

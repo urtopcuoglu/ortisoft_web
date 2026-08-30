@@ -6,22 +6,23 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { listContracts } from "@/modules/contracts/actions";
+import { getT } from "@/lib/i18n/server";
 
 const footerLinks = {
   services: [
-    { label: "Proje Danışmanlığı",    href: "/services#project" },
-    { label: "Yazılım Danışmanlığı",  href: "/services#software" },
-    { label: "Dijital Pazarlama",     href: "/services#marketing" },
-    { label: "Dijital Dönüşüm",       href: "/services#digital" },
+    { labelKey: "footer.serviceConsulting", href: "/services#project" },
+    { labelKey: "footer.serviceSoftware",   href: "/services#software" },
+    { labelKey: "footer.serviceMarketing",  href: "/services#marketing" },
+    { labelKey: "footer.serviceDigital",    href: "/services#digital" },
   ],
   company: [
-    { label: "Hakkımızda",     href: "/about" },
-    { label: "Referanslarımız", href: "/references", child: true },
-    { label: "Ürünlerimiz",    href: "/products" },
-    { label: "Projelerimiz",   href: "/projects" },
-    { label: "Kariyer",        href: "/career" },
-    { label: "Blog",           href: "/blog" },
-    { label: "İletişim",       href: "/contact" },
+    { labelKey: "nav.about",       href: "/about" },
+    { labelKey: "nav.references",  href: "/references", child: true },
+    { labelKey: "nav.products",    href: "/products" },
+    { labelKey: "nav.projects",    href: "/projects" },
+    { labelKey: "nav.career",      href: "/career" },
+    { labelKey: "nav.blog",        href: "/blog" },
+    { labelKey: "nav.contact",     href: "/contact" },
   ],
 };
 
@@ -39,7 +40,7 @@ const contactItems = [
 ];
 
 export default async function Footer() {
-  const contracts = await listContracts();
+  const [contracts, t] = await Promise.all([listContracts(), getT()]);
 
   return (
     <footer className="bg-slate-950 text-white">
@@ -56,17 +57,17 @@ export default async function Footer() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="text-center lg:text-left">
               <h3 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-3">
-                Projenizi hayata geçirelim
+                {t("footer.ctaTitle")}
               </h3>
               <p className="text-blue-100 text-base font-light max-w-md leading-relaxed">
-                Danışmanlık görüşmesi için bugün bize ulaşın — 24 saat içinde geri dönüyoruz.
+                {t("footer.ctaSubtitle")}
               </p>
             </div>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2.5 bg-white text-blue-700 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl whitespace-nowrap text-base"
             >
-              Hemen Başlayalım
+              {t("footer.ctaButton")}
               <ArrowUpRight size={16} />
             </Link>
           </div>
@@ -94,8 +95,7 @@ export default async function Footer() {
             </Link>
 
             <p className="text-slate-400 text-sm leading-relaxed font-light mb-8 max-w-xs">
-              Dijital dönüşüm süreçlerinde işletmelere stratejik danışmanlık,
-              yazılım mimarlığı ve büyüme odaklı çözümler sunuyoruz.
+              {t("footer.tagline")}
             </p>
 
             <div className="flex gap-2.5">
@@ -114,16 +114,16 @@ export default async function Footer() {
 
           {/* Services col – 2 of 12 */}
           <div className="lg:col-span-2">
-            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">Hizmetler</h4>
+            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">{t("footer.servicesTitle")}</h4>
             <ul className="space-y-4">
               {footerLinks.services.map((link) => (
-                <li key={link.label}>
+                <li key={link.labelKey}>
                   <Link
                     href={link.href}
                     className="text-sm text-slate-400 hover:text-blue-400 transition-colors duration-200 font-medium flex items-center gap-2 group"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-blue-400 transition-colors duration-200 flex-shrink-0" />
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -132,10 +132,10 @@ export default async function Footer() {
 
           {/* Company col – 2 of 12 */}
           <div className="lg:col-span-2">
-            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">Şirket</h4>
+            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">{t("footer.companyTitle")}</h4>
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
-                <li key={link.label} className={link.child ? "pl-4" : undefined}>
+                <li key={link.labelKey} className={link.child ? "pl-4" : undefined}>
                   <Link
                     href={link.href}
                     className={cn(
@@ -147,7 +147,7 @@ export default async function Footer() {
                       "rounded-full bg-slate-700 group-hover:bg-blue-400 transition-colors duration-200 flex-shrink-0",
                       link.child ? "w-1 h-1" : "w-1.5 h-1.5"
                     )} />
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -156,7 +156,7 @@ export default async function Footer() {
 
           {/* Contact col – 4 of 12 */}
           <div className="lg:col-span-4">
-            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">İletişim</h4>
+            <h4 className="font-bold text-sm text-white mb-7 tracking-wide">{t("footer.contactTitle")}</h4>
             <div className="space-y-3.5">
               {contactItems.map(({ icon: Icon, label, href }, i) => (
                 <a
@@ -181,7 +181,7 @@ export default async function Footer() {
         {/* ── Bottom Bar ── */}
         <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-6">
           <p className="text-slate-500 text-xs font-light">
-            © {new Date().getFullYear()} Ortisoft. Tüm hakları saklıdır.
+            © {new Date().getFullYear()} Ortisoft. {t("footer.rightsReserved")}
           </p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
             {contracts.map((contract) => (

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewTeamMemberPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Ekip Üyesi</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Ekip Üyesi</h1>
       <TeamMemberForm action={createTeamMember} submitLabel="Oluştur" />
     </div>
   );

@@ -20,7 +20,7 @@ export default function DeleteForm({
     >
       <button
         type="submit"
-        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+        className="rounded-lg border border-red-200 dark:border-red-900 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
       >
         {label}
       </button>

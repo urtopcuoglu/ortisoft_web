@@ -19,7 +19,7 @@ export default async function EditBlogPostPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yazıyı Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yazıyı Düzenle</h1>
       <BlogPostForm action={updatePost.bind(null, id)} post={post} />
     </div>
   );

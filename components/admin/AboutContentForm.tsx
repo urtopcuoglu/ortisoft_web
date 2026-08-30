@@ -5,7 +5,7 @@ import { updateAboutContent } from "@/modules/about/actions";
 import type { AboutContent } from "@/lib/generated/prisma/client";
 
 const inputClass =
-  "w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
+  "w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-500/20";
 
 export default function AboutContentForm({
   content,
@@ -20,7 +20,7 @@ export default function AboutContentForm({
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-5">
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
           Hero Başlığı
         </label>
         <input
@@ -34,7 +34,7 @@ export default function AboutContentForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
           Hero Alt Başlığı
         </label>
         <textarea
@@ -49,7 +49,7 @@ export default function AboutContentForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
           Hakkımızda Yazısı
         </label>
         <textarea
@@ -64,7 +64,7 @@ export default function AboutContentForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
           Misyon
         </label>
         <textarea
@@ -79,7 +79,7 @@ export default function AboutContentForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300">
           Vizyon
         </label>
         <textarea
@@ -94,7 +94,7 @@ export default function AboutContentForm({
       </div>
 
       {state?.success && (
-        <p className="rounded-lg bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
+        <p className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-700 dark:text-emerald-400">
           {state.message ?? "Kaydedildi."}
         </p>
       )}

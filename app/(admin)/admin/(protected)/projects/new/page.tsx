@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewProjectPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Proje</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Proje</h1>
       <ProjectForm action={createProject} submitLabel="Oluştur" />
     </div>
   );

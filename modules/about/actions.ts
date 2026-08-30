@@ -108,6 +108,11 @@ export async function updateTeamMember(
 ): Promise<TeamMemberFormState> {
   const session = await verifySession();
 
+  const existing = await prisma.teamMember.findUnique({ where: { id } });
+  if (!existing) {
+    return { message: "Ekip üyesi bulunamadı." };
+  }
+
   const validated = TeamMemberSchema.safeParse({
     name: formData.get("name"),
     role: formData.get("role"),
@@ -123,7 +128,21 @@ export async function updateTeamMember(
     return { errors: validated.error.flatten().fieldErrors };
   }
 
-  await prisma.teamMember.update({ where: { id }, data: validated.data });
+  const data = { ...validated.data };
+
+  // "Aynı data" ilkesi: bir kullanıcı hesabına bağlı ekip üyesinin isim/unvanı
+  // formdan ne gönderilirse gönderilsin, Kullanıcılar panelindeki Ad Soyad/Görev
+  // ile geçersiz kılınır — tek doğru kaynak Kullanıcılar paneli olur
+  // (bkz. modules/users/actions.ts#updateUser, ters yönde senkronizasyon orada).
+  if (existing.linkedUserId) {
+    const linkedUser = await prisma.user.findUnique({ where: { id: existing.linkedUserId } });
+    if (linkedUser) {
+      data.name = linkedUser.name;
+      data.role = linkedUser.title?.trim() || "Ekip Üyesi";
+    }
+  }
+
+  await prisma.teamMember.update({ where: { id }, data });
 
   await logAudit({
     actorId: session.userId,

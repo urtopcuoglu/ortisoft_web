@@ -30,7 +30,7 @@ export default function MessageStatusSelect({
           updateMessageStatus(messageId, next);
         });
       }}
-      className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-blue-500"
+      className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 outline-none focus:border-blue-500"
     >
       {Object.entries(STATUS_LABEL).map(([value, label]) => (
         <option key={value} value={value}>{label}</option>

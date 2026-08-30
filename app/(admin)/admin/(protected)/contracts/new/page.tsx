@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewContractPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Sözleşme</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Sözleşme</h1>
       <ContractForm action={createContract} submitLabel="Oluştur" />
     </div>
   );

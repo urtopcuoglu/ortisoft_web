@@ -2,6 +2,47 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.9.0] - 2026-08-30 — Çoklu Dil, Kullanıcı Yönetimi, Panel Genişletmeleri
+
+### Çoklu Dil (TR/EN) + Açık/Koyu Tema
+- Çerez tabanlı hafif i18n sistemi (`lib/i18n`), `LocaleProvider`/`LocaleSwitcher`;
+  Header/Footer/Sidebar tamamen çevirili. Kapsam bilinçli olarak paylaşılan
+  kabukla sınırlı — tekil sayfa içerikleri ayrı bir işte ele alınabilir.
+- `next-themes` ile açık/koyu tema, `ThemeToggle`; **panelin tamamı** (23 sayfa +
+  13 form/bileşen, Mesajlar dahil) koyu temaya uyarlandı.
+
+### Sertleştirme
+- `/admin/settings`: şifre değiştirme; `/admin/audit-log`: salt-okunur denetim
+  kaydı; giriş formunda e-posta bazlı kaba kuvvet koruması (5 deneme/15 dk).
+
+### Resend E-posta Entegrasyonu
+- Mesaj yanıtları ve yeni kullanıcı giriş bilgileri artık `RESEND_API_KEY`
+  tanımlıysa otomatik e-postayla gönderiliyor; tanımsızsa sessizce mailto:
+  yedeğine düşüyor (build'i asla çökertmez).
+
+### Kullanıcı Yönetimi (`/admin/users`, sadece Yönetici rolü)
+- Ad soyad, görev, departman, kişisel/şirket telefonu, rol (Yönetici/Editör),
+  şifre; "Ekibe ekle" ile Hakkımızda > Ekip Üyeleri'ne otomatik bağlanma.
+- Görev/Ad Soyad Kullanıcılar panelinden yönetilir, bağlı ekip üyesi kaydına
+  tek yönlü senkronize edilir (Hakkımızda formunda o alanlar salt-okunur).
+- Son admin silinemez/editöre düşürülemez; kendi hesabını silemezsin.
+
+### Panel Dashboard
+- Metrik kartları (mesaj/talep/kullanıcı/blog/ekip sayıları), talep türü ve
+  mesaj durumu dağılım grafikleri, son eklenen yazı/sayfa/kullanıcı listeleri,
+  güncel USD/TRY kuru (Frankfurter/ECB, saatlik yenilenir).
+- Üst çubukta bildirim çanı — mevcut denetim kaydını kaynak olarak kullanır,
+  ayrı bir tablo gerektirmez.
+
+### Hizmetler — Dinamik Alt Hizmetler + Fiyatlandırma
+- `Service.features` (düz metin listesi) kaldırıldı, yerine `subServices`
+  geldi: sınırsız sayıda eklenip çıkarılabilen, her biri ad+açıklama+fiyat
+  taşıyan alt hizmet listesi (admin formunda dinamik tekrarlayıcı ile).
+- Ad+açıklama public `/services` sayfasında gösterilir, fiyat SADECE admin
+  panelinde görünür. Her hizmet kartının altına "Bilgi Talep Et" butonu
+  eklendi (`/contact`'a yönlendirir).
+- Mesajlar listesine durum/talep türüne göre filtre eklendi.
+
 ## [0.8.0] - 2026-08-30 — Blog Modülü + Vercel Build Düzeltmeleri
 
 ### Blog Modülü

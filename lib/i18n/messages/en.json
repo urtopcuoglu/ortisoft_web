@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "products": "Products",
+    "projects": "Projects",
+    "about": "About Us",
+    "references": "References",
+    "career": "Careers",
+    "blog": "Blog",
+    "contact": "Contact",
+    "cta": "Request a Call"
+  },
+  "footer": {
+    "tagline": "We provide strategic consulting, software architecture, and growth-focused solutions for businesses on their digital transformation journey.",
+    "servicesTitle": "Services",
+    "serviceConsulting": "Project Consulting",
+    "serviceSoftware": "Software Consulting",
+    "serviceMarketing": "Digital Marketing",
+    "serviceDigital": "Digital Transformation",
+    "companyTitle": "Company",
+    "contactTitle": "Contact",
+    "ctaTitle": "Let's bring your project to life",
+    "ctaSubtitle": "Reach out today for a consultation — we get back to you within 24 hours.",
+    "ctaButton": "Get Started",
+    "rightsReserved": "All rights reserved."
+  },
+  "common": {
+    "readMore": "Read More",
+    "sendMessage": "Send Message",
+    "sending": "Sending...",
+    "loading": "Loading…",
+    "previous": "Previous",
+    "next": "Next",
+    "all": "All",
+    "contactUs": "Contact Us"
+  }
+}

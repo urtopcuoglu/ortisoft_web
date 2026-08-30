@@ -26,12 +26,12 @@ export default function ComingSoonToggle({
       }}
       className={cn(
         "relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 disabled:opacity-60",
-        initialValue ? "bg-amber-500" : "bg-slate-200"
+        initialValue ? "bg-amber-500" : "bg-slate-200 dark:bg-slate-700"
       )}
     >
       <span
         className={cn(
-          "inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200",
+          "inline-block h-4 w-4 transform rounded-full bg-white dark:bg-slate-900 shadow transition-transform duration-200",
           initialValue ? "translate-x-6" : "translate-x-1"
         )}
       />

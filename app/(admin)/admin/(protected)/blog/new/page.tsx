@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function NewBlogPostPage() {
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Yeni Blog Yazısı</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Yeni Blog Yazısı</h1>
       <BlogPostForm action={createPost} submitLabel="Oluştur" />
     </div>
   );

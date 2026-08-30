@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "home": "Anasayfa",
+    "services": "Hizmetlerimiz",
+    "products": "Ürünlerimiz",
+    "projects": "Projelerimiz",
+    "about": "Hakkımızda",
+    "references": "Referanslarımız",
+    "career": "Kariyer",
+    "blog": "Blog",
+    "contact": "İletişim",
+    "cta": "Görüşme Talep Et"
+  },
+  "footer": {
+    "tagline": "Dijital dönüşüm süreçlerinde işletmelere stratejik danışmanlık, yazılım mimarlığı ve büyüme odaklı çözümler sunuyoruz.",
+    "servicesTitle": "Hizmetler",
+    "serviceConsulting": "Proje Danışmanlığı",
+    "serviceSoftware": "Yazılım Danışmanlığı",
+    "serviceMarketing": "Dijital Pazarlama",
+    "serviceDigital": "Dijital Dönüşüm",
+    "companyTitle": "Şirket",
+    "contactTitle": "İletişim",
+    "ctaTitle": "Projenizi hayata geçirelim",
+    "ctaSubtitle": "Danışmanlık görüşmesi için bugün bize ulaşın — 24 saat içinde geri dönüyoruz.",
+    "ctaButton": "Hemen Başlayalım",
+    "rightsReserved": "Tüm hakları saklıdır."
+  },
+  "common": {
+    "readMore": "Devamını Oku",
+    "sendMessage": "Mesaj Gönder",
+    "sending": "Gönderiliyor...",
+    "loading": "Yükleniyor…",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "all": "Tümü",
+    "contactUs": "Bize Ulaşın"
+  }
+}

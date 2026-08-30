@@ -19,7 +19,7 @@ export default async function EditProjectPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-xl font-extrabold text-slate-900">Projeyi Düzenle</h1>
+      <h1 className="mb-6 text-xl font-extrabold text-slate-900 dark:text-white">Projeyi Düzenle</h1>
       <ProjectForm action={updateProject.bind(null, id)} project={project} />
     </div>
   );
