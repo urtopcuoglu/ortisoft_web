@@ -2,6 +2,27 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.3.0] - 2026-08-30 — Faz 2 (bölüm 1): Hakkımızda + Hizmetler İçerik Modülleri
+
+### Eklenenler
+- `AboutContent` (hero/hakkımızda yazısı/misyon/vizyon, tekil kayıt), `TeamMember`,
+  `Service` Prisma modelleri — hepsinde `locale` alanı Faz 4 için şimdiden hazır
+- `lib/icon-map.tsx`, `lib/color-theme.ts`: admin panelinden ham Tailwind class'ı/kod
+  girilmesini önleyen, sabit ikon ve renk teması eşlemeleri
+- `modules/about/`, `modules/services/`: Zod şemaları + Server Action'lar (create/
+  update/delete), her mutasyon `modules/shared/audit.ts` ile AuditLog'a yazılıyor
+- Admin UI: `/admin/about` (sayfa metinleri + ekip üyesi CRUD), `/admin/services`
+  (hizmet kartı CRUD) — ortak `DeleteForm`, `AboutContentForm`, `TeamMemberForm`,
+  `ServiceForm` bileşenleri
+- Public `/about` ve `/services` sayfaları artık veritabanından okuyor (önceden
+  sabit kodluydu); mevcut içerik `prisma/seed.ts` ile birebir DB'ye taşındı
+- Kapsam dışı bırakılanlar (bilinçli, kullanıcıyla netleşti): kilometre taşları
+  (timeline), değerler kartları, referans/ortak logoları — statik kod olarak kaldı
+
+### Notlar
+- Zod şeması + Prisma Json alan round-trip'i ve DB yazma/okuma doğrudan test edildi;
+  admin formlarının tarayıcıda tıklanarak son doğrulaması kullanıcıya bırakıldı.
+
 ## [0.2.0] - 2026-08-30 — Faz 1: Kimlik Doğrulama ve Admin Kabuğu
 
 ### Eklenenler

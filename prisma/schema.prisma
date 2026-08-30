@@ -48,3 +48,63 @@ model AuditLog {
   @@index([entityType, entityId])
   @@map("audit_logs")
 }
+
+// ─────────────────────────────────────────────────────────
+// Faz 2 — İçerik modülleri: Hakkımızda + Hizmetler
+// `locale` alanı şimdiden eklendi (Faz 4 çoklu dil desteği için), varsayılan "tr".
+// `icon`/`colorTheme` alanları serbest metin DEĞİL — kod tarafında sabit bir
+// eşleme (lib/icon-map.tsx, lib/color-theme.ts) üzerinden render edilir; admin
+// panelinden ham Tailwind class'ı/keyfi kod yazılmasını engellemek içindir.
+// ─────────────────────────────────────────────────────────
+
+// Tek satırlık (singleton) sayfa metinleri — her zaman upsert edilir.
+model AboutContent {
+  id           String   @id @default(cuid())
+  locale       String   @default("tr")
+  heroTitle    String   @default("Hakkımızda")
+  heroSubtitle String
+  aboutText    String
+  missionText  String
+  visionText   String
+  updatedAt    DateTime @updatedAt
+
+  @@unique([locale])
+  @@map("about_content")
+}
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  locale      String   @default("tr")
+  name        String
+  role        String
+  bio         String
+  photoUrl    String?
+  colorTheme  String   @default("blue")
+  linkedinUrl String?
+  specialties Json
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([locale, sortOrder])
+  @@map("team_members")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  locale      String   @default("tr")
+  slug        String
+  icon        String
+  tag         String
+  title       String
+  description String
+  features    Json
+  colorTheme  String   @default("blue")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, sortOrder])
+  @@map("services")
+}

@@ -8,36 +8,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { getAboutContent, listTeamMembers } from "@/modules/about/actions";
+import { resolveTeamGradient } from "@/lib/color-theme";
 
-const teamMembers = [
-  {
-    name: "Umutcan Recep TOPCUOĞLU",
-    role: "Kurucu Ortak | Yazılım Geliştiricisi",
-    bio: "Detaylar yakında eklenecek.",
-    initials: "UT",
-    color: "from-blue-500 to-blue-600",
-    linkedin: "#",
-    specialties: ["Yazılım Geliştirme", "Teknik Mimari", "Proje Danışmanlığı"],
-  },
-  {
-    name: "Ezgi TOSUN",
-    role: "Kurucu Ortak | Proje Yöneticisi",
-    bio: "Detaylar yakında eklenecek.",
-    initials: "ET",
-    color: "from-violet-500 to-violet-600",
-    linkedin: "#",
-    specialties: ["Proje Yönetimi", "Müşteri İlişkileri", "Operasyon"],
-  },
-  {
-    name: "Özlem Güneş AVCI",
-    role: "Dijital Pazarlama ve Marka Yöneticisi",
-    bio: "Detaylar yakında eklenecek.",
-    initials: "ÖA",
-    color: "from-emerald-500 to-emerald-600",
-    linkedin: "#",
-    specialties: ["Dijital Pazarlama", "Marka Yönetimi", "İçerik Stratejisi"],
-  },
-];
+function initialsOf(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+}
 
 const references = [
   {
@@ -111,7 +93,12 @@ const milestones = [
   { year: "2025", title: "Yeni Hedefler",            desc: "Uluslararası pazara açılım ve kurumsal müşteri segmentine odaklanma stratejimizi hayata geçiriyoruz." },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [content, teamMembers] = await Promise.all([
+    getAboutContent(),
+    listTeamMembers(),
+  ]);
+
   return (
     <div className="flex flex-col">
 
@@ -124,13 +111,25 @@ export default function AboutPage() {
         <div className="relative z-10 narrow-container text-center">
           <Badge className="mb-6 bg-white/10 text-white border-white/20">Biz Kimiz?</Badge>
           <h1 className="heading-xl text-white mb-6">
-            <span className="gradient-text">Hakkımızda</span>
+            <span className="gradient-text">{content?.heroTitle ?? "Hakkımızda"}</span>
           </h1>
           <p className="body-lg text-slate-300 max-w-xl mx-auto">
-            İşletmelerin dijital dönüşüm yolculuklarında güvenilir ortakları oluyoruz.
+            {content?.heroSubtitle ??
+              "İşletmelerin dijital dönüşüm yolculuklarında güvenilir ortakları oluyoruz."}
           </p>
         </div>
       </section>
+
+      {/* ── Hakkımızda Yazısı ── */}
+      {content?.aboutText && (
+        <section className="py-16 md:py-20 bg-white">
+          <div className="narrow-container">
+            <p className="body-lg text-slate-600 leading-relaxed text-center whitespace-pre-line">
+              {content.aboutText}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* ── Mission & Vision ── */}
       <section className="py-20 md:py-28 bg-white">
@@ -142,9 +141,7 @@ export default function AboutPage() {
               </div>
               <h2 className="text-2xl font-bold mb-4">Misyonumuz</h2>
               <p className="text-blue-100 leading-relaxed">
-                Her ölçekteki işletmenin dijital potansiyelini tam anlamıyla ortaya çıkarmasına
-                yardımcı olmak. Teknoloji ve stratejiyi bir araya getirerek ölçülebilir,
-                sürdürülebilir büyüme yaratmak.
+                {content?.missionText}
               </p>
             </div>
             <div className="bg-gradient-to-br from-violet-600 to-violet-800 rounded-2xl p-10 text-white">
@@ -153,9 +150,7 @@ export default function AboutPage() {
               </div>
               <h2 className="text-2xl font-bold mb-4">Vizyonumuz</h2>
               <p className="text-violet-100 leading-relaxed">
-                Türkiye&apos;nin en güvenilir dijital dönüşüm şirketi olmak ve yerel işletmeleri
-                küresel rekabete hazırlamak. İnovasyon ve insan merkezli teknoloji anlayışıyla
-                sektörde standartları belirleyen bir marka haline gelmek.
+                {content?.visionText}
               </p>
             </div>
           </div>
@@ -174,37 +169,54 @@ export default function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {teamMembers.map((member) => (
-              <div
-                key={member.name}
-                className="bg-white rounded-2xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
-              >
-                <div className={cn(
-                  "w-20 h-20 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-xl font-bold mb-5 shadow-lg group-hover:scale-105 transition-transform duration-300",
-                  member.color
-                )}>
-                  {member.initials}
-                </div>
-                <h3 className="font-bold text-slate-900 text-base mb-1">{member.name}</h3>
-                <p className="text-blue-600 text-xs font-semibold mb-4 uppercase tracking-wide">{member.role}</p>
-                <p className="text-slate-500 text-xs leading-relaxed mb-5">{member.bio}</p>
+            {teamMembers.map((member) => {
+              const specialties = Array.isArray(member.specialties)
+                ? (member.specialties as string[])
+                : [];
+              return (
+                <div
+                  key={member.id}
+                  className="bg-white rounded-2xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group"
+                >
+                  {member.photoUrl ? (
+                    <Image
+                      src={member.photoUrl}
+                      alt={member.name}
+                      width={80}
+                      height={80}
+                      className="w-20 h-20 rounded-full object-cover mb-5 shadow-lg group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className={cn(
+                      "w-20 h-20 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-xl font-bold mb-5 shadow-lg group-hover:scale-105 transition-transform duration-300",
+                      resolveTeamGradient(member.colorTheme)
+                    )}>
+                      {initialsOf(member.name)}
+                    </div>
+                  )}
+                  <h3 className="font-bold text-slate-900 text-base mb-1">{member.name}</h3>
+                  <p className="text-blue-600 text-xs font-semibold mb-4 uppercase tracking-wide">{member.role}</p>
+                  <p className="text-slate-500 text-xs leading-relaxed mb-5">{member.bio}</p>
 
-                <div className="flex flex-wrap gap-1.5 justify-center mb-5">
-                  {member.specialties.map((s) => (
-                    <span key={s} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
-                      {s}
-                    </span>
-                  ))}
-                </div>
+                  <div className="flex flex-wrap gap-1.5 justify-center mb-5">
+                    {specialties.map((s) => (
+                      <span key={s} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
 
-                <div className="flex gap-3 mt-auto">
-                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                    className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-200">
-                    <Linkedin className="w-3.5 h-3.5" />
-                  </a>
+                  {member.linkedinUrl && (
+                    <div className="flex gap-3 mt-auto">
+                      <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                        className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-200">
+                        <Linkedin className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
