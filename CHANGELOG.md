@@ -2,6 +2,20 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.9.1] - 2026-08-31 — Admin Subdomain Desteği (admin.ortisoft.com.tr)
+
+### Proxy (Middleware)
+- `proxy.ts`: `admin.ortisoft.com.tr` host'undan gelen istekler artık sunucu
+  tarafında (kullanıcıya görünmeden) `/admin` altına eşleniyor — ayrı bir
+  Vercel projesi gerekmiyor, aynı uygulama iki hostname'i de servis ediyor.
+  Ana domain ve `/admin/...` yolları davranışı değişmedi.
+- Matcher genişletildi (statik dosyalar hariç tüm yollar) — host'a göre
+  eşleştirme Next.js config seviyesinde desteklenmediği için ayrım fonksiyon
+  içinde yapılıyor, admin dışı istekler için erken çıkışla ek maliyet yok.
+- Bulunan hata: girişli bir kullanıcı subdomain kökünü (`/`) ziyaret ettiğinde
+  sayfası olmayan çıplak `/admin`'e rewrite edilip 404 dönüyordu — düzeltildi,
+  artık doğrudan dashboard'a yönleniyor.
+
 ## [0.9.0] - 2026-08-30 — Çoklu Dil, Kullanıcı Yönetimi, Panel Genişletmeleri
 
 ### Çoklu Dil (TR/EN) + Açık/Koyu Tema
