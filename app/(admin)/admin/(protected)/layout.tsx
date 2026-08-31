@@ -7,6 +7,7 @@ import {
   FileText,
   Award,
   FolderKanban,
+  BookUser,
   Mail,
   FileSignature,
   LayoutList,
@@ -65,6 +66,9 @@ export default async function ProtectedAdminLayout({
           </Link>
           <Link href="/admin/projects" className={navLinkClass}>
             <FolderKanban className="h-4 w-4 flex-shrink-0" /> Projeler
+          </Link>
+          <Link href="/admin/guide" className={navLinkClass}>
+            <BookUser className="h-4 w-4 flex-shrink-0" /> Rehber
           </Link>
           <Link href="/admin/messages" className={navLinkClass}>
             <Mail className="h-4 w-4 flex-shrink-0" /> Mesajlar
