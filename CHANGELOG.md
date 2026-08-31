@@ -2,6 +2,13 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.9.3] - 2026-08-31 — Hizmetler & Kariyer SEO
+
+- `/services` ve `/career` sayfalarına `generateMetadata()` eklendi (mevcut
+  `/admin/pages/[key]/edit` alt yapısı zaten genel amaçlıydı, ek admin kodu
+  gerekmedi — sadece public sayfalar SitePage'deki seo alanlarını okumuyordu).
+- Boşsa mevcut varsayılan başlık/açıklamaya düşer.
+
 ## [0.9.2] - 2026-08-31 — Sayfa SEO, Header/Footer Ayarları, Panel İkonları
 
 ### Sayfa Bazlı SEO
