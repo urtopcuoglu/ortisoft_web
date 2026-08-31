@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   ArrowRight, CheckCircle2,
   Briefcase, Award, Layers, Clock, Code2,
@@ -9,8 +10,17 @@ import { cn } from "@/lib/utils";
 import { listProjects } from "@/modules/projects/actions";
 import { resolveIcon } from "@/lib/icon-map";
 import { resolveProjectTheme } from "@/lib/color-theme";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("projects");
+  return {
+    title: seo?.seoTitle || "Projelerimiz | Ortisoft",
+    description: seo?.seoDescription || "Ortisoft'un geliştirdiği ve yürüttüğü girişim ve destek programı projeleri.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 const STATUS_BADGE_LABEL: Record<string, string> = {
   COMING_SOON: "Çok Yakında",

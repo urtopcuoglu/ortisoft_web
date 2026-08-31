@@ -1,10 +1,20 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   Sparkles, ArrowRight, Mail, Rocket, Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("products");
+  return {
+    title: seo?.seoTitle || "Ürünlerimiz | Ortisoft",
+    description: seo?.seoDescription || "Ortisoft'un geliştirdiği kendi SaaS ürünleri ve yakında gelecek çözümler.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 const highlights = [
   {

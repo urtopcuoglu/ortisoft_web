@@ -282,12 +282,37 @@ model Contract {
 // eklenemez/silinemez, sadece mevcut sayfaların görünürlüğü aç/kapa yapılır.
 // ─────────────────────────────────────────────────────────
 model SitePage {
-  key        String   @id
-  label      String
-  comingSoon Boolean  @default(false)
-  updatedAt  DateTime @updatedAt
+  key            String   @id
+  label          String
+  comingSoon     Boolean  @default(false)
+  // Sayfa bazlı SEO — public sayfanın generateMetadata()'sı bunları okur.
+  // Boşsa sayfa kendi statik/dinamik varsayılanına düşer (bkz. ilgili page.tsx).
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  updatedAt      DateTime @updatedAt
 
   @@map("site_pages")
+}
+
+// Header/Footer'daki iletişim bilgileri ve sosyal medya linkleri — admin
+// panelinden (/admin/site-settings) düzenlenir. Tek satırlık (singleton)
+// bir tablo; id sabit "singleton" değerini taşır. Menü linkleri (yapısal,
+// i18n'e bağlı) ve tagline/CTA metinleri (i18n dictionary'de) bu kapsamda
+// DEĞİL — sadece gerçekten hardcoded olan iletişim/sosyal alanlar burada.
+model SiteSettings {
+  id            String   @id @default("singleton")
+  contactEmail  String?
+  contactPhone1 String?
+  contactPhone2 String?
+  address       String?
+  addressMapUrl String?
+  linkedinUrl   String?
+  twitterUrl    String?
+  githubUrl     String?
+  updatedAt     DateTime @updatedAt
+
+  @@map("site_settings")
 }
 
 enum BlogStatus {

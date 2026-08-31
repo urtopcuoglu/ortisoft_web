@@ -2,6 +2,26 @@
 
 Bu proje [Semantic Versioning](https://semver.org/) kullanır. Sürüm etiketleri (`git tag`) `main` dalı üzerinde, her faz/kilometre taşı tamamlandığında atılır.
 
+## [0.9.2] - 2026-08-31 — Sayfa SEO, Header/Footer Ayarları, Panel İkonları
+
+### Sayfa Bazlı SEO
+- `SitePage` modeline `seoTitle`/`seoDescription`/`seoKeywords` eklendi.
+- `/admin/pages/[key]/edit`: Anasayfa, Hakkımızda, Ürünlerimiz, Projelerimiz,
+  Referanslarımız için meta alanları + blog modülündeki SEO Analiz Aracı
+  (Google SERP önizleme, karakter sayaçları, kontrol listesi/skor).
+- İlgili 5 public sayfaya `generateMetadata()` eklendi — boşsa mevcut
+  varsayılan başlık/açıklamaya düşer.
+
+### Header/Footer Ayarları (yeni: `SiteSettings` modeli, `/admin/site-settings`)
+- Footer'daki e-posta/telefon/adres/sosyal medya linkleri artık admin
+  panelinden düzenlenebiliyor, kaydedince public footer'a yansıyor.
+- Menü linkleri ve tagline/CTA metinleri kapsam dışı (i18n sözlüğüne bağlı).
+
+### Panel Görsel İyileştirmeler
+- Admin sidebar'daki her menü öğesine ikon eklendi.
+- Admin panel sidebar'ının altına "Development by Ortisoft Software Team —
+  2026" kredi satırı eklendi (sadece admin panelinde).
+
 ## [0.9.1] - 2026-08-31 — Admin Subdomain Desteği (admin.ortisoft.com.tr)
 
 ### Proxy (Middleware)
