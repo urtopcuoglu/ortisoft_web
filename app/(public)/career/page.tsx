@@ -4,13 +4,17 @@ import { MapPin, Briefcase, Building2, ArrowRight, CheckCircle2 } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listPublishedCareerPostings } from "@/modules/career/actions";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
 
-export const metadata: Metadata = {
-  title: "Kariyer | Ortisoft",
-  description: "Ortisoft'ta açık pozisyonları inceleyin, ekibimize katılın.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("career");
+  return {
+    title: seo?.seoTitle || "Kariyer | Ortisoft",
+    description: seo?.seoDescription || "Ortisoft'ta açık pozisyonları inceleyin, ekibimize katılın.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 export default async function CareerPage() {
   if (await isPageComingSoon("career")) {

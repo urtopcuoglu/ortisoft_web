@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   Search, Lightbulb, Wrench, LineChart, ArrowRight,
   CheckCircle2,
@@ -10,8 +11,19 @@ import { listServices } from "@/modules/services/actions";
 import type { SubService } from "@/modules/services/schema";
 import { resolveIcon } from "@/lib/icon-map";
 import { resolveServiceTheme } from "@/lib/color-theme";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("services");
+  return {
+    title: seo?.seoTitle || "Hizmetlerimiz | Ortisoft",
+    description:
+      seo?.seoDescription ||
+      "Yazılımdan tasarıma, pazarlamadan danışmanlığa kadar 10 temel alanda uzman hizmetler sunuyoruz.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 const processSteps = [
   { step: "01", icon: Search,    title: "Analiz",       desc: "İhtiyaçlarınızı, mevcut durumunuzu ve hedeflerinizi derinlemesine analiz ediyoruz. Paydaş görüşmeleri ve veri incelemesiyle gerçek problemi tanımlıyoruz." },
