@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { listContracts } from "@/modules/contracts/actions";
+import { getSiteSettings } from "@/modules/settings/actions";
 import { getT } from "@/lib/i18n/server";
 
 const footerLinks = {
@@ -26,21 +27,31 @@ const footerLinks = {
   ],
 };
 
-const socials = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter,  href: "#", label: "Twitter"  },
-  { icon: Github,   href: "#", label: "GitHub"   },
-];
-
-const contactItems = [
-  { icon: Mail,   label: "ortisofttech@gmail.com", href: "mailto:ortisofttech@gmail.com" },
-  { icon: Phone,  label: "+90 551 714 24 52",       href: "tel:+905517142452" },
-  { icon: Phone,  label: "+90 543 841 06 40",       href: "tel:+905438410640" },
-  { icon: MapPin, label: "Ankara, Türkiye",         href: "https://maps.google.com/?q=Ankara+Turkiye" },
-];
+// Sabit (fallback) değerler — /admin/site-settings henüz hiç kaydedilmemişse
+// (SiteSettings tablosu boşsa) footer bunlara düşer, asla boş/kırık görünmez.
+const DEFAULT_CONTACT_EMAIL = "ortisofttech@gmail.com";
+const DEFAULT_CONTACT_PHONE1 = "+90 551 714 24 52";
+const DEFAULT_CONTACT_PHONE2 = "+90 543 841 06 40";
+const DEFAULT_ADDRESS = "Ankara, Türkiye";
+const DEFAULT_ADDRESS_MAP_URL = "https://maps.google.com/?q=Ankara+Turkiye";
 
 export default async function Footer() {
-  const [contracts, t] = await Promise.all([listContracts(), getT()]);
+  const [contracts, t, settings] = await Promise.all([listContracts(), getT(), getSiteSettings()]);
+
+  const socials = [
+    { icon: Linkedin, href: settings?.linkedinUrl || "#", label: "LinkedIn" },
+    { icon: Twitter,  href: settings?.twitterUrl || "#",  label: "Twitter"  },
+    { icon: Github,   href: settings?.githubUrl || "#",   label: "GitHub"   },
+  ];
+
+  const contactItems = [
+    { icon: Mail,   label: settings?.contactEmail || DEFAULT_CONTACT_EMAIL, href: `mailto:${settings?.contactEmail || DEFAULT_CONTACT_EMAIL}` },
+    { icon: Phone,  label: settings?.contactPhone1 || DEFAULT_CONTACT_PHONE1, href: `tel:${(settings?.contactPhone1 || DEFAULT_CONTACT_PHONE1).replace(/\s+/g, "")}` },
+    ...(settings?.contactPhone2 || DEFAULT_CONTACT_PHONE2
+      ? [{ icon: Phone, label: settings?.contactPhone2 || DEFAULT_CONTACT_PHONE2, href: `tel:${(settings?.contactPhone2 || DEFAULT_CONTACT_PHONE2).replace(/\s+/g, "")}` }]
+      : []),
+    { icon: MapPin, label: settings?.address || DEFAULT_ADDRESS, href: settings?.addressMapUrl || DEFAULT_ADDRESS_MAP_URL },
+  ];
 
   return (
     <footer className="bg-slate-950 text-white">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import {
   Target, Eye, Heart, Zap, Shield, Users,
   TrendingUp, Star, Linkedin, ExternalLink,
@@ -11,8 +12,17 @@ import { cn } from "@/lib/utils";
 import { getAboutContent, listTeamMembers } from "@/modules/about/actions";
 import { listReferences } from "@/modules/references/actions";
 import { resolveTeamGradient } from "@/lib/color-theme";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [seo, content] = await Promise.all([getPageSeo("about"), getAboutContent()]);
+  return {
+    title: seo?.seoTitle || "Hakkımızda | Ortisoft",
+    description: seo?.seoDescription || content?.heroSubtitle || "Ortisoft ekibi, misyonu ve vizyonu hakkında bilgi edinin.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 function initialsOf(name: string) {
   return name

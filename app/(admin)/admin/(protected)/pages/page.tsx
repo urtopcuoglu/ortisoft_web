@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { listSitePages } from "@/modules/pages/actions";
 import ComingSoonToggle from "@/components/admin/ComingSoonToggle";
@@ -41,6 +42,7 @@ export default async function AdminPagesPage() {
               <th className="px-4 py-3">URL</th>
               <th className="px-4 py-3">Durum</th>
               <th className="px-4 py-3">Yakında Modu</th>
+              <th className="px-4 py-3 text-right">SEO</th>
             </tr>
           </thead>
           <tbody>
@@ -61,6 +63,14 @@ export default async function AdminPagesPage() {
                 </td>
                 <td className="px-4 py-3">
                   <ComingSoonToggle pageKey={page.key} initialValue={page.comingSoon} />
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Link
+                    href={`/admin/pages/${page.key}/edit`}
+                    className="rounded-lg border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                  >
+                    SEO Düzenle
+                  </Link>
                 </td>
               </tr>
             ))}

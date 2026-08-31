@@ -40,6 +40,7 @@ async function main() {
   await seedProjects();
   await seedContracts();
   await seedSitePages();
+  await seedSiteSettings();
 }
 
 const LOCALE = "tr";
@@ -380,6 +381,26 @@ async function seedSitePages() {
     ],
   });
   console.log("✔ SitePage seed edildi (9 kayıt)");
+}
+
+async function seedSiteSettings() {
+  const existing = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+  if (existing) return;
+
+  // Footer.tsx'te önceden hardcoded olan değerlerle aynı — böylece seed
+  // sonrası public site görsel olarak DEĞİŞMEZ, admin panelinden düzenlemeye
+  // hazır bir başlangıç noktası sunar.
+  await prisma.siteSettings.create({
+    data: {
+      id: "singleton",
+      contactEmail: "ortisofttech@gmail.com",
+      contactPhone1: "+90 551 714 24 52",
+      contactPhone2: "+90 543 841 06 40",
+      address: "Ankara, Türkiye",
+      addressMapUrl: "https://maps.google.com/?q=Ankara+Turkiye",
+    },
+  });
+  console.log("✔ SiteSettings seed edildi (1 kayıt)");
 }
 
 main()

@@ -1,18 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import {
   TrendingUp, Users, Award, ArrowRight, Building2, Mail, ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listReferences } from "@/modules/references/actions";
-import { isPageComingSoon } from "@/modules/pages/actions";
+import { isPageComingSoon, getPageSeo } from "@/modules/pages/actions";
 import ComingSoonPage from "@/components/ComingSoonPage";
 
-export const metadata = {
-  title: "Referanslarımız | Ortisoft",
-  description: "Birlikte çalıştığımız markalar ve başarı hikâyelerimiz.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("references");
+  return {
+    title: seo?.seoTitle || "Referanslarımız | Ortisoft",
+    description: seo?.seoDescription || "Birlikte çalıştığımız markalar ve başarı hikâyelerimiz.",
+    keywords: seo?.seoKeywords || undefined,
+  };
+}
 
 const stats = [
   { icon: Users,      number: "85+",  label: "Mutlu Müşteri" },
