@@ -23,24 +23,26 @@ enum UserRole {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  email          String          @unique
+  id             String         @id @default(cuid())
+  email          String         @unique
   passwordHash   String
   name           String
-  role           UserRole        @default(EDITOR)
+  role           UserRole       @default(EDITOR)
   // Personel bilgileri (Faz 4 — Kullanıcı Yönetimi paneli). Login ile ilgisi
   // yok, sadece bilgi amaçlı — bkz. modules/users.
   title          String?
   department     String?
   personalPhone  String?
   companyPhone   String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   auditLogs      AuditLog[]
   messageReplies MessageReply[]
   blogPosts      BlogPost[]
   // "Ekibe ekle" ile oluşturulan public TeamMember kaydına bağlantı (varsa).
   teamMember     TeamMember?
+  // Rehber modülünde "İlgili Kişi" olarak atanan kayıtlar (bkz. modules/guide).
+  guideContacts  GuideContact[]
 
   @@map("users")
 }
@@ -106,23 +108,23 @@ model TeamMember {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  locale      String   @default("tr")
-  slug        String
-  icon        String
-  tag         String
-  title       String
-  description String
-  colorTheme  String   @default("blue")
-  sortOrder   Int      @default(0)
+  id              String   @id @default(cuid())
+  locale          String   @default("tr")
+  slug            String
+  icon            String
+  tag             String
+  title           String
+  description     String
+  colorTheme      String   @default("blue")
+  sortOrder       Int      @default(0)
   // Alt hizmetler — dinamik/sonsuz sayıda eklenebilir, eski `features` metin
   // listesinin yerini alır. Şekli: { label: string, description: string,
   // price: number|null }[]. label+description public /services sayfasında
   // gösterilir, price SADECE admin panelinde görünür (bkz. modules/services/schema.ts).
-  subServices Json
-  pricingCurrency String @default("TRY")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  subServices     Json
+  pricingCurrency String   @default("TRY")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([locale, slug])
   @@index([locale, sortOrder])
@@ -168,24 +170,24 @@ enum MessagePurpose {
 }
 
 model ContactMessage {
-  id           String          @id @default(cuid())
-  name         String
-  email        String
-  phone        String?
-  company      String?
-  service      String?
-  message      String
-  purpose      MessagePurpose  @default(INFO)
+  id          String         @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  company     String?
+  service     String?
+  message     String
+  purpose     MessagePurpose @default(INFO)
   // CV başvurusu (purpose=CV) — Supabase Storage'daki dosya yolu (private bucket,
   // indirme için her seferinde imzalı URL üretilir) ve orijinal dosya adı.
-  cvFilePath   String?
-  cvFileName   String?
-  kvkkConsent  Boolean         @default(false)
-  status       MessageStatus   @default(NEW)
-  source       String          @default("contact_form")
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  replies      MessageReply[]
+  cvFilePath  String?
+  cvFileName  String?
+  kvkkConsent Boolean        @default(false)
+  status      MessageStatus  @default(NEW)
+  source      String         @default("contact_form")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  replies     MessageReply[]
 
   @@index([status])
   @@index([purpose])
@@ -346,4 +348,67 @@ model BlogPost {
   @@unique([locale, slug])
   @@index([locale, status])
   @@map("blog_posts")
+}
+
+// ─────────────────────────────────────────────────────────
+// Rehber modülü (plan dışı, kullanıcı isteği) — firma/kişi kartvizit defteri.
+// İşletme kategorisi serbest metin değil, admin panelinden "yeni kategori
+// ekle" ile büyüyen bir liste (GuideCategory); ilişki türü ise sabit bir
+// enum (kullanıcı tarafından tanımlı, sabit 8 değer).
+// ─────────────────────────────────────────────────────────
+model GuideCategory {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  createdAt DateTime       @default(now())
+  contacts  GuideContact[]
+
+  @@map("guide_categories")
+}
+
+enum GuideRelationType {
+  COZUM_ORTAGI
+  TEDARIKCI
+  POTANSIYEL_MUSTERI
+  AKTIF_MUSTERI
+  PASIF_MUSTERI
+  YETKILI_TEKNIK_SERVIS
+  MALI_MUHASEBE
+  DESTEK
+}
+
+model GuideContact {
+  id               String @id @default(cuid())
+  // Firma adı.
+  companyName      String
+  // Firma tarafındaki yetkili/irtibat kişisi (serbest metin — bizim
+  // kullanıcılarımızdan biri DEĞİL, bkz. relatedUser).
+  authorizedPerson String
+
+  category   GuideCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  phone   String
+  address String?
+  email   String
+  website String?
+
+  // "İlgili kişi" — bu kaydı takip eden bizim ekipten biri (users listesi).
+  relatedUser   User?   @relation(fields: [relatedUserId], references: [id], onDelete: SetNull)
+  relatedUserId String?
+
+  relationType GuideRelationType
+
+  // Kayıt tarihi — modalde alan olarak İSTENMİYOR, kayıt anında sunucu
+  // tarafında otomatik basılır; listede gün_ay_yıl formatında gösterilir
+  // (bkz. lib/utils.ts formatGunAyYil). Gerçek DateTime olarak tutulur ki
+  // tabloda tarihe göre asc/desc sıralama doğru çalışsın.
+  recordDate DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([relatedUserId])
+  @@index([relationType])
+  @@map("guide_contacts")
 }
