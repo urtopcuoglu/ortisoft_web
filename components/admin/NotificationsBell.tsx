@@ -16,6 +16,7 @@ const ENTITY_LABEL: Record<string, string> = {
   ContactMessage: "mesaj",
   Contract: "sözleşme",
   MessageReply: "mesaj yanıtı",
+  PasswordResetRequest: "şifre sıfırlama talebi",
   Project: "proje",
   Reference: "referans",
   Service: "hizmet",

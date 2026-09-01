@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { login } from "@/modules/auth/actions";
 
 export default function LoginForm() {
@@ -26,9 +27,14 @@ export default function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="password" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-          Şifre
-        </label>
+        <div className="flex items-center justify-between">
+          <label htmlFor="password" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            Şifre
+          </label>
+          <Link href="/admin/forgot-password" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+            Şifremi unuttum?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"

@@ -14,11 +14,12 @@ import {
   PanelTop,
   Newspaper,
   UserCog,
+  KeyRound,
   History,
   Settings,
 } from "lucide-react";
 import { getCurrentUser } from "@/modules/shared/dal";
-import { logout } from "@/modules/auth/actions";
+import { logout, countPendingPasswordResetRequests } from "@/modules/auth/actions";
 import { listRecentAuditLogs } from "@/modules/shared/audit";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationsBell from "@/components/admin/NotificationsBell";
@@ -37,7 +38,11 @@ const navLinkClass =
 export default async function ProtectedAdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [user, recentLogs] = await Promise.all([getCurrentUser(), listRecentAuditLogs()]);
+  const [user, recentLogs, pendingResetCount] = await Promise.all([
+    getCurrentUser(),
+    listRecentAuditLogs(),
+    countPendingPasswordResetRequests(),
+  ]);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -89,6 +94,16 @@ export default async function ProtectedAdminLayout({
           {user?.role === "ADMIN" && (
             <Link href="/admin/users" className={navLinkClass}>
               <UserCog className="h-4 w-4 flex-shrink-0" /> Kullanıcılar
+            </Link>
+          )}
+          {user?.role === "ADMIN" && (
+            <Link href="/admin/password-resets" className={navLinkClass}>
+              <KeyRound className="h-4 w-4 flex-shrink-0" /> Şifre Sıfırlama Talepleri
+              {pendingResetCount > 0 && (
+                <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                  {pendingResetCount}
+                </span>
+              )}
             </Link>
           )}
           <Link href="/admin/audit-log" className={navLinkClass}>

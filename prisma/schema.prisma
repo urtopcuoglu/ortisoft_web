@@ -23,26 +23,29 @@ enum UserRole {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  email          String         @unique
-  passwordHash   String
-  name           String
-  role           UserRole       @default(EDITOR)
+  id                     String                 @id @default(cuid())
+  email                  String                 @unique
+  passwordHash           String
+  name                   String
+  role                   UserRole               @default(EDITOR)
   // Personel bilgileri (Faz 4 — Kullanıcı Yönetimi paneli). Login ile ilgisi
   // yok, sadece bilgi amaçlı — bkz. modules/users.
-  title          String?
-  department     String?
-  personalPhone  String?
-  companyPhone   String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  auditLogs      AuditLog[]
-  messageReplies MessageReply[]
-  blogPosts      BlogPost[]
+  title                  String?
+  department             String?
+  personalPhone          String?
+  companyPhone           String?
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  auditLogs              AuditLog[]
+  messageReplies         MessageReply[]
+  blogPosts              BlogPost[]
   // "Ekibe ekle" ile oluşturulan public TeamMember kaydına bağlantı (varsa).
-  teamMember     TeamMember?
+  teamMember             TeamMember?
   // Rehber modülünde "İlgili Kişi" olarak atanan kayıtlar (bkz. modules/guide).
-  guideContacts  GuideContact[]
+  guideContacts          GuideContact[]
+  // Şifre sıfırlama — kendi taleplerim + (ADMIN ise) onayladığım/reddettiğim talepler.
+  passwordResetRequests  PasswordResetRequest[] @relation("PasswordResetRequests")
+  resolvedPasswordResets PasswordResetRequest[] @relation("ResolvedPasswordResets")
 
   @@map("users")
 }
@@ -411,4 +414,40 @@ model GuideContact {
   @@index([relatedUserId])
   @@index([relationType])
   @@map("guide_contacts")
+}
+
+// ─────────────────────────────────────────────────────────
+// "Şifremi Unuttum" akışı — mail sunucusu YOK, bu yüzden self-servis değil:
+// kullanıcı /admin/forgot-password'dan talep açar, bir ADMIN admin panelinden
+// (/admin/password-resets) görüp onaylar/reddeder. Onaylanınca tek kullanımlık,
+// süreli bir token üretilir; admin bu linki kullanıcıya başka bir kanaldan
+// (telefon/WhatsApp) elle iletir — bkz. modules/auth/actions.ts.
+// ─────────────────────────────────────────────────────────
+enum PasswordResetStatus {
+  PENDING
+  APPROVED
+  DISMISSED
+  USED
+}
+
+model PasswordResetRequest {
+  id     String  @id @default(cuid())
+  // Talep formunda girilen e-posta — kullanıcı bulunamasa da (enumeration'ı
+  // önlemek için) aynı jenerik mesaj döner, ama kayıt SADECE eşleşen bir
+  // User varsa oluşturulur (bkz. resolveUserForReset).
+  email  String
+  user   User?   @relation("PasswordResetRequests", fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+
+  status         PasswordResetStatus @default(PENDING)
+  token          String?             @unique
+  tokenExpiresAt DateTime?
+
+  requestedAt  DateTime  @default(now())
+  resolvedAt   DateTime?
+  resolvedBy   User?     @relation("ResolvedPasswordResets", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolvedById String?
+
+  @@index([status])
+  @@map("password_reset_requests")
 }
