@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { verifySession } from "@/modules/shared/dal";
 import { logAudit } from "@/modules/shared/audit";
 import { GuideContactSchema, NEW_CATEGORY_VALUE, type GuideContactFormState } from "./schema";
@@ -181,14 +182,19 @@ export async function deleteGuideContact(id: string) {
 
   try {
     await prisma.guideContact.delete({ where: { id } });
-  } catch {
+  } catch (err) {
     // CRM alt-kayıtları (görüşme/teklif/sözleşme/ödeme) varken silme
     // Restrict ile DB seviyesinde engellenir (bkz. prisma/schema.prisma) —
     // bilinçli: geçmiş kayıtlar yanlışlıkla kaybolmasın, silmek yerine
-    // relationType PASIF_MUSTERI'ye çekilsin.
-    throw new Error(
-      "Bu firma silinemedi — altında görüşme/teklif/sözleşme/ödeme kaydı var. Önce onları silin ya da bu firmayı \"Pasif Müşteri\" yapın."
-    );
+    // relationType PASIF_MUSTERI'ye çekilsin. Sadece bu FK ihlalini (P2003)
+    // yakalayıp açıklayıcı mesaja çeviriyoruz — başka bir DB hatasını aynı
+    // yanıltıcı mesajla örtmemek için diğer hataları olduğu gibi fırlatıyoruz.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+      throw new Error(
+        "Bu firma silinemedi — altında görüşme/teklif/sözleşme/ödeme kaydı var. Önce onları silin ya da bu firmayı \"Pasif Müşteri\" yapın."
+      );
+    }
+    throw err;
   }
 
   await logAudit({
