@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { verifySession } from "@/modules/shared/dal";
 import { logAudit } from "@/modules/shared/audit";
 import { GuideContactSchema, NEW_CATEGORY_VALUE, type GuideContactFormState } from "./schema";
@@ -96,6 +97,9 @@ export async function createGuideContact(
       // Kayıt tarihi modalde alan olarak sorulmaz, kayıt anında otomatik basılır
       // (bkz. lib/utils.ts#formatGunAyYil — listede gün_ay_yıl olarak gösterilir).
       recordDate: new Date(),
+      // Doğrudan aktif müşteri olarak eklendiyse, "ne zaman aktif oldu"
+      // raporlaması için o anı da işaretle (bkz. CRM Bölüm 10.1).
+      becameActiveAt: validated.data.relationType === "AKTIF_MUSTERI" ? new Date() : null,
     },
   });
 
@@ -106,7 +110,7 @@ export async function createGuideContact(
     entityId: contact.id,
   });
 
-  revalidatePath("/admin/guide");
+  revalidatePath("/admin/crm");
   return { success: true, message: "Kayıt eklendi." };
 }
 
@@ -137,6 +141,14 @@ export async function updateGuideContact(
     return { errors: validated.error.flatten().fieldErrors };
   }
 
+  // Potansiyel müşteri ilk kez AKTIF_MUSTERI'ye geçiyorsa becameActiveAt
+  // basılır; zaten aktifse (ya da hiç aktif olmadıysa) dokunulmaz — alanı
+  // hiç yazmadan (undefined) DB'deki mevcut değeri korumak için önce mevcut
+  // kaydı kontrol ediyoruz.
+  const existing = await prisma.guideContact.findUnique({ where: { id }, select: { becameActiveAt: true } });
+  const becameActiveAt =
+    validated.data.relationType === "AKTIF_MUSTERI" && !existing?.becameActiveAt ? new Date() : undefined;
+
   await prisma.guideContact.update({
     where: { id },
     data: {
@@ -149,6 +161,7 @@ export async function updateGuideContact(
       website: validated.data.website || null,
       relatedUserId: validated.data.relatedUserId || null,
       relationType: validated.data.relationType,
+      ...(becameActiveAt ? { becameActiveAt } : {}),
       // recordDate kasıtlı olarak değiştirilmiyor — ilk kayıt anı korunur.
     },
   });
@@ -160,14 +173,29 @@ export async function updateGuideContact(
     entityId: id,
   });
 
-  revalidatePath("/admin/guide");
+  revalidatePath("/admin/crm");
   return { success: true, message: "Kaydedildi." };
 }
 
 export async function deleteGuideContact(id: string) {
   const session = await verifySession();
 
-  await prisma.guideContact.delete({ where: { id } });
+  try {
+    await prisma.guideContact.delete({ where: { id } });
+  } catch (err) {
+    // CRM alt-kayıtları (görüşme/teklif/sözleşme/ödeme) varken silme
+    // Restrict ile DB seviyesinde engellenir (bkz. prisma/schema.prisma) —
+    // bilinçli: geçmiş kayıtlar yanlışlıkla kaybolmasın, silmek yerine
+    // relationType PASIF_MUSTERI'ye çekilsin. Sadece bu FK ihlalini (P2003)
+    // yakalayıp açıklayıcı mesaja çeviriyoruz — başka bir DB hatasını aynı
+    // yanıltıcı mesajla örtmemek için diğer hataları olduğu gibi fırlatıyoruz.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+      throw new Error(
+        "Bu firma silinemedi — altında görüşme/teklif/sözleşme/ödeme kaydı var. Önce onları silin ya da bu firmayı \"Pasif Müşteri\" yapın."
+      );
+    }
+    throw err;
+  }
 
   await logAudit({
     actorId: session.userId,
@@ -176,5 +204,5 @@ export async function deleteGuideContact(id: string) {
     entityId: id,
   });
 
-  revalidatePath("/admin/guide");
+  revalidatePath("/admin/crm");
 }

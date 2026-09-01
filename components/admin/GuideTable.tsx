@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Plus, ArrowUp, ArrowDown, ArrowUpDown, X } from "lucide-react";
 import GuideContactModal, { type GuideContactForEdit } from "./GuideContactModal";
 import DeleteForm from "./DeleteForm";
@@ -322,7 +323,11 @@ export default function GuideTable({
             )}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
-                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">{row.companyName}</td>
+                <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">
+                  <Link href={`/admin/crm/${row.id}`} className="hover:text-blue-600 hover:underline dark:hover:text-blue-400">
+                    {row.companyName}
+                  </Link>
+                </td>
                 <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{row.authorizedPerson}</td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
