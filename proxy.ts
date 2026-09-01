@@ -10,6 +10,12 @@ import { decrypt, SESSION_COOKIE_NAME } from "@/lib/session";
 
 const LOGIN_PATH = "/admin/login";
 const DEFAULT_ADMIN_PATH = "/admin/dashboard";
+// login gibi girişsiz erişilebilmesi gereken diğer yollar — "Şifremi Unuttum"
+// akışının tamamı, tanım gereği oturumu olmayan biri için var (bkz.
+// modules/auth/actions.ts). Bunlar olmadan proxy her ikisini de login'e
+// geri fırlatır ve akış hiç çalışmaz.
+const FORGOT_PASSWORD_PATH = "/admin/forgot-password";
+const RESET_PASSWORD_PREFIX = "/admin/reset-password/";
 
 // admin.ortisoft.com.tr -> aynı Next.js uygulaması, ama bu host'ta gelen
 // istekler /admin altına rewrite edilir (kullanıcıya görünmeyen, sunucu
@@ -50,8 +56,12 @@ export default async function proxy(request: NextRequest) {
   const session = await decrypt(cookie);
   const isAuthenticated = Boolean(session?.userId);
   const isLoginPage = effectivePathname === LOGIN_PATH;
+  const isPublicAuthPath =
+    isLoginPage ||
+    effectivePathname === FORGOT_PASSWORD_PATH ||
+    effectivePathname.startsWith(RESET_PASSWORD_PREFIX);
 
-  if (!isAuthenticated && !isLoginPage) {
+  if (!isAuthenticated && !isPublicAuthPath) {
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 

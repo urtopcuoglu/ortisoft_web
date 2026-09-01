@@ -39,3 +39,31 @@ export type ChangePasswordFormState =
       success?: boolean;
     }
   | undefined;
+
+export const ForgotPasswordSchema = z.object({
+  email: z.email({ error: "Geçerli bir e-posta adresi girin." }).trim(),
+});
+
+export type ForgotPasswordFormState =
+  | { errors?: { email?: string[] }; message?: string; success?: boolean }
+  | undefined;
+
+// changePassword'daki (currentPassword doğrulaması gereken) ile aynı kurallar,
+// tek fark: mevcut şifre yerine token'ın kendisi kimlik kanıtı sayılıyor.
+export const ResetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, { error: "Yeni şifre en az 8 karakter olmalı." })
+      .regex(/[a-zA-Z]/, { error: "En az bir harf içermeli." })
+      .regex(/[0-9]/, { error: "En az bir rakam içermeli." }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    error: "Yeni şifreler eşleşmiyor.",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordFormState =
+  | { errors?: Record<string, string[]>; message?: string; success?: boolean }
+  | undefined;
