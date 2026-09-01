@@ -72,8 +72,8 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin/projects" className={navLinkClass}>
             <FolderKanban className="h-4 w-4 flex-shrink-0" /> Projeler
           </Link>
-          <Link href="/admin/guide" className={navLinkClass}>
-            <BookUser className="h-4 w-4 flex-shrink-0" /> Rehber
+          <Link href="/admin/crm" className={navLinkClass}>
+            <BookUser className="h-4 w-4 flex-shrink-0" /> CRM
           </Link>
           <Link href="/admin/messages" className={navLinkClass}>
             <Mail className="h-4 w-4 flex-shrink-0" /> Mesajlar
