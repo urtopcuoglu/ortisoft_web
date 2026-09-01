@@ -55,21 +55,30 @@ function relativeTime(date: Date) {
  */
 export default function NotificationsBell({ logs }: { logs: LogEntry[] }) {
   const [open, setOpen] = useState(false);
-  // localStorage bir "harici sistem"den abonelik değil, tek seferlik senkron
-  // bir okuma — bu yüzden useEffect+setState yerine tembel initializer'da
-  // hesaplanır (React'in "muhtemelen effect'e ihtiyacın yok" önerisiyle uyumlu).
-  const [unreadCount, setUnreadCount] = useState(() => {
-    if (typeof window === "undefined") return 0;
+  // Başlangıç değeri sunucuyla (window yok, her zaman 0) eşleşecek şekilde
+  // sabit tutulur — localStorage'ı tembel initializer'da okumak hydration
+  // mismatch'e yol açıyordu (sunucu her zaman 0 render ediyor, istemcinin
+  // İLK render'ı ise localStorage'ı görüp farklı bir sayı üretebiliyordu;
+  // ThemeToggle.tsx'teki "mounted" deseniyle aynı sorun). Gerçek değer,
+  // mount sonrası (SSR çıktısıyla eşleşen ilk render'dan SONRA) effect'te
+  // hesaplanır — burada localStorage bir "harici sistem"den abonelik değil,
+  // tek seferlik senkron bir okuma olsa da, SSR'lı bir bileşende ilk render
+  // sonucunu değiştirdiği için effect'e ihtiyaç var.
+  const [unreadCount, setUnreadCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
     try {
       const lastSeen = localStorage.getItem(STORAGE_KEY);
       const lastSeenTime = lastSeen ? Number(lastSeen) : 0;
-      return logs.filter((l) => l.createdAt.getTime() > lastSeenTime).length;
+      // Kasıtlı: ilk (SSR ile eşleşen) render'dan SONRA gerçek değeri basıyoruz, bkz. yukarısı.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUnreadCount(logs.filter((l) => l.createdAt.getTime() > lastSeenTime).length);
     } catch {
       // localStorage erişilemiyorsa (gizli sekme vb.) sessizce hepsini okunmamış say.
-      return logs.length;
+      setUnreadCount(logs.length);
     }
-  });
-  const ref = useRef<HTMLDivElement>(null);
+  }, [logs]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
