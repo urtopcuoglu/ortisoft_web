@@ -5,6 +5,11 @@ import Sidebar from "@/components/layout/Sidebar";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { getMessages } from "@/lib/i18n/server";
 
+// Google Analytics 4 measurement ID — önceden app/layout.tsx'te (public+admin
+// ortak kabukta) tanımlıydı; admin panel kullanımının GA4'e gitmemesi için
+// buraya, Meta Pixel/Yandex Metrica ile aynı yere taşındı.
+const GA4_MEASUREMENT_ID = "G-3S604E3LCC";
+
 // Meta (Facebook) Pixel ID — sadece ziyaretçiye açık site için, admin paneli
 // tarafında yüklenmez (bkz. aşağıdaki yorum).
 const META_PIXEL_ID = "2338527013646602";
@@ -15,10 +20,10 @@ const YANDEX_METRICA_ID = "112295745";
 // Ziyaretçiye açık site kabuğu (Header/Sidebar/Footer). Admin panelinin
 // (app/(admin)/admin/layout.tsx) bu kabukla hiçbir ilişkisi yoktur.
 //
-// Dijital pazarlama/izleme scriptleri (Meta Pixel, Yandex Metrica vb.) kasıtlı
-// olarak buraya, admin ile paylaşılan app/layout.tsx yerine ekleniyor: sadece
-// gerçek ziyaretçi/dönüşüm trafiğini izlemek istiyoruz, admin panel
-// kullanımını değil.
+// Dijital pazarlama/izleme scriptleri (GA4, Meta Pixel, Yandex Metrica vb.)
+// kasıtlı olarak buraya, admin ile paylaşılan app/layout.tsx yerine
+// ekleniyor: sadece gerçek ziyaretçi/dönüşüm trafiğini izlemek istiyoruz,
+// admin panel kullanımını değil.
 export default async function PublicLayout({
     children,
 }: Readonly<{
@@ -32,6 +37,20 @@ export default async function PublicLayout({
             <Sidebar />
             <main className="flex-1 content-area">{children}</main>
             <Footer />
+
+            {/* Google Analytics 4 */}
+            <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`}
+                strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+                {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA4_MEASUREMENT_ID}');
+                `}
+            </Script>
 
             {/* Meta Pixel Code */}
             <Script id="meta-pixel" strategy="afterInteractive">

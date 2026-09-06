@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Script from "next/script";
 import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
@@ -9,9 +8,12 @@ export const metadata: Metadata = {
         "Proje danışmanlığı, yazılım danışmanlığı ve dijital pazarlama hizmetleriyle işletmenizi geleceğe taşıyoruz.",
 };
 
-// Bu, tüm site için ortak (public + admin) minimal kabuktur: html/head/font/GA4.
+// Bu, tüm site için ortak (public + admin) minimal kabuktur: html/head/font.
 // Sayfa-özel görünüm (Header/Sidebar/Footer vs. admin sidebar) alt route group
 // layout'larında (app/(public)/layout.tsx, app/(admin)/admin/layout.tsx) tanımlanır.
+// GA4/Meta Pixel/Yandex Metrica gibi izleme scriptleri kasıtlı olarak burada
+// değil, app/(public)/layout.tsx içinde — admin panel kullanımı hiçbirine
+// gitmesin diye.
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
@@ -26,18 +28,6 @@ export default function RootLayout({
                 href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap"
                 rel="stylesheet"
             />
-            <Script
-                src="https://www.googletagmanager.com/gtag/js?id=G-3S604E3LCC"
-                strategy="afterInteractive"
-            />
-            <Script id="ga4-init" strategy="afterInteractive">
-                {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-3S604E3LCC');
-          `}
-            </Script>
         </head>
         <body className="min-h-full flex flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
