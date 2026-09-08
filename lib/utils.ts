@@ -28,3 +28,36 @@ export function toDateInputValue(date: Date | string | null | undefined): string
   const gun = String(d.getDate()).padStart(2, "0");
   return `${yil}-${ay}-${gun}`;
 }
+
+/**
+ * Influencer modülü — sosyal medya tarzı kısaltılmış takipçi sayısı gösterimi
+ * (10.000 → "10k", 12.500 → "12.5k", 1.250.000 → "1.25m"). Gereksiz ondalık
+ * basılmaz (10.000 → "10k", "10.0k" değil).
+ */
+export function formatFollowerCount(count: number): string {
+  const abs = Math.abs(count);
+
+  function format(value: number, suffix: string): string {
+    const rounded = Math.round(value * 100) / 100;
+    const text = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    return `${text}${suffix}`;
+  }
+
+  if (abs >= 1_000_000_000) return format(count / 1_000_000_000, "b");
+  if (abs >= 1_000_000) return format(count / 1_000_000, "m");
+  if (abs >= 1_000) return format(count / 1_000, "k");
+  return String(count);
+}
+
+/**
+ * Influencer modülü — admin panelinden "+ yeni platform ekle" ile girilen
+ * serbest metin platform adından URL-güvenli bir slug türetir (bkz.
+ * modules/influencer/actions.ts#resolvePlatform). Türkçe karakterler ASCII'ye
+ * çevrilir.
+ */
+export function slugifyPlatformName(name: string): string {
+  const turkishMap: Record<string, string> = { ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" };
+  const normalized = name.toLowerCase().replace(/[çğıöşü]/g, (ch) => turkishMap[ch] ?? ch);
+  const slug = normalized.trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return slug || "platform";
+}
