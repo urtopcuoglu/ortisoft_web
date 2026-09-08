@@ -4,6 +4,7 @@ config({ path: ".env.local" });
 import { PrismaClient, Prisma } from "../lib/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "@node-rs/argon2";
+import { DEFAULT_INFLUENCER_PLATFORMS } from "../lib/social-platform";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -41,6 +42,7 @@ async function main() {
   await seedContracts();
   await seedSitePages();
   await seedSiteSettings();
+  await seedInfluencerPlatforms();
 }
 
 const LOCALE = "tr";
@@ -401,6 +403,21 @@ async function seedSiteSettings() {
     },
   });
   console.log("✔ SiteSettings seed edildi (1 kayıt)");
+}
+
+// Influencer modülü — platform listesi serbest metin değil (bkz.
+// prisma/schema.prisma InfluencerPlatform), admin panelinden "+ yeni platform
+// ekle" ile büyüyebilir. Burada sadece bilinen/QR destekli platformlarla
+// (lib/social-platform.ts) başlangıç listesi oluşturuluyor.
+async function seedInfluencerPlatforms() {
+  const count = await prisma.influencerPlatform.count();
+  if (count > 0) return;
+
+  await prisma.influencerPlatform.createMany({
+    data: DEFAULT_INFLUENCER_PLATFORMS,
+    skipDuplicates: true,
+  });
+  console.log(`✔ InfluencerPlatform seed edildi (${DEFAULT_INFLUENCER_PLATFORMS.length} kayıt)`);
 }
 
 main()
