@@ -12,7 +12,7 @@
 import ExcelJS from "exceljs";
 import { formatGunAyYil } from "@/lib/utils";
 import type { BulkImportAccountInput, BulkImportRowInput } from "@/modules/influencer/schema";
-import type { InfluencerRow } from "@/components/admin/influencer/types";
+import { influencerTier, type InfluencerRow } from "@/components/admin/influencer/types";
 
 export type ParsedImportOutcome = {
   rows: BulkImportRowInput[];
@@ -43,7 +43,16 @@ function todayStamp(): string {
 
 function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
   const maxAccounts = Math.max(1, ...rows.map((r) => r.accounts.length));
-  const headers: string[] = ["Ad", "Soyad", "E-posta", "Telefon", "Adres", "İçerik Kategorisi", "Kayıt Tarihi"];
+  const headers: string[] = [
+    "Ad",
+    "Soyad",
+    "E-posta",
+    "Telefon",
+    "Adres",
+    "İçerik Kategorisi",
+    "Seviye",
+    "Kayıt Tarihi",
+  ];
   for (let i = 1; i <= maxAccounts; i++) {
     headers.push(`Platform ${i}`, `Kullanıcı Adı ${i}`, `Profil URL ${i}`, `Takipçi Sayısı ${i}`);
   }
@@ -57,6 +66,8 @@ function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
       row.phone ?? "",
       row.address ?? "",
       row.contentCategory?.name ?? "",
+      // Bilgi amaçlı — türetilmiş değer, içe aktarımda okunmaz (bkz. mapHeaders "seviye").
+      influencerTier(row)?.label ?? "",
       formatGunAyYil(row.recordDate),
     ];
     for (let i = 0; i < maxAccounts; i++) {
@@ -190,7 +201,7 @@ function mapHeaders(headerRow: unknown[]): ColumnMap {
     if (["adres", "address"].includes(norm)) return void (map.address = idx);
     if (["icerikkategorisi", "kategori", "icerikategorisi", "category"].includes(norm))
       return void (map.contentCategory = idx);
-    if (norm === "kayittarihi") return; // bilgi amaçlı — içe aktarımda kullanılmaz (yeni kayıtta tarih otomatik basılır)
+    if (norm === "kayittarihi" || norm === "seviye") return; // bilgi amaçlı — içe aktarımda kullanılmaz
 
     let m = norm.match(/^platform(\d*)$/);
     if (m) return setGroup(map, m[1], "platform", idx);

@@ -11,7 +11,15 @@ import { deleteInfluencer } from "@/modules/influencer/actions";
 import { formatFollowerCount, formatGunAyYil } from "@/lib/utils";
 import { QR_ENABLED_PLATFORM_SLUGS } from "@/lib/social-platform";
 import { resolvePlatformIcon } from "@/lib/social-platform-icons";
-import { influencerDisplayName, influencerTotalFollowers, type InfluencerRow } from "./types";
+import {
+  influencerDisplayName,
+  influencerTier,
+  influencerTotalFollowers,
+  INFLUENCER_TIER_BADGE_CLASS,
+  INFLUENCER_TIERS,
+  type InfluencerRow,
+  type InfluencerTierKey,
+} from "./types";
 
 type SortKey = "name" | "recordDate" | "followers";
 type SortDir = "asc" | "desc";
@@ -82,6 +90,7 @@ export default function InfluencerTable({
   const [lastNameFilter, setLastNameFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [tierFilter, setTierFilter] = useState<InfluencerTierKey | "">("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("recordDate");
@@ -120,6 +129,7 @@ export default function InfluencerTable({
     lastNameFilter !== "" ||
     platformFilter !== "" ||
     categoryFilter !== "" ||
+    tierFilter !== "" ||
     dateFrom !== "" ||
     dateTo !== "";
 
@@ -129,6 +139,7 @@ export default function InfluencerTable({
     setLastNameFilter("");
     setPlatformFilter("");
     setCategoryFilter("");
+    setTierFilter("");
     setDateFrom("");
     setDateTo("");
   }
@@ -144,6 +155,7 @@ export default function InfluencerTable({
       if (lastNameFilter && !(inf.lastName ?? "").toLowerCase().includes(lastNameFilter.toLowerCase())) return false;
       if (platformFilter && !inf.accounts.some((a) => a.platform.id === platformFilter)) return false;
       if (categoryFilter && inf.contentCategory?.id !== categoryFilter) return false;
+      if (tierFilter && influencerTier(inf)?.key !== tierFilter) return false;
 
       const recordDate = new Date(inf.recordDate);
       if (from && recordDate < from) return false;
@@ -191,6 +203,7 @@ export default function InfluencerTable({
     lastNameFilter,
     platformFilter,
     categoryFilter,
+    tierFilter,
     dateFrom,
     dateTo,
     sortKey,
@@ -263,6 +276,19 @@ export default function InfluencerTable({
               <option value="">Tümü</option>
               {contentCategories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold text-slate-500 dark:text-slate-400">Seviye</label>
+            <select
+              value={tierFilter}
+              onChange={(e) => setTierFilter(e.target.value as InfluencerTierKey | "")}
+              className={filterInputClass}
+            >
+              <option value="">Tümü</option>
+              {INFLUENCER_TIERS.map((t) => (
+                <option key={t.key} value={t.key}>{t.label}</option>
               ))}
             </select>
           </div>
@@ -352,6 +378,9 @@ export default function InfluencerTable({
                 </SortButton>
               </th>
               <th className={thClass}>
+                <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Seviye</span>
+              </th>
+              <th className={thClass}>
                 <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Kategori</span>
               </th>
               <th className={thClass}>
@@ -367,7 +396,7 @@ export default function InfluencerTable({
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
+                <td colSpan={9} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
                   {influencers.length === 0 ? "Henüz influencer kaydı eklenmedi." : "Filtreyle eşleşen kayıt yok."}
                 </td>
               </tr>
@@ -422,6 +451,20 @@ export default function InfluencerTable({
                 </td>
                 <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-200">
                   {formatFollowerCount(influencerTotalFollowers(row))}
+                </td>
+                <td className="px-4 py-3">
+                  {(() => {
+                    const tier = influencerTier(row);
+                    return tier ? (
+                      <span
+                        className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-bold ${INFLUENCER_TIER_BADGE_CLASS[tier.key]}`}
+                      >
+                        {tier.label}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
+                    );
+                  })()}
                 </td>
                 <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
                   {row.contentCategory?.name || "—"}
