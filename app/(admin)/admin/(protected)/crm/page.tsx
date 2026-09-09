@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { listGuideContacts, listGuideCategories, listGuideUsers } from "@/modules/guide/actions";
-import { listInfluencers, listInfluencerPlatforms } from "@/modules/influencer/actions";
+import { listInfluencers, listInfluencerPlatforms, listInfluencerContentCategories } from "@/modules/influencer/actions";
 import GuideTable from "@/components/admin/GuideTable";
 import InfluencerTable from "@/components/admin/influencer/InfluencerTable";
 import CrmSectionTabs from "@/components/admin/crm/CrmSectionTabs";
@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminCrmPage() {
-  const [contacts, categories, users, influencers, influencerPlatforms] = await Promise.all([
+  const [contacts, categories, users, influencers, influencerPlatforms, influencerContentCategories] = await Promise.all([
     listGuideContacts(),
     listGuideCategories(),
     listGuideUsers(),
     listInfluencers(),
     listInfluencerPlatforms(),
+    listInfluencerContentCategories(),
   ]);
 
   return (
@@ -33,7 +34,13 @@ export default async function AdminCrmPage() {
         companiesCount={contacts.length}
         influencerCount={influencers.length}
         companies={<GuideTable contacts={contacts} categories={categories} users={users} />}
-        influencer={<InfluencerTable influencers={influencers} platforms={influencerPlatforms} />}
+        influencer={
+          <InfluencerTable
+            influencers={influencers}
+            platforms={influencerPlatforms}
+            contentCategories={influencerContentCategories}
+          />
+        }
       />
     </div>
   );

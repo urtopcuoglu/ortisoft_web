@@ -57,6 +57,7 @@ function toEditInfluencer(row: InfluencerRow): InfluencerForEdit {
     email: row.email,
     phone: row.phone,
     address: row.address,
+    contentCategory: row.contentCategory,
     accounts: row.accounts.map((a) => ({
       platformId: a.platform.id,
       newPlatformName: "",
@@ -70,14 +71,17 @@ function toEditInfluencer(row: InfluencerRow): InfluencerForEdit {
 export default function InfluencerTable({
   influencers,
   platforms,
+  contentCategories,
 }: {
   influencers: InfluencerRow[];
   platforms: { id: string; name: string }[];
+  contentCategories: { id: string; name: string }[];
 }) {
   const [search, setSearch] = useState("");
   const [firstNameFilter, setFirstNameFilter] = useState("");
   const [lastNameFilter, setLastNameFilter] = useState("");
   const [platformFilter, setPlatformFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("recordDate");
@@ -115,6 +119,7 @@ export default function InfluencerTable({
     firstNameFilter !== "" ||
     lastNameFilter !== "" ||
     platformFilter !== "" ||
+    categoryFilter !== "" ||
     dateFrom !== "" ||
     dateTo !== "";
 
@@ -123,6 +128,7 @@ export default function InfluencerTable({
     setFirstNameFilter("");
     setLastNameFilter("");
     setPlatformFilter("");
+    setCategoryFilter("");
     setDateFrom("");
     setDateTo("");
   }
@@ -137,6 +143,7 @@ export default function InfluencerTable({
       if (firstNameFilter && !(inf.firstName ?? "").toLowerCase().includes(firstNameFilter.toLowerCase())) return false;
       if (lastNameFilter && !(inf.lastName ?? "").toLowerCase().includes(lastNameFilter.toLowerCase())) return false;
       if (platformFilter && !inf.accounts.some((a) => a.platform.id === platformFilter)) return false;
+      if (categoryFilter && inf.contentCategory?.id !== categoryFilter) return false;
 
       const recordDate = new Date(inf.recordDate);
       if (from && recordDate < from) return false;
@@ -177,7 +184,18 @@ export default function InfluencerTable({
     });
 
     return sorted;
-  }, [influencers, search, firstNameFilter, lastNameFilter, platformFilter, dateFrom, dateTo, sortKey, sortDir]);
+  }, [
+    influencers,
+    search,
+    firstNameFilter,
+    lastNameFilter,
+    platformFilter,
+    categoryFilter,
+    dateFrom,
+    dateTo,
+    sortKey,
+    sortDir,
+  ]);
 
   const selectedRows = useMemo(() => influencers.filter((inf) => selectedIds.has(inf.id)), [influencers, selectedIds]);
   const allVisibleSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id));
@@ -234,6 +252,17 @@ export default function InfluencerTable({
               <option value="">Tümü</option>
               {platforms.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              İçerik Kategorisi
+            </label>
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={filterInputClass}>
+              <option value="">Tümü</option>
+              {contentCategories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
@@ -323,6 +352,9 @@ export default function InfluencerTable({
                 </SortButton>
               </th>
               <th className={thClass}>
+                <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Kategori</span>
+              </th>
+              <th className={thClass}>
                 <SortButton sortKeyValue="recordDate" currentKey={sortKey} currentDir={sortDir} onToggle={toggleSort}>
                   Kayıt Tarihi
                 </SortButton>
@@ -335,7 +367,7 @@ export default function InfluencerTable({
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
+                <td colSpan={8} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
                   {influencers.length === 0 ? "Henüz influencer kaydı eklenmedi." : "Filtreyle eşleşen kayıt yok."}
                 </td>
               </tr>
@@ -391,6 +423,9 @@ export default function InfluencerTable({
                 <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-200">
                   {formatFollowerCount(influencerTotalFollowers(row))}
                 </td>
+                <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                  {row.contentCategory?.name || "—"}
+                </td>
                 <td className="whitespace-nowrap px-4 py-3 text-slate-500 dark:text-slate-400">
                   {formatGunAyYil(row.recordDate)}
                 </td>
@@ -423,6 +458,7 @@ export default function InfluencerTable({
         open={modalOpen}
         onOpenChange={setModalOpen}
         platforms={platforms}
+        contentCategories={contentCategories}
         influencer={editingRow ? toEditInfluencer(editingRow) : null}
       />
     </div>

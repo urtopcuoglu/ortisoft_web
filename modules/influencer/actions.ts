@@ -10,6 +10,7 @@ import { resolveInfluencerProfileUrl } from "@/lib/social-platform";
 import {
   BulkImportRowSchema,
   InfluencerSchema,
+  NEW_CONTENT_CATEGORY_VALUE,
   NEW_PLATFORM_VALUE,
   type BulkImportResult,
   type BulkImportRowInput,
@@ -21,13 +22,21 @@ export async function listInfluencers() {
   await verifySession();
   return prisma.influencer.findMany({
     orderBy: { recordDate: "desc" },
-    include: { accounts: { include: { platform: true }, orderBy: { createdAt: "asc" } } },
+    include: {
+      accounts: { include: { platform: true }, orderBy: { createdAt: "asc" } },
+      contentCategory: { select: { id: true, name: true } },
+    },
   });
 }
 
 export async function listInfluencerPlatforms() {
   await verifySession();
   return prisma.influencerPlatform.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function listInfluencerContentCategories() {
+  await verifySession();
+  return prisma.influencerContentCategory.findMany({ orderBy: { name: "asc" } });
 }
 
 /** QR route handler'ı için — bkz. app/(admin)/admin/(protected)/crm/influencer-qr/[accountId]/route.ts. */
@@ -93,6 +102,54 @@ async function resolvePlatform(
   return resolvePlatformByName(row.newPlatformName);
 }
 
+/**
+ * İçerik kategorisi adını çözer — resolvePlatformByName ile aynı desen
+ * (ad varsa büyük/küçük harf duyarsız eşleşir, yoksa oluşturulur). Hem manuel
+ * form akışındaki "+ yeni kategori ekle" (bkz. resolveContentCategoryId) hem
+ * de Excel/CSV içe aktarımdaki serbest metin "İçerik Kategorisi" sütunu
+ * (bkz. bulkImportInfluencers) bunu kullanır.
+ */
+async function resolveContentCategoryByName(rawName: string): Promise<{ id: string } | { error: string }> {
+  const name = rawName.trim();
+  if (name.length < 2) {
+    return { error: "Kategori adı en az 2 karakter olmalı." };
+  }
+
+  const existing = await prisma.influencerContentCategory.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
+    select: { id: true },
+  });
+  if (existing) return { id: existing.id };
+
+  const created = await prisma.influencerContentCategory.create({ data: { name }, select: { id: true } });
+  return { id: created.id };
+}
+
+/**
+ * Manuel form akışındaki içerik kategorisi seçimini çözer — GuideContact'taki
+ * resolveCategoryId ile aynı desen, tek fark OPSİYONEL olması: boş bırakılırsa
+ * influencer kategorisiz kaydedilir (null).
+ */
+async function resolveContentCategoryId(
+  contentCategoryId: string,
+  newContentCategoryName: string
+): Promise<{ id: string | null } | { error: string }> {
+  if (contentCategoryId === NEW_CONTENT_CATEGORY_VALUE) {
+    const result = await resolveContentCategoryByName(newContentCategoryName);
+    if ("error" in result) return { error: result.error };
+    return { id: result.id };
+  }
+
+  if (!contentCategoryId) return { id: null };
+
+  const existing = await prisma.influencerContentCategory.findUnique({
+    where: { id: contentCategoryId },
+    select: { id: true },
+  });
+  if (!existing) return { error: "Seçilen kategori bulunamadı." };
+  return { id: existing.id };
+}
+
 type ResolvedInfluencerAccount = {
   platformId: string;
   username: string;
@@ -128,6 +185,8 @@ function parseInfluencerForm(formData: FormData) {
     email: formData.get("email") ?? "",
     phone: formData.get("phone") ?? "",
     address: formData.get("address") ?? "",
+    contentCategoryId: formData.get("contentCategoryId") ?? "",
+    newContentCategoryName: formData.get("newContentCategoryName") ?? "",
     accountsJson: formData.get("accountsJson") ?? "[]",
   });
 }
@@ -148,6 +207,14 @@ export async function createInfluencer(
     return { errors: { accountsJson: [accountsResult.error] } };
   }
 
+  const categoryResult = await resolveContentCategoryId(
+    validated.data.contentCategoryId,
+    validated.data.newContentCategoryName
+  );
+  if ("error" in categoryResult) {
+    return { errors: { contentCategoryId: [categoryResult.error] } };
+  }
+
   const influencer = await prisma.influencer.create({
     data: {
       firstName: validated.data.firstName || null,
@@ -155,6 +222,7 @@ export async function createInfluencer(
       email: validated.data.email || null,
       phone: validated.data.phone || null,
       address: validated.data.address || null,
+      contentCategoryId: categoryResult.id,
       // Kayıt tarihi modalde alan olarak sorulmaz, kayıt anında otomatik basılır.
       recordDate: new Date(),
       accounts: { create: accountsResult.accounts },
@@ -189,6 +257,14 @@ export async function updateInfluencer(
     return { errors: { accountsJson: [accountsResult.error] } };
   }
 
+  const categoryResult = await resolveContentCategoryId(
+    validated.data.contentCategoryId,
+    validated.data.newContentCategoryName
+  );
+  if ("error" in categoryResult) {
+    return { errors: { contentCategoryId: [categoryResult.error] } };
+  }
+
   // Hesap satırları düzenlemede tek tek eşleştirilmiyor — basitlik için
   // mevcut tüm hesaplar silinip gönderilen liste yeniden oluşturuluyor
   // (hesapların başka hiçbir tabloda referansı yok, bkz. prisma/schema.prisma).
@@ -202,6 +278,7 @@ export async function updateInfluencer(
         email: validated.data.email || null,
         phone: validated.data.phone || null,
         address: validated.data.address || null,
+        contentCategoryId: categoryResult.id,
         // recordDate kasıtlı olarak değiştirilmiyor — ilk kayıt anı korunur.
         accounts: { create: accountsResult.accounts },
       },
@@ -244,6 +321,19 @@ export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise
     return platformCache.get(key)!;
   }
 
+  // Kategori boşsa (Excel'de sütun boş bırakıldıysa) kategorisiz aktarılır —
+  // platformun aksine burada "Diğer" gibi bir varsayılana ZORLANMAZ.
+  const categoryCache = new Map<string, { id: string } | { error: string }>();
+  async function cachedResolveContentCategoryByName(rawName: string): Promise<{ id: string | null } | { error: string }> {
+    const name = rawName.trim();
+    if (!name) return { id: null };
+    const key = name.toLowerCase();
+    if (!categoryCache.has(key)) {
+      categoryCache.set(key, await resolveContentCategoryByName(name));
+    }
+    return categoryCache.get(key)!;
+  }
+
   const errors: { row: number; message: string }[] = [];
   const toCreate: {
     firstName: string | null;
@@ -251,6 +341,7 @@ export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise
     email: string | null;
     phone: string | null;
     address: string | null;
+    contentCategoryId: string | null;
     accounts: ResolvedInfluencerAccount[];
   }[] = [];
 
@@ -285,12 +376,19 @@ export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise
       continue;
     }
 
+    const categoryResult = await cachedResolveContentCategoryByName(row.contentCategoryName);
+    if ("error" in categoryResult) {
+      errors.push({ row: rowNumber, message: categoryResult.error });
+      continue;
+    }
+
     toCreate.push({
       firstName: row.firstName || null,
       lastName: row.lastName || null,
       email: row.email || null,
       phone: row.phone || null,
       address: row.address || null,
+      contentCategoryId: categoryResult.id,
       accounts: resolvedAccounts,
     });
   }

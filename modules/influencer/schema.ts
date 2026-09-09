@@ -6,6 +6,13 @@ import { z } from "zod";
 // kullanılır. GuideCategory'deki NEW_CATEGORY_VALUE ile aynı desen.
 export const NEW_PLATFORM_VALUE = "__new_platform__";
 
+// İçerik kategorisi dropdown'ındaki "yeni kategori ekle" sentinel değeri —
+// GuideContact'taki NEW_CATEGORY_VALUE ile aynı desen (bkz.
+// components/admin/influencer/InfluencerModal.tsx ve
+// modules/influencer/actions.ts#resolveContentCategoryId). Platformdan farklı
+// olarak bu alan OPSİYONEL — boş bırakılırsa influencer kategorisiz kalır.
+export const NEW_CONTENT_CATEGORY_VALUE = "__new_content_category__";
+
 // Bir influencer'ın tek bir sosyal medya hesabı — formdan tek bir gizli
 // input'ta JSON dizi olarak gelir (bkz. Service modülündeki subServicesJson
 // deseni). TEK zorunlu alan `username` — platform select'i zaten her zaman
@@ -26,6 +33,10 @@ export const InfluencerSchema = z.object({
   email: z.union([z.email({ error: "Geçerli bir e-posta girin." }), z.literal("")]).default(""),
   phone: z.string().trim().default(""),
   address: z.string().trim().default(""),
+  // "" (kategorisiz), mevcut bir kategori id'si, ya da NEW_CONTENT_CATEGORY_VALUE
+  // (bu durumda newContentCategoryName zorunlu — bkz. resolveContentCategoryId).
+  contentCategoryId: z.string().trim().default(""),
+  newContentCategoryName: z.string().trim().default(""),
   // Formdan tek bir gizli input'ta JSON string olarak gelir (bkz.
   // components/admin/influencer/InfluencerAccountRepeater.tsx) — en az bir
   // sosyal medya hesabı zorunlu.
@@ -76,6 +87,11 @@ export const BulkImportRowSchema = z.object({
   email: z.string().trim().default(""),
   phone: z.string().trim().default(""),
   address: z.string().trim().default(""),
+  // Platform adı gibi SERBEST METİN — dosyadaki "İçerik Kategorisi" sütunu
+  // ada göre eşleştirilir/gerekirse oluşturulur (bkz.
+  // modules/influencer/actions.ts#resolveContentCategoryByName). Boşsa
+  // kategorisiz aktarılır.
+  contentCategoryName: z.string().trim().default(""),
   accounts: z.array(BulkImportAccountSchema),
 });
 export type BulkImportRowInput = z.infer<typeof BulkImportRowSchema>;

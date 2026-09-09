@@ -43,7 +43,7 @@ function todayStamp(): string {
 
 function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
   const maxAccounts = Math.max(1, ...rows.map((r) => r.accounts.length));
-  const headers: string[] = ["Ad", "Soyad", "E-posta", "Telefon", "Adres", "Kayıt Tarihi"];
+  const headers: string[] = ["Ad", "Soyad", "E-posta", "Telefon", "Adres", "İçerik Kategorisi", "Kayıt Tarihi"];
   for (let i = 1; i <= maxAccounts; i++) {
     headers.push(`Platform ${i}`, `Kullanıcı Adı ${i}`, `Profil URL ${i}`, `Takipçi Sayısı ${i}`);
   }
@@ -56,6 +56,7 @@ function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
       row.email ?? "",
       row.phone ?? "",
       row.address ?? "",
+      row.contentCategory?.name ?? "",
       formatGunAyYil(row.recordDate),
     ];
     for (let i = 0; i < maxAccounts; i++) {
@@ -110,6 +111,7 @@ export async function downloadInfluencerImportTemplate(): Promise<void> {
       "E-posta",
       "Telefon",
       "Adres",
+      "İçerik Kategorisi",
       "Platform 1",
       "Kullanıcı Adı 1",
       "Profil URL 1",
@@ -125,6 +127,7 @@ export async function downloadInfluencerImportTemplate(): Promise<void> {
       "ayse@ornek.com",
       "5551234567",
       "İstanbul, Türkiye",
+      "Life Style",
       "Instagram",
       "ayseyilmaz",
       "https://www.instagram.com/ayseyilmaz",
@@ -162,6 +165,7 @@ type ColumnMap = {
   email?: number;
   phone?: number;
   address?: number;
+  contentCategory?: number;
   // Grup no (1, 2, 3…) → o gruptaki her alanın sütun index'i.
   groups: Map<number, Partial<Record<AccountField, number>>>;
 };
@@ -184,6 +188,8 @@ function mapHeaders(headerRow: unknown[]): ColumnMap {
     if (["eposta", "email", "mail"].includes(norm)) return void (map.email = idx);
     if (["telefon", "tel", "phone", "gsm"].includes(norm)) return void (map.phone = idx);
     if (["adres", "address"].includes(norm)) return void (map.address = idx);
+    if (["icerikkategorisi", "kategori", "icerikategorisi", "category"].includes(norm))
+      return void (map.contentCategory = idx);
     if (norm === "kayittarihi") return; // bilgi amaçlı — içe aktarımda kullanılmaz (yeni kayıtta tarih otomatik basılır)
 
     let m = norm.match(/^platform(\d*)$/);
@@ -265,6 +271,7 @@ function buildRowsFromAoa(aoa: unknown[][]): ParsedImportOutcome {
       email: map.email !== undefined ? cellToString(line[map.email]) : "",
       phone: map.phone !== undefined ? cellToString(line[map.phone]) : "",
       address: map.address !== undefined ? cellToString(line[map.address]) : "",
+      contentCategoryName: map.contentCategory !== undefined ? cellToString(line[map.contentCategory]) : "",
       accounts,
     });
   }

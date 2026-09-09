@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { createInfluencer, updateInfluencer } from "@/modules/influencer/actions";
-import type { InfluencerFormState } from "@/modules/influencer/schema";
+import { NEW_CONTENT_CATEGORY_VALUE, type InfluencerFormState } from "@/modules/influencer/schema";
 import InfluencerAccountRepeater, { type InfluencerAccountRow } from "./InfluencerAccountRepeater";
 
 const inputClass =
@@ -18,6 +18,7 @@ export type InfluencerForEdit = {
   email: string | null;
   phone: string | null;
   address: string | null;
+  contentCategory: { id: string; name: string } | null;
   accounts: InfluencerAccountRow[];
 };
 
@@ -25,11 +26,13 @@ export default function InfluencerModal({
   open,
   onOpenChange,
   platforms,
+  contentCategories,
   influencer,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   platforms: { id: string; name: string }[];
+  contentCategories: { id: string; name: string }[];
   influencer?: InfluencerForEdit | null;
 }) {
   const isEdit = !!influencer;
@@ -40,6 +43,11 @@ export default function InfluencerModal({
       ) => Promise<InfluencerFormState>)
     : createInfluencer;
   const [state, formAction, pending] = useActionState(action, undefined);
+
+  // Boş (kategorisiz) varsayılan — platform seçiminden farklı olarak burada
+  // "hiçbir kategori" geçerli bir seçenek (bkz. NEW_CONTENT_CATEGORY_VALUE
+  // sadece "+ yeni kategori ekle" seçildiğinde devreye girer).
+  const [categoryValue, setCategoryValue] = useState(influencer?.contentCategory?.id ?? "");
 
   useEffect(() => {
     if (state?.success) onOpenChange(false);
@@ -83,9 +91,38 @@ export default function InfluencerModal({
               </div>
             </div>
 
-            <div>
-              <label className={labelClass}>Adres</label>
-              <textarea name="address" rows={2} defaultValue={influencer?.address ?? ""} className={inputClass} />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Adres</label>
+                <textarea name="address" rows={2} defaultValue={influencer?.address ?? ""} className={inputClass} />
+              </div>
+              <div>
+                <label className={labelClass}>İçerik Kategorisi</label>
+                <select
+                  name="contentCategoryId"
+                  value={categoryValue}
+                  onChange={(e) => setCategoryValue(e.target.value)}
+                  className={inputClass}
+                >
+                  <option value="">Kategorisiz</option>
+                  {contentCategories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                  <option value={NEW_CONTENT_CATEGORY_VALUE}>+ Yeni kategori ekle</option>
+                </select>
+                {categoryValue === NEW_CONTENT_CATEGORY_VALUE && (
+                  <input
+                    name="newContentCategoryName"
+                    placeholder="Örn. Life Style, Spor, Yoga, Yemek-Tarif"
+                    className={`${inputClass} mt-2`}
+                    autoFocus
+                    required
+                  />
+                )}
+                {state?.errors?.contentCategoryId && (
+                  <p className="mt-1 text-xs text-red-600">{state.errors.contentCategoryId[0]}</p>
+                )}
+              </div>
             </div>
 
             <div>

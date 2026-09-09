@@ -18,6 +18,7 @@ export type InfluencerRow = {
   address: string | null;
   recordDate: Date | string;
   accounts: InfluencerAccountRowData[];
+  contentCategory: { id: string; name: string } | null;
 };
 
 /** Ad+soyad varsa onu, yoksa ilk hesabın kullanıcı adını gösterir. */
