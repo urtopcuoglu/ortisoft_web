@@ -56,6 +56,7 @@ function toEditInfluencer(row: InfluencerRow): InfluencerForEdit {
     lastName: row.lastName,
     email: row.email,
     phone: row.phone,
+    address: row.address,
     accounts: row.accounts.map((a) => ({
       platformId: a.platform.id,
       newPlatformName: "",
@@ -148,6 +149,7 @@ export default function InfluencerTable({
           inf.lastName ?? "",
           inf.email ?? "",
           inf.phone ?? "",
+          inf.address ?? "",
           ...inf.accounts.map((a) => a.username),
         ]
           .join(" ")
@@ -355,6 +357,7 @@ export default function InfluencerTable({
                 <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
                   <div>{row.email || "—"}</div>
                   <div>{row.phone || "—"}</div>
+                  {row.address && <div className="mt-0.5 max-w-[180px] text-slate-400 dark:text-slate-500">{row.address}</div>}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex flex-col gap-1.5">

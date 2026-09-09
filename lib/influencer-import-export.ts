@@ -43,7 +43,7 @@ function todayStamp(): string {
 
 function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
   const maxAccounts = Math.max(1, ...rows.map((r) => r.accounts.length));
-  const headers: string[] = ["Ad", "Soyad", "E-posta", "Telefon", "Kayıt Tarihi"];
+  const headers: string[] = ["Ad", "Soyad", "E-posta", "Telefon", "Adres", "Kayıt Tarihi"];
   for (let i = 1; i <= maxAccounts; i++) {
     headers.push(`Platform ${i}`, `Kullanıcı Adı ${i}`, `Profil URL ${i}`, `Takipçi Sayısı ${i}`);
   }
@@ -55,6 +55,7 @@ function buildExportAoa(rows: InfluencerRow[]): (string | number)[][] {
       row.lastName ?? "",
       row.email ?? "",
       row.phone ?? "",
+      row.address ?? "",
       formatGunAyYil(row.recordDate),
     ];
     for (let i = 0; i < maxAccounts; i++) {
@@ -108,6 +109,7 @@ export async function downloadInfluencerImportTemplate(): Promise<void> {
       "Soyad",
       "E-posta",
       "Telefon",
+      "Adres",
       "Platform 1",
       "Kullanıcı Adı 1",
       "Profil URL 1",
@@ -122,6 +124,7 @@ export async function downloadInfluencerImportTemplate(): Promise<void> {
       "Yılmaz",
       "ayse@ornek.com",
       "5551234567",
+      "İstanbul, Türkiye",
       "Instagram",
       "ayseyilmaz",
       "https://www.instagram.com/ayseyilmaz",
@@ -158,6 +161,7 @@ type ColumnMap = {
   lastName?: number;
   email?: number;
   phone?: number;
+  address?: number;
   // Grup no (1, 2, 3…) → o gruptaki her alanın sütun index'i.
   groups: Map<number, Partial<Record<AccountField, number>>>;
 };
@@ -179,6 +183,7 @@ function mapHeaders(headerRow: unknown[]): ColumnMap {
     if (norm === "soyad") return void (map.lastName = idx);
     if (["eposta", "email", "mail"].includes(norm)) return void (map.email = idx);
     if (["telefon", "tel", "phone", "gsm"].includes(norm)) return void (map.phone = idx);
+    if (["adres", "address"].includes(norm)) return void (map.address = idx);
     if (norm === "kayittarihi") return; // bilgi amaçlı — içe aktarımda kullanılmaz (yeni kayıtta tarih otomatik basılır)
 
     let m = norm.match(/^platform(\d*)$/);
@@ -259,6 +264,7 @@ function buildRowsFromAoa(aoa: unknown[][]): ParsedImportOutcome {
       lastName: map.lastName !== undefined ? cellToString(line[map.lastName]) : "",
       email: map.email !== undefined ? cellToString(line[map.email]) : "",
       phone: map.phone !== undefined ? cellToString(line[map.phone]) : "",
+      address: map.address !== undefined ? cellToString(line[map.address]) : "",
       accounts,
     });
   }

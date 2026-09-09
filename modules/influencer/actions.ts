@@ -127,6 +127,7 @@ function parseInfluencerForm(formData: FormData) {
     lastName: formData.get("lastName") ?? "",
     email: formData.get("email") ?? "",
     phone: formData.get("phone") ?? "",
+    address: formData.get("address") ?? "",
     accountsJson: formData.get("accountsJson") ?? "[]",
   });
 }
@@ -153,6 +154,7 @@ export async function createInfluencer(
       lastName: validated.data.lastName || null,
       email: validated.data.email || null,
       phone: validated.data.phone || null,
+      address: validated.data.address || null,
       // Kayıt tarihi modalde alan olarak sorulmaz, kayıt anında otomatik basılır.
       recordDate: new Date(),
       accounts: { create: accountsResult.accounts },
@@ -199,6 +201,7 @@ export async function updateInfluencer(
         lastName: validated.data.lastName || null,
         email: validated.data.email || null,
         phone: validated.data.phone || null,
+        address: validated.data.address || null,
         // recordDate kasıtlı olarak değiştirilmiyor — ilk kayıt anı korunur.
         accounts: { create: accountsResult.accounts },
       },
@@ -247,6 +250,7 @@ export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise
     lastName: string | null;
     email: string | null;
     phone: string | null;
+    address: string | null;
     accounts: ResolvedInfluencerAccount[];
   }[] = [];
 
@@ -286,6 +290,7 @@ export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise
       lastName: row.lastName || null,
       email: row.email || null,
       phone: row.phone || null,
+      address: row.address || null,
       accounts: resolvedAccounts,
     });
   }

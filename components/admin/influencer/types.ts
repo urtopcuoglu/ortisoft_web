@@ -15,6 +15,7 @@ export type InfluencerRow = {
   lastName: string | null;
   email: string | null;
   phone: string | null;
+  address: string | null;
   recordDate: Date | string;
   accounts: InfluencerAccountRowData[];
 };

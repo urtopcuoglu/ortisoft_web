@@ -25,6 +25,7 @@ export const InfluencerSchema = z.object({
   lastName: z.string().trim().default(""),
   email: z.union([z.email({ error: "Geçerli bir e-posta girin." }), z.literal("")]).default(""),
   phone: z.string().trim().default(""),
+  address: z.string().trim().default(""),
   // Formdan tek bir gizli input'ta JSON string olarak gelir (bkz.
   // components/admin/influencer/InfluencerAccountRepeater.tsx) — en az bir
   // sosyal medya hesabı zorunlu.
@@ -74,6 +75,7 @@ export const BulkImportRowSchema = z.object({
   lastName: z.string().trim().default(""),
   email: z.string().trim().default(""),
   phone: z.string().trim().default(""),
+  address: z.string().trim().default(""),
   accounts: z.array(BulkImportAccountSchema),
 });
 export type BulkImportRowInput = z.infer<typeof BulkImportRowSchema>;

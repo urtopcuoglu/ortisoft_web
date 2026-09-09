@@ -17,6 +17,7 @@ export type InfluencerForEdit = {
   lastName: string | null;
   email: string | null;
   phone: string | null;
+  address: string | null;
   accounts: InfluencerAccountRow[];
 };
 
@@ -80,6 +81,11 @@ export default function InfluencerModal({
                 <label className={labelClass}>Telefon Numarası</label>
                 <input name="phone" type="tel" defaultValue={influencer?.phone ?? ""} className={inputClass} />
               </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Adres</label>
+              <textarea name="address" rows={2} defaultValue={influencer?.address ?? ""} className={inputClass} />
             </div>
 
             <div>
