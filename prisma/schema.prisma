@@ -603,12 +603,26 @@ model InfluencerPlatform {
   @@map("influencer_platforms")
 }
 
+// İçerik kategorisi — GuideCategory ile aynı desen: sabit bir enum DEĞİL,
+// admin panelinden "+ yeni kategori ekle" ile serbestçe büyüyen bir liste
+// (bkz. modules/influencer/schema.ts#NEW_CONTENT_CATEGORY_VALUE). "Life
+// style", "Spor", "Yoga", "Yemek-Tarif" gibi manuel etiketler için.
+model InfluencerContentCategory {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  createdAt   DateTime     @default(now())
+  influencers Influencer[]
+
+  @@map("influencer_content_categories")
+}
+
 model Influencer {
   id        String                    @id @default(cuid())
   firstName String?
   lastName  String?
   email     String?
   phone     String?
+  address   String?
   // Kayıt tarihi — modalde alan olarak İSTENMİYOR, kayıt anında sunucu
   // tarafında otomatik basılır (bkz. GuideContact.recordDate ile aynı desen,
   // lib/utils.ts#formatGunAyYil ile gün_ay_yıl olarak gösterilir).
@@ -617,7 +631,16 @@ model Influencer {
   updatedAt  DateTime                 @updatedAt
   accounts   InfluencerSocialAccount[]
 
+  // Takipçi bazlı Nano/Mikro/Makro/Mega ayrımı burada bir alan DEĞİL — DB'de
+  // saklanmaz, toplam takipçiden anlık türetilir (bkz.
+  // components/admin/influencer/types.ts#influencerTier) ki eşikler
+  // değiştiğinde geçmiş kayıtlar yeniden hesaplanmasın diye migration
+  // gerekmesin.
+  contentCategory   InfluencerContentCategory? @relation(fields: [contentCategoryId], references: [id], onDelete: SetNull)
+  contentCategoryId String?
+
   @@index([recordDate])
+  @@index([contentCategoryId])
   @@map("influencers")
 }
 
