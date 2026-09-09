@@ -5,6 +5,7 @@ import { Plus, ArrowUp, ArrowDown, ArrowUpDown, X, ExternalLink } from "lucide-r
 import InfluencerModal, { type InfluencerForEdit } from "./InfluencerModal";
 import InfluencerQrButton from "./InfluencerQrButton";
 import InfluencerDashboard from "./InfluencerDashboard";
+import InfluencerImportExportBar from "./InfluencerImportExportBar";
 import DeleteForm from "../DeleteForm";
 import { deleteInfluencer } from "@/modules/influencer/actions";
 import { formatFollowerCount, formatGunAyYil } from "@/lib/utils";
@@ -84,6 +85,21 @@ export default function InfluencerTable({
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<InfluencerRow | null>(null);
 
+  // Satır seçimi — export'ta "seçili satırları indir" için (bkz.
+  // InfluencerImportExportBar). Seçim ID bazlı tutulur, filtre değişse bile
+  // korunur; header checkbox'ı sadece o an filtreyle görünen satırları
+  // toplu seçer/kaldırır (yaygın veri tablosu deseni).
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  function toggleRowSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -161,6 +177,21 @@ export default function InfluencerTable({
     return sorted;
   }, [influencers, search, firstNameFilter, lastNameFilter, platformFilter, dateFrom, dateTo, sortKey, sortDir]);
 
+  const selectedRows = useMemo(() => influencers.filter((inf) => selectedIds.has(inf.id)), [influencers, selectedIds]);
+  const allVisibleSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id));
+
+  function toggleSelectAllVisible() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleSelected) {
+        rows.forEach((r) => next.delete(r.id));
+      } else {
+        rows.forEach((r) => next.add(r.id));
+      }
+      return next;
+    });
+  }
+
   return (
     <div>
       <InfluencerDashboard influencers={influencers} />
@@ -226,22 +257,53 @@ export default function InfluencerTable({
             </button>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setEditingRow(null);
-            setModalOpen(true);
-          }}
-          className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
-        >
-          <Plus className="h-4 w-4" /> Yeni Influencer Ekle
-        </button>
+        <div className="flex items-center gap-2">
+          <InfluencerImportExportBar
+            allRows={influencers}
+            filteredRows={rows}
+            selectedRows={selectedRows}
+            hasActiveFilters={hasActiveFilters}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setEditingRow(null);
+              setModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+          >
+            <Plus className="h-4 w-4" /> Yeni Influencer Ekle
+          </button>
+        </div>
       </div>
+
+      {selectedIds.size > 0 && (
+        <div className="mb-3 flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-500/10 px-3.5 py-2 text-xs font-semibold text-blue-700 dark:text-blue-400">
+          {selectedIds.size} satır seçili
+          <button
+            type="button"
+            onClick={() => setSelectedIds(new Set())}
+            className="text-blue-600 underline hover:no-underline dark:text-blue-400"
+          >
+            Seçimi temizle
+          </button>
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
             <tr>
+              <th className={`${thClass} w-8`}>
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleSelectAllVisible}
+                  disabled={rows.length === 0}
+                  aria-label="Görünen tüm satırları seç"
+                  className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 accent-blue-600"
+                />
+              </th>
               <th className={thClass}>
                 <SortButton sortKeyValue="name" currentKey={sortKey} currentDir={sortDir} onToggle={toggleSort}>
                   Ad Soyad
@@ -271,13 +333,22 @@ export default function InfluencerTable({
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
+                <td colSpan={7} className="px-4 py-6 text-center text-slate-400 dark:text-slate-500">
                   {influencers.length === 0 ? "Henüz influencer kaydı eklenmedi." : "Filtreyle eşleşen kayıt yok."}
                 </td>
               </tr>
             )}
             {rows.map((row) => (
               <tr key={row.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0 align-top">
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(row.id)}
+                    onChange={() => toggleRowSelected(row.id)}
+                    aria-label={`${influencerDisplayName(row)} satırını seç`}
+                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 accent-blue-600"
+                  />
+                </td>
                 <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">
                   {influencerDisplayName(row)}
                 </td>

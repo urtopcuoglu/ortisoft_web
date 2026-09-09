@@ -1,14 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/modules/shared/dal";
 import { logAudit } from "@/modules/shared/audit";
 import { slugifyPlatformName } from "@/lib/utils";
 import { resolveInfluencerProfileUrl } from "@/lib/social-platform";
 import {
+  BulkImportRowSchema,
   InfluencerSchema,
   NEW_PLATFORM_VALUE,
+  type BulkImportResult,
+  type BulkImportRowInput,
   type InfluencerAccountInput,
   type InfluencerFormState,
 } from "./schema";
@@ -36,27 +40,18 @@ export async function getInfluencerAccountForQr(accountId: string) {
 }
 
 /**
- * Bir hesap satırının platformunu çözer — GuideContact'taki resolveCategoryId
- * ile aynı desen: "+ yeni platform ekle" seçilip yeni bir ad girildiyse önce
- * o platformu oluşturur (aynı ad zaten varsa, büyük/küçük harf duyarsız
- * olarak mevcut kaydı kullanır). Slug çakışırsa kısa bir rastgele son ek
- * eklenir.
+ * Bir platform adını çözer — aynı ad zaten varsa (büyük/küçük harf duyarsız)
+ * mevcut kaydı kullanır, yoksa yeni oluşturur. Slug çakışırsa kısa bir
+ * rastgele son ek eklenir. Hem manuel form akışındaki "+ yeni platform ekle"
+ * (bkz. resolvePlatform) hem de Excel/CSV içe aktarımdaki serbest metin
+ * "Platform" sütunu (bkz. bulkImportInfluencers) bunu kullanır.
  */
-async function resolvePlatform(
-  row: InfluencerAccountInput
+async function resolvePlatformByName(
+  rawName: string
 ): Promise<{ platform: { id: string; slug: string } } | { error: string }> {
-  if (row.platformId !== NEW_PLATFORM_VALUE) {
-    const existing = await prisma.influencerPlatform.findUnique({
-      where: { id: row.platformId },
-      select: { id: true, slug: true },
-    });
-    if (!existing) return { error: "Seçilen platform bulunamadı." };
-    return { platform: existing };
-  }
-
-  const name = row.newPlatformName.trim();
+  const name = rawName.trim();
   if (name.length < 2) {
-    return { error: "Yeni platform adı en az 2 karakter olmalı." };
+    return { error: "Platform adı en az 2 karakter olmalı." };
   }
 
   const existingByName = await prisma.influencerPlatform.findFirst({
@@ -75,6 +70,27 @@ async function resolvePlatform(
     select: { id: true, slug: true },
   });
   return { platform: created };
+}
+
+/**
+ * Bir hesap satırının platformunu çözer — GuideContact'taki resolveCategoryId
+ * ile aynı desen: "+ yeni platform ekle" seçilip yeni bir ad girildiyse
+ * resolvePlatformByName üzerinden oluşturur/eşler, aksi halde platformId ile
+ * doğrudan arar.
+ */
+async function resolvePlatform(
+  row: InfluencerAccountInput
+): Promise<{ platform: { id: string; slug: string } } | { error: string }> {
+  if (row.platformId !== NEW_PLATFORM_VALUE) {
+    const existing = await prisma.influencerPlatform.findUnique({
+      where: { id: row.platformId },
+      select: { id: true, slug: true },
+    });
+    if (!existing) return { error: "Seçilen platform bulunamadı." };
+    return { platform: existing };
+  }
+
+  return resolvePlatformByName(row.newPlatformName);
 }
 
 type ResolvedInfluencerAccount = {
@@ -198,6 +214,105 @@ export async function updateInfluencer(
 
   revalidatePath("/admin/crm");
   return { success: true, message: "Kaydedildi." };
+}
+
+/**
+ * Excel/CSV içe aktarma — dosya tarayıcıda satır dizisine çevrilip
+ * (bkz. lib/influencer-import-export.ts#parseInfluencerImportFile) buraya
+ * gönderilir. Her satır ayrı ayrı çözümlenir; bir satırdaki hata diğer
+ * satırları etkilemez (hatalı satırlar atlanıp `errors` içinde raporlanır).
+ * Platform adları bir Map'te önbelleğe alınır ki aynı platform (ör.
+ * "Instagram") yüzlerce satırda tekrar etse bile tek DB sorgusuyla çözülsün.
+ */
+export async function bulkImportInfluencers(rows: BulkImportRowInput[]): Promise<BulkImportResult> {
+  const session = await verifySession();
+
+  const validated = z.array(BulkImportRowSchema).safeParse(rows);
+  if (!validated.success) {
+    return { createdCount: 0, errors: [{ row: 0, message: "Dosya verisi okunamadı." }] };
+  }
+
+  const platformCache = new Map<string, { platform: { id: string; slug: string } } | { error: string }>();
+  async function cachedResolvePlatformByName(rawName: string) {
+    const key = (rawName.trim() || "diğer").toLowerCase();
+    if (!platformCache.has(key)) {
+      platformCache.set(key, await resolvePlatformByName(rawName || "Diğer"));
+    }
+    return platformCache.get(key)!;
+  }
+
+  const errors: { row: number; message: string }[] = [];
+  const toCreate: {
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+    phone: string | null;
+    accounts: ResolvedInfluencerAccount[];
+  }[] = [];
+
+  for (let i = 0; i < validated.data.length; i++) {
+    const row = validated.data[i];
+    const rowNumber = i + 2; // 1. satır başlık, veri Excel'de 2. satırdan başlar
+
+    if (row.accounts.length === 0) {
+      errors.push({ row: rowNumber, message: "En az bir sosyal medya hesabı (kullanıcı adı) gerekli." });
+      continue;
+    }
+
+    const resolvedAccounts: ResolvedInfluencerAccount[] = [];
+    let rowError: string | null = null;
+    for (const acc of row.accounts) {
+      const platformResult = await cachedResolvePlatformByName(acc.platformName);
+      if ("error" in platformResult) {
+        rowError = platformResult.error;
+        break;
+      }
+      const autoUrl = resolveInfluencerProfileUrl(platformResult.platform.slug, acc.username);
+      const profileUrl = /^https?:\/\//i.test(acc.profileUrl) ? acc.profileUrl : autoUrl;
+      resolvedAccounts.push({
+        platformId: platformResult.platform.id,
+        username: acc.username,
+        profileUrl,
+        followerCount: acc.followerCount,
+      });
+    }
+    if (rowError) {
+      errors.push({ row: rowNumber, message: rowError });
+      continue;
+    }
+
+    toCreate.push({
+      firstName: row.firstName || null,
+      lastName: row.lastName || null,
+      email: row.email || null,
+      phone: row.phone || null,
+      accounts: resolvedAccounts,
+    });
+  }
+
+  if (toCreate.length === 0) {
+    return { createdCount: 0, errors };
+  }
+
+  const created = await prisma.$transaction(
+    toCreate.map((data) =>
+      prisma.influencer.create({
+        data: { ...data, recordDate: new Date(), accounts: { create: data.accounts } },
+        select: { id: true },
+      })
+    )
+  );
+
+  await logAudit({
+    actorId: session.userId,
+    action: "CREATE",
+    entityType: "Influencer",
+    entityId: `bulk-import:${created.length}`,
+    diff: { importedIds: created.map((c) => c.id) },
+  });
+
+  revalidatePath("/admin/crm");
+  return { createdCount: created.length, errors };
 }
 
 export async function deleteInfluencer(id: string) {
