@@ -35,3 +35,8 @@ export const supabaseAdmin = new Proxy({} as SupabaseClient, {
 });
 
 export const CV_BUCKET = "cvs";
+
+// Pazarlama Portföy Yönetimi (bkz. modules/portfolio) — müşteri dosyaları
+// (teklif/sözleşme/vb. — pdf/doc/docx/xls/xlsx/csv). CV_BUCKET gibi PRIVATE —
+// Supabase dashboard'da elle oluşturulmalı, migration bunu sağlamaz.
+export const PORTFOLIO_BUCKET = "portfolio-files";

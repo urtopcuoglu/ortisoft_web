@@ -103,6 +103,17 @@ export async function createGuideContact(
     },
   });
 
+  // Mesajlar sayfasındaki "Firmalara Ekle" aksiyonundan geldiyse (bkz.
+  // MessageCrmActions.tsx) — mesajı bu kayda bağla ki "zaten eklendi" durumu
+  // gösterilsin, tekrar eklenmesin.
+  const sourceMessageId = String(formData.get("sourceMessageId") ?? "") || null;
+  if (sourceMessageId) {
+    await prisma.contactMessage.update({
+      where: { id: sourceMessageId },
+      data: { guideContactId: contact.id },
+    });
+  }
+
   await logAudit({
     actorId: session.userId,
     action: "CREATE",
@@ -111,6 +122,7 @@ export async function createGuideContact(
   });
 
   revalidatePath("/admin/crm");
+  if (sourceMessageId) revalidatePath(`/admin/messages/${sourceMessageId}`);
   return { success: true, message: "Kayıt eklendi." };
 }
 

@@ -3,10 +3,13 @@ import { Suspense } from "react";
 import { listGuideContacts, listGuideCategories, listGuideUsers } from "@/modules/guide/actions";
 import { listInfluencers, listInfluencerPlatforms, listInfluencerContentCategories } from "@/modules/influencer/actions";
 import { listTasks, listTaskColumns, listTaskLabels, listTaskUsers, listTaskRequestTypes } from "@/modules/tasks/actions";
+import { listPortfolioCustomers, listPortfolioContactStatuses } from "@/modules/portfolio/actions";
+import { listServices } from "@/modules/services/actions";
 import { getCurrentUser } from "@/modules/shared/dal";
 import GuideTable from "@/components/admin/GuideTable";
 import InfluencerTable from "@/components/admin/influencer/InfluencerTable";
 import CrmSectionTabs from "@/components/admin/crm/CrmSectionTabs";
+import PortfolioTable from "@/components/admin/portfolio/PortfolioTable";
 import TasksViewSwitcher from "@/components/admin/tasks/TasksViewSwitcher";
 
 export const metadata: Metadata = {
@@ -28,6 +31,9 @@ export default async function AdminCrmPage() {
     taskUsers,
     taskRequestTypes,
     currentUser,
+    portfolioCustomers,
+    portfolioStatuses,
+    services,
   ] = await Promise.all([
     listGuideContacts(),
     listGuideCategories(),
@@ -41,6 +47,9 @@ export default async function AdminCrmPage() {
     listTaskUsers(),
     listTaskRequestTypes(),
     getCurrentUser(),
+    listPortfolioCustomers(),
+    listPortfolioContactStatuses(),
+    listServices(),
   ]);
 
   return (
@@ -60,6 +69,7 @@ export default async function AdminCrmPage() {
         <CrmSectionTabs
           companiesCount={contacts.length}
           influencerCount={influencers.length}
+          portfolioCount={portfolioCustomers.length}
           tasksCount={tasks.length}
           companies={<GuideTable contacts={contacts} categories={categories} users={users} />}
           influencer={
@@ -68,6 +78,9 @@ export default async function AdminCrmPage() {
               platforms={influencerPlatforms}
               contentCategories={influencerContentCategories}
             />
+          }
+          portfolio={
+            <PortfolioTable customers={portfolioCustomers} services={services} statuses={portfolioStatuses} />
           }
           tasks={
             <TasksViewSwitcher

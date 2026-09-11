@@ -45,6 +45,7 @@ async function main() {
   await seedInfluencerPlatforms();
   await seedTaskColumns();
   await seedTaskRequestTypes();
+  await seedPortfolioContactStatuses();
 }
 
 const LOCALE = "tr";
@@ -451,6 +452,29 @@ async function seedTaskRequestTypes() {
     data: DEFAULT_TASK_REQUEST_TYPES.map((name) => ({ name })),
   });
   console.log(`✔ TaskRequestType seed edildi (${DEFAULT_TASK_REQUEST_TYPES.length} kayıt)`);
+}
+
+// Pazarlama Portföy Yönetimi — PortfolioContactStatus da admin-büyüyebilir
+// bir liste (GuideCategory deseni), burada kullanıcının verdiği 6 başlangıç
+// değeriyle açılıyor (TaskRequestType'daki gibi — GuideCategory'nin aksine,
+// doğal bir başlangıç listesi olduğu için seed ediliyor).
+const DEFAULT_PORTFOLIO_CONTACT_STATUSES = [
+  "Marka Tanıtım Toplantısı",
+  "Fiyat Teklifi İletildi",
+  "Yanıt Bekleniyor",
+  "Olumlu",
+  "Olumsuz",
+  "Beklemede",
+];
+
+async function seedPortfolioContactStatuses() {
+  const count = await prisma.portfolioContactStatus.count();
+  if (count > 0) return;
+
+  await prisma.portfolioContactStatus.createMany({
+    data: DEFAULT_PORTFOLIO_CONTACT_STATUSES.map((name) => ({ name })),
+  });
+  console.log(`✔ PortfolioContactStatus seed edildi (${DEFAULT_PORTFOLIO_CONTACT_STATUSES.length} kayıt)`);
 }
 
 main()

@@ -139,6 +139,10 @@ export async function getMessage(id: string) {
         orderBy: { sentAt: "asc" },
         include: { sentBy: { select: { name: true, email: true } } },
       },
+      // Bu mesajdan Portföy/Firmalar'a eklendiyse — MessageCrmActions'ın
+      // "zaten eklendi → görüntüle" durumunu göstermesi için (bkz. modules/portfolio).
+      portfolioCustomer: { select: { id: true, companyName: true } },
+      guideContact: { select: { id: true, companyName: true } },
     },
   });
 }

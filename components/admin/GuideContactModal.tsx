@@ -28,18 +28,34 @@ export type GuideContactForEdit = {
   relationType: (typeof GUIDE_RELATION_TYPES)[number];
 };
 
+// Mesajlar sayfasından "Firmalara Ekle" ile önceden doldurma — SADECE
+// create'te kullanılan varsayılan değerler, `contact` prop'undan (isEdit'i
+// belirleyen) bilinçli olarak AYRI tutulur, isEdit'i asla etkilemez.
+export type GuideContactPrefill = {
+  companyName?: string;
+  authorizedPerson?: string;
+  phone?: string;
+  email?: string;
+};
+
 export default function GuideContactModal({
   open,
   onOpenChange,
   categories,
   users,
   contact,
+  prefill,
+  sourceMessageId,
+  onSaved,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   categories: { id: string; name: string }[];
   users: { id: string; name: string }[];
   contact?: GuideContactForEdit | null;
+  prefill?: GuideContactPrefill;
+  sourceMessageId?: string;
+  onSaved?: () => void;
 }) {
   const isEdit = !!contact;
   const action = isEdit
@@ -55,8 +71,12 @@ export default function GuideContactModal({
   );
 
   useEffect(() => {
-    if (state?.success) onOpenChange(false);
-  }, [state?.success, onOpenChange]);
+    if (state?.success) {
+      onOpenChange(false);
+      onSaved?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.success]);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -73,17 +93,28 @@ export default function GuideContactModal({
           </div>
 
           <form action={formAction} className="flex flex-col gap-4">
+            {sourceMessageId && <input type="hidden" name="sourceMessageId" value={sourceMessageId} />}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Firma Adı</label>
-                <input name="companyName" defaultValue={contact?.companyName} className={inputClass} required />
+                <input
+                  name="companyName"
+                  defaultValue={contact?.companyName ?? prefill?.companyName ?? ""}
+                  className={inputClass}
+                  required
+                />
                 {state?.errors?.companyName && (
                   <p className="mt-1 text-xs text-red-600">{state.errors.companyName[0]}</p>
                 )}
               </div>
               <div>
                 <label className={labelClass}>Yetkili</label>
-                <input name="authorizedPerson" defaultValue={contact?.authorizedPerson} className={inputClass} required />
+                <input
+                  name="authorizedPerson"
+                  defaultValue={contact?.authorizedPerson ?? prefill?.authorizedPerson ?? ""}
+                  className={inputClass}
+                  required
+                />
                 {state?.errors?.authorizedPerson && (
                   <p className="mt-1 text-xs text-red-600">{state.errors.authorizedPerson[0]}</p>
                 )}
@@ -120,12 +151,24 @@ export default function GuideContactModal({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Telefon</label>
-                <input name="phone" type="tel" defaultValue={contact?.phone} className={inputClass} required />
+                <input
+                  name="phone"
+                  type="tel"
+                  defaultValue={contact?.phone ?? prefill?.phone ?? ""}
+                  className={inputClass}
+                  required
+                />
                 {state?.errors?.phone && <p className="mt-1 text-xs text-red-600">{state.errors.phone[0]}</p>}
               </div>
               <div>
                 <label className={labelClass}>E-posta</label>
-                <input name="email" type="email" defaultValue={contact?.email} className={inputClass} required />
+                <input
+                  name="email"
+                  type="email"
+                  defaultValue={contact?.email ?? prefill?.email ?? ""}
+                  className={inputClass}
+                  required
+                />
                 {state?.errors?.email && <p className="mt-1 text-xs text-red-600">{state.errors.email[0]}</p>}
               </div>
             </div>

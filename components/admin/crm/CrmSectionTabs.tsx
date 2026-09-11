@@ -2,17 +2,18 @@
 
 import { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { Building2, KanbanSquare, Sparkles } from "lucide-react";
+import { Building2, KanbanSquare, Sparkles, Users } from "lucide-react";
 
-type Tab = "companies" | "influencer" | "tasks";
+type Tab = "companies" | "influencer" | "portfolio" | "tasks";
 
 /**
  * Rehber/CRM sayfasının üst sekmesi — "Firmalar" (mevcut GuideTable),
- * "Influencer" ve "Görev Yönetimi" (Trello-lite Kanban/Zaman Çizelgesi,
- * bkz. components/admin/tasks) arasında geçiş yapar. Aktif olmayan sekme
- * ClientDetailTabs'teki gibi unmount edilir (yeniden mount'ta filtre/arama
- * state'i sıfırlanır — kabul edilebilir, sekmeler arası state paylaşımı
- * istenmiyor).
+ * "Influencer", "Müşteri Yönetimi" (Pazarlama Portföy Yönetimi, bkz.
+ * components/admin/portfolio) ve "Görev Yönetimi" (Trello-lite Kanban/Zaman
+ * Çizelgesi, bkz. components/admin/tasks) arasında geçiş yapar. Aktif
+ * olmayan sekme ClientDetailTabs'teki gibi unmount edilir (yeniden mount'ta
+ * filtre/arama state'i sıfırlanır — kabul edilebilir, sekmeler arası state
+ * paylaşımı istenmiyor).
  *
  * Başlangıç sekmesi `?tab=` query param'ından (ya da `?task=` varsa doğrudan
  * "tasks") okunur — görev bildirim çanındaki linkler (bkz.
@@ -23,22 +24,27 @@ type Tab = "companies" | "influencer" | "tasks";
 export default function CrmSectionTabs({
   companiesCount,
   influencerCount,
+  portfolioCount,
   tasksCount,
   companies,
   influencer,
+  portfolio,
   tasks,
 }: {
   companiesCount: number;
   influencerCount: number;
+  portfolioCount: number;
   tasksCount: number;
   companies: ReactNode;
   influencer: ReactNode;
+  portfolio: ReactNode;
   tasks: ReactNode;
 }) {
   const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
   const initialTab: Tab =
-    searchParams.get("tab") === "tasks" || searchParams.get("tab") === "influencer"
-      ? (searchParams.get("tab") as Tab)
+    tabParam === "tasks" || tabParam === "influencer" || tabParam === "portfolio"
+      ? tabParam
       : searchParams.get("task")
         ? "tasks"
         : "companies";
@@ -73,6 +79,18 @@ export default function CrmSectionTabs({
         </button>
         <button
           type="button"
+          onClick={() => setTab("portfolio")}
+          className={`flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+            tab === "portfolio"
+              ? "border-blue-600 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+          }`}
+        >
+          <Users className="h-4 w-4" /> Müşteri Yönetimi{" "}
+          <span className="text-xs font-normal text-slate-400 dark:text-slate-500">({portfolioCount})</span>
+        </button>
+        <button
+          type="button"
           onClick={() => setTab("tasks")}
           className={`flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
             tab === "tasks"
@@ -87,6 +105,7 @@ export default function CrmSectionTabs({
 
       {tab === "companies" && companies}
       {tab === "influencer" && influencer}
+      {tab === "portfolio" && portfolio}
       {tab === "tasks" && tasks}
     </div>
   );

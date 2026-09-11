@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Download } from "lucide-react";
 import { getMessage, deleteMessage } from "@/modules/messages/actions";
+import { listGuideCategories, listGuideUsers } from "@/modules/guide/actions";
+import { listServices } from "@/modules/services/actions";
 import MessageStatusSelect from "@/components/admin/MessageStatusSelect";
 import MessageReplyForm from "@/components/admin/MessageReplyForm";
+import MessageCrmActions from "@/components/admin/MessageCrmActions";
 import DeleteForm from "@/components/admin/DeleteForm";
 import { MESSAGE_PURPOSE_LABEL } from "@/modules/messages/schema";
 import type { MessageStatusValue, MessagePurposeValue } from "@/modules/messages/schema";
@@ -29,7 +32,12 @@ export default async function AdminMessageDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const msg = await getMessage(id);
+  const [msg, categories, users, services] = await Promise.all([
+    getMessage(id),
+    listGuideCategories(),
+    listGuideUsers(),
+    listServices(),
+  ]);
   if (!msg) notFound();
 
   return (
@@ -53,6 +61,22 @@ export default async function AdminMessageDetailPage({
           />
         </div>
       </div>
+
+      <MessageCrmActions
+        message={{
+          id: msg.id,
+          name: msg.name,
+          email: msg.email,
+          phone: msg.phone,
+          company: msg.company,
+          message: msg.message,
+          portfolioCustomer: msg.portfolioCustomer,
+          guideContact: msg.guideContact,
+        }}
+        services={services}
+        categories={categories}
+        users={users}
+      />
 
       {msg.service && (
         <div className="text-sm">
