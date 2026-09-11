@@ -21,8 +21,10 @@ import {
 import { getCurrentUser } from "@/modules/shared/dal";
 import { logout, countPendingPasswordResetRequests } from "@/modules/auth/actions";
 import { listRecentAuditLogs } from "@/modules/shared/audit";
+import { listMyTaskNotifications, countUnreadTaskNotifications } from "@/modules/tasks/actions";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationsBell from "@/components/admin/NotificationsBell";
+import TaskNotificationsBell from "@/components/admin/tasks/TaskNotificationsBell";
 
 // Bu layout sadece giriş yapılmış admin sayfalarını sarar (/admin/login hariç
 // tutulur — bkz. klasör yapısı: login, bu (protected) grubunun dışında).
@@ -38,10 +40,12 @@ const navLinkClass =
 export default async function ProtectedAdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [user, recentLogs, pendingResetCount] = await Promise.all([
+  const [user, recentLogs, pendingResetCount, taskNotifications, unreadTaskNotifCount] = await Promise.all([
     getCurrentUser(),
     listRecentAuditLogs(),
     countPendingPasswordResetRequests(),
+    listMyTaskNotifications(),
+    countUnreadTaskNotifications(),
   ]);
 
   return (
@@ -136,6 +140,7 @@ export default async function ProtectedAdminLayout({
             )}
           </div>
           <div className="flex items-center gap-2">
+            <TaskNotificationsBell notifications={taskNotifications} unreadCount={unreadTaskNotifCount} />
             <NotificationsBell logs={recentLogs} />
             <ThemeToggle />
             <form action={logout}>

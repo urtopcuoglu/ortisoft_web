@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { listGuideContacts, listGuideCategories, listGuideUsers } from "@/modules/guide/actions";
 import { listInfluencers, listInfluencerPlatforms, listInfluencerContentCategories } from "@/modules/influencer/actions";
+import { listTasks, listTaskColumns, listTaskLabels, listTaskUsers, listTaskRequestTypes } from "@/modules/tasks/actions";
+import { getCurrentUser } from "@/modules/shared/dal";
 import GuideTable from "@/components/admin/GuideTable";
 import InfluencerTable from "@/components/admin/influencer/InfluencerTable";
 import CrmSectionTabs from "@/components/admin/crm/CrmSectionTabs";
+import TasksViewSwitcher from "@/components/admin/tasks/TasksViewSwitcher";
 
 export const metadata: Metadata = {
   title: "CRM | Ortisoft Admin",
@@ -11,13 +15,32 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminCrmPage() {
-  const [contacts, categories, users, influencers, influencerPlatforms, influencerContentCategories] = await Promise.all([
+  const [
+    contacts,
+    categories,
+    users,
+    influencers,
+    influencerPlatforms,
+    influencerContentCategories,
+    tasks,
+    taskColumns,
+    taskLabels,
+    taskUsers,
+    taskRequestTypes,
+    currentUser,
+  ] = await Promise.all([
     listGuideContacts(),
     listGuideCategories(),
     listGuideUsers(),
     listInfluencers(),
     listInfluencerPlatforms(),
     listInfluencerContentCategories(),
+    listTasks(),
+    listTaskColumns(),
+    listTaskLabels(),
+    listTaskUsers(),
+    listTaskRequestTypes(),
+    getCurrentUser(),
   ]);
 
   return (
@@ -30,18 +53,35 @@ export default async function AdminCrmPage() {
         </p>
       </div>
 
-      <CrmSectionTabs
-        companiesCount={contacts.length}
-        influencerCount={influencers.length}
-        companies={<GuideTable contacts={contacts} categories={categories} users={users} />}
-        influencer={
-          <InfluencerTable
-            influencers={influencers}
-            platforms={influencerPlatforms}
-            contentCategories={influencerContentCategories}
-          />
-        }
-      />
+      {/* CrmSectionTabs ve (içindeki) TasksBoard useSearchParams() kullanıyor
+          (sekme + görev deep-link'i "?tab=tasks&task=" için, bkz. bildirim
+          çanı) — Next.js kuralı gereği Suspense zorunlu. */}
+      <Suspense fallback={null}>
+        <CrmSectionTabs
+          companiesCount={contacts.length}
+          influencerCount={influencers.length}
+          tasksCount={tasks.length}
+          companies={<GuideTable contacts={contacts} categories={categories} users={users} />}
+          influencer={
+            <InfluencerTable
+              influencers={influencers}
+              platforms={influencerPlatforms}
+              contentCategories={influencerContentCategories}
+            />
+          }
+          tasks={
+            <TasksViewSwitcher
+              columns={taskColumns}
+              tasks={tasks}
+              users={taskUsers}
+              labels={taskLabels}
+              requestTypes={taskRequestTypes}
+              currentUserId={currentUser?.id ?? ""}
+              isAdmin={currentUser?.role === "ADMIN"}
+            />
+          }
+        />
+      </Suspense>
     </div>
   );
 }

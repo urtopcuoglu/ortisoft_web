@@ -49,6 +49,19 @@ model User {
   passwordResetRequests  PasswordResetRequest[] @relation("PasswordResetRequests")
   resolvedPasswordResets PasswordResetRequest[] @relation("ResolvedPasswordResets")
 
+  // Görev Yönetimi (bkz. modules/tasks) — bana atanan görevler/alt görevler/
+  // talepler, benim yaptığım atamalar, oluşturduğum görevler/talepler/yorumlar,
+  // ve bana gelen bildirimler.
+  taskAssignments            TaskAssignee[]        @relation("TaskAssignments")
+  taskAssignmentsMade        TaskAssignee[]        @relation("TaskAssignmentsBy")
+  taskSubtaskAssignments     TaskSubtaskAssignee[] @relation("TaskSubtaskAssignments")
+  taskSubtaskAssignmentsMade TaskSubtaskAssignee[] @relation("TaskSubtaskAssignmentsBy")
+  taskRequestAssignments     TaskRequestAssignee[] @relation("TaskRequestAssignments")
+  createdTasks               Task[]
+  taskComments               TaskComment[]
+  createdTaskRequests        TaskRequest[]
+  notifications              Notification[]
+
   @@map("users")
 }
 
@@ -617,18 +630,18 @@ model InfluencerContentCategory {
 }
 
 model Influencer {
-  id        String                    @id @default(cuid())
-  firstName String?
-  lastName  String?
-  email     String?
-  phone     String?
-  address   String?
+  id         String                    @id @default(cuid())
+  firstName  String?
+  lastName   String?
+  email      String?
+  phone      String?
+  address    String?
   // Kayıt tarihi — modalde alan olarak İSTENMİYOR, kayıt anında sunucu
   // tarafında otomatik basılır (bkz. GuideContact.recordDate ile aynı desen,
   // lib/utils.ts#formatGunAyYil ile gün_ay_yıl olarak gösterilir).
-  recordDate DateTime                 @default(now())
-  createdAt  DateTime                 @default(now())
-  updatedAt  DateTime                 @updatedAt
+  recordDate DateTime                  @default(now())
+  createdAt  DateTime                  @default(now())
+  updatedAt  DateTime                  @updatedAt
   accounts   InfluencerSocialAccount[]
 
   // Takipçi bazlı Nano/Mikro/Makro/Mega ayrımı burada bir alan DEĞİL — DB'de
@@ -663,4 +676,271 @@ model InfluencerSocialAccount {
   @@index([influencerId])
   @@index([platformId])
   @@map("influencer_social_accounts")
+}
+
+// ─────────────────────────────────────────────────────────
+// Görev Yönetimi (Trello-lite, CRM'in 3. sekmesi — "Görev Yönetimi", 2026-09-11,
+// plan dışı). Kanban panosu (sütun→görev, sürükle-bırak) + Zaman Çizelgesi
+// görünümü aynı Task verisini paylaşır. Sıralama (Task.order/TaskColumn.order/
+// TaskSubtask.order) "sparse float" tekniğiyle tutulur: yeni kayıtlar 1000'er
+// aralıklı, iki kayıt arası taşımada (prev+next)/2 — her sürüklemede tüm
+// sütunu yeniden numaralamamak için (bkz. modules/tasks/actions.ts#
+// computeSparseOrder). Silme yerine arşivleme felsefesi GuideContact'taki
+// "PASIF_MUSTERI'ye çek" yaklaşımıyla tutarlı: Task hard-delete edilmez.
+// ─────────────────────────────────────────────────────────
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskRequestStatus {
+  PLANLANDI
+  TAMAMLANDI
+  IPTAL
+}
+
+// Bildirim çanı — mevcut global NotificationsBell (AuditLog tabanlı, kişiye
+// özel değil) bu iş için yetersiz: burada belirli kullanıcıya, okundu
+// durumu sunucuda kalıcı olan hedefli bildirimler gerekiyor, bu yüzden
+// bilinçli olarak ayrı bir Notification tablosu açılıyor.
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  TASK_MOVED
+  TASK_COMMENT
+  TASK_COMMENT_REPLY
+  TASK_REQUEST_ASSIGNED
+  TASK_REQUEST_UPDATED
+}
+
+// Kanban sütunları ("Yapılacak" vb.) — GuideCategory gibi admin-büyüyebilir
+// bir liste, sabit bir enum DEĞİL; v1'de tam CRUD var (ekle/adlandır/
+// sırala/arşivle). Arşivleme sadece içinde aktif görev yoksa izinli.
+model TaskColumn {
+  id        String   @id @default(cuid())
+  name      String
+  color     String?
+  order     Float
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks     Task[]
+
+  @@map("task_columns")
+}
+
+// Etiket/kategori (kullanıcı bu iki kavramı eşitledi) — GuideCategory ile
+// aynı resolve-or-create deseni, artı sabit bir renk paleti. Join tablosunda
+// ekstra alan gerekmediği için implicit many-to-many kullanılıyor.
+model TaskLabel {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String
+  createdAt DateTime @default(now())
+  tasks     Task[]
+
+  @@map("task_labels")
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  // Zengin metin (RichTextEditor/Tiptap) — blog içeriğiyle aynı desen.
+  description String?
+  priority    TaskPriority @default(MEDIUM)
+
+  column   TaskColumn @relation(fields: [columnId], references: [id])
+  columnId String
+  // Sütun içi sıra — bkz. dosya başı açıklama.
+  order    Float
+
+  // Hard delete yok — arşivlenen görev panodan kalkar, Zaman Çizelgesi/geçmiş
+  // sorgularında includeArchived:true ile hâlâ erişilebilir.
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
+  startAt DateTime?
+  dueAt   DateTime?
+
+  // Görevi oluşturan/ilk atayan kişi. Kim kime atadı bilgisinin asıl kaynağı
+  // TaskAssignee.assignedById'dir (görev yeniden atandıkça değişebilir);
+  // burası sabit "oluşturan" bilgisi.
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  labels    TaskLabel[]
+  assignees TaskAssignee[]
+  subtasks  TaskSubtask[]
+  comments  TaskComment[]
+  requests  TaskRequest[]
+
+  @@index([columnId])
+  @@index([archived])
+  @@index([dueAt])
+  @@map("tasks")
+}
+
+// Görev-seviyesi atama. Cascade (User silinirse satır da silinir) — bilinçli
+// olarak diğer User ilişkilerinden (genelde SetNull) farklı: bu satırın tek
+// anlamı "bu kullanıcı atanmış", kullanıcı yoksa satırın da anlamı kalmıyor.
+// assignedById ise SetNull — "kim atadı" geçmiş bilgisi atayan silinse de kalmalı.
+model TaskAssignee {
+  id           String   @id @default(cuid())
+  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId       String
+  user         User     @relation("TaskAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  assignedBy   User?    @relation("TaskAssignmentsBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  assignedById String?
+  assignedAt   DateTime @default(now())
+
+  @@unique([taskId, userId])
+  @@index([userId])
+  @@map("task_assignees")
+}
+
+// Alt görev — bilinçli olarak Task'ın kendine referansı (self-relation)
+// DEĞİL, hafif bir model. Kullanıcı sadece alt-görev bazlı ATAMA istedi,
+// alt görevin kendi etiketi/yorumu/sütunu olmasını istemedi (Trello'nun
+// checklist item mantığıyla birebir) — self-relation gereksiz karmaşıklık
+// ve sınırsız iç içe alt-görev riski getirirdi.
+model TaskSubtask {
+  id        String    @id @default(cuid())
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  title     String
+  isDone    Boolean   @default(false)
+  order     Float
+  dueAt     DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  assignees TaskSubtaskAssignee[]
+
+  @@index([taskId])
+  @@map("task_subtasks")
+}
+
+model TaskSubtaskAssignee {
+  id           String      @id @default(cuid())
+  subtask      TaskSubtask @relation(fields: [subtaskId], references: [id], onDelete: Cascade)
+  subtaskId    String
+  user         User        @relation("TaskSubtaskAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  assignedBy   User?       @relation("TaskSubtaskAssignmentsBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  assignedById String?
+  assignedAt   DateTime    @default(now())
+
+  @@unique([subtaskId, userId])
+  @@map("task_subtask_assignees")
+}
+
+// Yorumlar — self-relation ile sonsuz iç içe yanıt (parentCommentId).
+// Soft delete: bir yorum silinse bile altındaki yanıt zinciri çalışmaya
+// devam etsin diye hard delete edilmiyor; UI "Bu yorum silindi" placeholder'ı
+// gösterip child reply'leri render etmeye devam eder. onDelete: Restrict
+// self-relation'da sadece DB-seviyesi bir backstop — uygulama kodu hiçbir
+// zaman hard delete denemiyor, bu yüzden pratikte hiç tetiklenmemeli.
+model TaskComment {
+  id              String        @id @default(cuid())
+  task            Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId          String
+  author          User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId        String?
+  parent          TaskComment?  @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Restrict)
+  parentCommentId String?
+  replies         TaskComment[] @relation("CommentReplies")
+  body            String
+  isDeleted       Boolean       @default(false)
+  deletedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([taskId])
+  @@index([parentCommentId])
+  @@map("task_comments")
+}
+
+// Talep tipi ("Şirket Toplantısı", "Müşteri Ziyareti" vb.) — GuideCategory
+// ile aynı admin-büyüyebilir liste deseni.
+model TaskRequestType {
+  id        String        @id @default(cuid())
+  name      String        @unique
+  createdAt DateTime      @default(now())
+  requests  TaskRequest[]
+
+  @@map("task_request_types")
+}
+
+// Görev içi ad-hoc, tarih/saat atanabilen "talep" ("şirket toplantısı
+// oluştur" gibi) — sonradan güncellenebilir. scheduledAt her zaman dolu bir
+// DateTime tutar; isAllDay=true ise saat girilmemiş demektir (gösterim/
+// bildirimde saat atlanır). İleride ayrı bir Takvim modülünün ana veri
+// kaynaklarından biri olacak şekilde tasarlandı (bkz. @@index([scheduledAt])).
+model TaskRequest {
+  id          String            @id @default(cuid())
+  task        Task              @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String
+  type        TaskRequestType   @relation(fields: [typeId], references: [id])
+  typeId      String
+  title       String
+  description String?
+  scheduledAt DateTime
+  isAllDay    Boolean           @default(false)
+  status      TaskRequestStatus @default(PLANLANDI)
+  createdBy   User?             @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  assignees TaskRequestAssignee[]
+
+  @@index([taskId])
+  @@index([scheduledAt])
+  @@map("task_requests")
+}
+
+// "Herkese ata" seçimi oluşturma anında MATERIALIZE edilir (o anki tüm
+// kullanıcılar için satır açılır) — dinamik bir "ALL" flag'i, sonradan
+// eklenen bir kullanıcının geçmiş talebi kapsayıp kapsamayacağı konusunda
+// belirsizlik yaratırdı; materialize etmek bunu baştan önlüyor.
+model TaskRequestAssignee {
+  id            String      @id @default(cuid())
+  taskRequest   TaskRequest @relation(fields: [taskRequestId], references: [id], onDelete: Cascade)
+  taskRequestId String
+  user          User        @relation("TaskRequestAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  assignedAt    DateTime    @default(now())
+
+  @@unique([taskRequestId, userId])
+  @@map("task_request_assignees")
+}
+
+// Kişiye özel, sunucu tarafında kalıcı okundu/okunmadı durumu olan bildirim
+// — bkz. dosya başı açıklama (mevcut global NotificationsBell'den bilinçli
+// ayrım). link, tıklanınca ilgili görevi doğrudan açan deep-link
+// (/admin/crm?tab=tasks&task={id}) tutar.
+model Notification {
+  id         String           @id @default(cuid())
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  type       NotificationType
+  title      String
+  body       String?
+  link       String?
+  entityType String
+  entityId   String
+  isRead     Boolean          @default(false)
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@index([entityType, entityId])
+  @@map("notifications")
 }

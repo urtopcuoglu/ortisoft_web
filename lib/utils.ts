@@ -50,6 +50,19 @@ export function formatFollowerCount(count: number): string {
 }
 
 /**
+ * Görev Yönetimi — TaskRequest.scheduledAt gösterimi/bildirim metni.
+ * isAllDay=true ise saat atlanır (ör. "12 Eylül Cuma"), değilse saat de
+ * eklenir (ör. "12 Eylül Cuma, 14:30").
+ */
+export function formatTaskDateTime(date: Date | string, isAllDay: boolean): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const datePart = d.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" });
+  if (isAllDay) return datePart;
+  const timePart = d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+  return `${datePart}, ${timePart}`;
+}
+
+/**
  * Influencer modülü — admin panelinden "+ yeni platform ekle" ile girilen
  * serbest metin platform adından URL-güvenli bir slug türetir (bkz.
  * modules/influencer/actions.ts#resolvePlatform). Türkçe karakterler ASCII'ye

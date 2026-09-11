@@ -43,6 +43,8 @@ async function main() {
   await seedSitePages();
   await seedSiteSettings();
   await seedInfluencerPlatforms();
+  await seedTaskColumns();
+  await seedTaskRequestTypes();
 }
 
 const LOCALE = "tr";
@@ -418,6 +420,37 @@ async function seedInfluencerPlatforms() {
     skipDuplicates: true,
   });
   console.log(`✔ InfluencerPlatform seed edildi (${DEFAULT_INFLUENCER_PLATFORMS.length} kayıt)`);
+}
+
+// Görev Yönetimi — Kanban sütunları admin-büyüyebilir bir liste (bkz.
+// prisma/schema.prisma TaskColumn), burada sadece başlangıç 4 sütunu açılıyor.
+const DEFAULT_TASK_COLUMNS = [
+  { name: "Yapılacak", color: "#64748b", order: 1000 },
+  { name: "Devam Ediyor", color: "#2563eb", order: 2000 },
+  { name: "İncelemede", color: "#d97706", order: 3000 },
+  { name: "Tamamlandı", color: "#16a34a", order: 4000 },
+];
+
+async function seedTaskColumns() {
+  const count = await prisma.taskColumn.count();
+  if (count > 0) return;
+
+  await prisma.taskColumn.createMany({ data: DEFAULT_TASK_COLUMNS });
+  console.log(`✔ TaskColumn seed edildi (${DEFAULT_TASK_COLUMNS.length} kayıt)`);
+}
+
+// Talep tipleri — TaskRequestType da admin-büyüyebilir bir liste (GuideCategory
+// deseni), burada kullanıcının kendi örnekleriyle 2 başlangıç değeri açılıyor.
+const DEFAULT_TASK_REQUEST_TYPES = ["Şirket Toplantısı", "Müşteri Ziyareti"];
+
+async function seedTaskRequestTypes() {
+  const count = await prisma.taskRequestType.count();
+  if (count > 0) return;
+
+  await prisma.taskRequestType.createMany({
+    data: DEFAULT_TASK_REQUEST_TYPES.map((name) => ({ name })),
+  });
+  console.log(`✔ TaskRequestType seed edildi (${DEFAULT_TASK_REQUEST_TYPES.length} kayıt)`);
 }
 
 main()
