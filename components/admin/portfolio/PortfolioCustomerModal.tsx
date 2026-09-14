@@ -86,7 +86,7 @@ export default function PortfolioCustomerModal({
             </Dialog.Close>
           </div>
 
-          <form action={formAction} encType="multipart/form-data" className="flex flex-col gap-4">
+          <form action={formAction} className="flex flex-col gap-4">
             {sourceMessageId && <input type="hidden" name="sourceMessageId" value={sourceMessageId} />}
 
             <div className="grid grid-cols-2 gap-4">

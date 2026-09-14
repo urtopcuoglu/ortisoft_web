@@ -23,7 +23,10 @@ export default function RichTextEditor({
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      // tiptap v3'te StarterKit kendi Link extension'ını içeriyor — aşağıdaki
+      // özel yapılandırmayla (openOnClick/autolink) çakışıp "Duplicate
+      // extension names" uyarısı veriyordu, StarterKit'inkini kapatıyoruz.
+      StarterKit.configure({ link: false }),
       Link.configure({ openOnClick: false, autolink: true }),
     ],
     content: defaultValue,
